@@ -41,6 +41,7 @@ canvas {
 	background-color: #2C2F20;
 	overflow-x: auto;
 	display: none;
+	max-height: 600px;
 	z-index: 1;
 }
 
@@ -48,9 +49,7 @@ canvas {
 	display: none;
 }
 
-.comment:hover  .commentButtons {
-	display: block;
-}
+
 
 .comment > div {
 	margin: 15px;

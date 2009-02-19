@@ -1,149 +1,155 @@
-var WEBNODES = function(root, settings){
-	// Fast Tree Layout 
-	settings = $.extend({
-		minWidth: 250,
-		maxWidth: 600,
-		linkColor: 'black',
-		linkWidth: 10,
-		horSpacing: 20,
-		vertSpacing: 50,
-		service: '/commands?action=dispatch',
-		graph: {}
-	}, settings);
-	
-	var Node = function(element) {
-		this.element = element;
-		this.childIds = settings.graph[element.id] || [];
-		this.children = []; // Displayed children
-		
-		this.top = element.offsetTop;
-		this.left = element.offsetLeft;
-		this.width = element.offsetWidth;
-		this.height = element.offsetHeight;
-		this.right = this.left + this.width;
-		this.bottom = this.top + this.height;
-		
-		// Positions for this node's children
-		this.childTop = this.bottom + 50;
-		this.childLeft = this.left;
-		this.childRight = this.right;
-	}
+var WebNodes = function(root, graph, options){
+    // Fast Tree Layout    
+    options = $.extend({
+        minWidth: 250,
+        maxWidth: 400,
+        linkColor: 'black',
+        linkWidth: 10,
+        horSpacing: 30,
+        vertSpacing: 70
+    }, options);
+    
+    function setNode(node) {
+        node.childIds = graph[node.id] || [];
+        node.visibleChildren = [];
+                
+        // represents the space where children may be layed out
+        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpacing;
+        node.childLeft = node.offsetLeft;
+        node.childRight = node.childLeft + node.offsetWidth;
+        return node;
+    }
 
-	var root = new Node(root);
-	
-	function log(row, out) {
-		for (var i = 0, node; node = row[i]; i++) {
-			out += node.element.id + ", ";
-		}
-		console.log(out);
-	}	
-	
-	function layout() {
-		var row = [root];
-		while (row.length) {
-			//log(row, "children :");
-			removeNodes(row);
-			//log(row, "culled :");
-			layoutChildren(row);
-		}
-		drawConnections(root);
-	}
+    function layout() {
+        var row = [setNode(root)];
+        var height = 0;
+        while (row.length) {
+            row = expandNodes(row);
+            //console.log('removed', row);
+            row = layoutChildren(row);
+            //console.log('children', row);
+            
+            // find the max height of the document
+            for (var i=0, node; node=row[i]; i++) {
+                if (height < node.childTop)
+                    height = node.childTop;
+            }
+        }
+        drawConnections(root, height);
+    }
 
-	function removeNodes(row) {
-		// Removes nodes that don't have any children, and lets adjacent nodes take up their space
-		for (var i = 0, node; node = row[i]; i++) {
-			if (node.childIds.length) continue;
-			
-			var leftNode = row[i - 1];
-			var rightNode = row[i + 1];
-			if (leftNode) {
-				leftNode.childTop = Math.max(leftNode.childTop, node.bottom + 50);
-				leftNode.childRight = node.right;
-			} else if (rightNode) {
-				rightNode.childTop = Math.max(rightNode.childTop, node.bottom + 50);
-				rightNode.childLeft = node.left;
-			}
-			
-			// Remove node and continue to next node
-			row.splice(i--, 1);
-		}
-	}
-		
-	function layoutChildren(row) {
-		for (var i = 0, node; node = row[i]; i++) {
-			var totWidth = node.childRight - node.childLeft;
-			var maxChildren = Math.floor(totWidth / settings.minWidth);
-			var nChildren = Math.min(maxChildren, node.childIds.length);
-			var childWidth = (totWidth - settings.horSpacing * (nChildren -1)) / nChildren;
-			
-			// Remove parent node
-			row.splice(i, 1);
-			
-			// Add child nodes
-			for (var j = 0, child, element; j < nChildren; j++) {
-				element = document.getElementById(node.childIds[j]);
-				
-				element.style.top = node.childTop + "px";
-				element.style.left = node.childLeft + childWidth * j + settings.horSpacing * j + "px";
-				element.style.width = childWidth + "px";
-				element.style.display = "block";
-				
-				child = new Node(element);
-				node.children.push(child);
-				row.splice(i++, 0, child);
-			}
-			i--;
-		}
-	}
-	
-	function drawConnection(ctx, node) {
-		for (var i = 0, child; child = node.children[i]; i++) {
-			var x = node.left + node.width / 2;
-			var y = node.bottom - 5;
-			var childX = child.left + child.width / 2;
-			var childY = child.top + 5;
-			var dY = childY - y;
-			
-			ctx.moveTo(x, y);
-			//ctx.lineTo(childX, childY);
-			//ctx.quadraticCurveTo(childX, y, childX, childY);
-			ctx.bezierCurveTo(x, childY, childX, y + dY / 2, childX, childY);
-			drawConnection(ctx, child);
-		}
-	}
-	
-	function drawConnections(node) {
-		var canvas = document.createElement('canvas');
-		
-		canvas.width = $("#container").width();
-		canvas.height = 3000;
-		
-		$(canvas).css({
-			"top": 0,
-			"left": 0
-		}).appendTo("#container");
-		
-		// Initialize Excanvas
-		if (window.G_vmlCanvasManager) {
-			window.G_vmlCanvasManager.initElement(canvas);
-		}
-		
-		var ctx = canvas.getContext("2d");
-		ctx.strokeStyle = settings.linkColor;
-		ctx.lineWidth = settings.linkWidth;
-		
-		ctx.beginPath();
-		
-		drawConnection(ctx, node);
-		
-		ctx.stroke();
-		ctx.closePath();
-	}
-	
-	layout();
-}
-
-var submitReply = function(id) {
-	var content = prompt("content", id);
-	return false;
+    function expandNodes(row) {
+        var new_row = [];
+        for (var i = 0, node; node = row[i]; i++) {
+            if (node.childIds.length) {
+                new_row.push(node);
+            } else {
+                var leftNode = row[i - 1];
+                var rightNode = row[i + 1];
+                
+                // let adjacent nodes take up the space below it
+                if (leftNode) {
+                    leftNode.childTop = Math.max(node.childTop, leftNode.childTop);
+                    leftNode.childRight = node.childRight;
+                } else if (rightNode) {
+                    rightNode.childTop = Math.max(node.childTop, rightNode.childTop);
+                    rightNode.childLeft = node.childLeft;
+                }
+            }
+        }
+        return new_row;
+    }
+        
+    function layoutChildren(row) {
+        var lowest;
+        var indexLow = 0;
+        for (var i = 0, node; node = row[i]; i++) {
+            if (!lowest || ( node.childTop < lowest.childTop )) {
+                lowest = node;
+                indexLow = i;
+            }
+        }
+        
+        if (!lowest) return row;
+        
+        node = lowest;
+        row.splice(indexLow, 1);
+        
+        var totWidth = node.childRight - node.childLeft;
+        var maxChildren = Math.floor(totWidth / options.minWidth);
+        var nChildren = Math.min(maxChildren, node.childIds.length);
+        var childWidth = (totWidth - options.horSpacing * (nChildren -1)) / nChildren;
+        
+        // Add child nodes
+        for (var j = 0, child; j < nChildren; j++) {
+            var child = document.getElementById(node.childIds[j]);
+            
+            child.style.top = node.childTop + 'px';
+            child.style.left = node.childLeft + childWidth * j + options.horSpacing * j + 'px';
+            child.style.width = childWidth + 'px';
+            child.style.display = 'block';
+            
+            setNode(child);
+            
+            // TODO: stop child space from shrinking due to horizontal spacing
+            child.childLeft = child.offsetLeft + childWidth * j + options.horSpacing * (j - 1);
+            child.childRight = child.childLeft + childWidth + options.horSpacing;
+            
+            if (childWidth > options.maxWidth) {
+                child.style.width = options.maxWidth + 'px';
+                child.style.left =  node.childLeft + childWidth * j + options.horSpacing * j  +  ((childWidth - options.maxWidth) / 2) + 'px';
+            }
+            
+            node.visibleChildren.push(child);
+            row.splice(indexLow++, 0, child);
+        }
+        
+        return row;
+    }
+    
+    function drawConnection(ctx, node) {
+        for (var i = 0, child; child = node.visibleChildren[i]; i++) {
+            var x = node.offsetLeft + node.offsetWidth / 2;
+            var y = node.offsetTop + node.offsetHeight - 5;
+            var childX = child.offsetLeft + child.offsetWidth / 2;
+            var childY = child.offsetTop + 5;
+            var dY = childY - y;
+            
+            ctx.moveTo(x, y);
+            //ctx.lineTo(childX, childY);
+            //ctx.quadraticCurveTo(childX, y, childX, childY);
+            ctx.bezierCurveTo(x, childY, childX, y + dY / 2, childX, childY);
+            drawConnection(ctx, child);
+        }
+    }
+    
+    function drawConnections(node, height) {
+        var canvas = document.createElement('canvas');
+        
+        canvas.width = $("#container").width();
+        canvas.height = height;
+        
+        $(canvas).css({
+            top: 0,
+            left: 0
+        }).appendTo("#container");
+        
+        // Initialize Excanvas
+        if (window.G_vmlCanvasManager) {
+            window.G_vmlCanvasManager.initElement(canvas);
+        }
+        
+        var ctx = canvas.getContext("2d");
+        ctx.strokeStyle = options.linkColor;
+        ctx.lineWidth = options.linkWidth;
+        
+        ctx.beginPath();
+        
+        drawConnection(ctx, node);
+        
+        ctx.stroke();
+        ctx.closePath();
+    }
+    
+    layout();
 }
