@@ -6,7 +6,7 @@ var WebNodes = function(root, graph, options){
         linkColor: 'black',
         linkWidth: 10,
         horSpacing: 30,
-        vertSpacing: 70
+        vertSpacing: 100
     }, options);
     
     function setNode(node) {
@@ -16,7 +16,7 @@ var WebNodes = function(root, graph, options){
         // represents the space where children may be layed out
         node.childTop = node.offsetTop + node.offsetHeight + options.vertSpacing;
         node.childLeft = node.offsetLeft;
-        node.childRight = node.childLeft + node.offsetWidth;
+        node.childWidth = node.offsetWidth;
         return node;
     }
 
@@ -40,6 +40,9 @@ var WebNodes = function(root, graph, options){
 
     function expandNodes(row) {
         var new_row = [];
+        
+        // TODO: expand to container edges if first or last node in row
+        
         for (var i = 0, node; node = row[i]; i++) {
             if (node.childIds.length) {
                 new_row.push(node);
@@ -50,10 +53,11 @@ var WebNodes = function(root, graph, options){
                 // let adjacent nodes take up the space below it
                 if (leftNode) {
                     leftNode.childTop = Math.max(node.childTop, leftNode.childTop);
-                    leftNode.childRight = node.childRight;
+                    leftNode.childWidth += node.childWidth;
                 } else if (rightNode) {
                     rightNode.childTop = Math.max(node.childTop, rightNode.childTop);
                     rightNode.childLeft = node.childLeft;
+                    rightNode.childWidth += rightNode.childWidth;
                 }
             }
         }
@@ -74,26 +78,24 @@ var WebNodes = function(root, graph, options){
         
         node = lowest;
         row.splice(indexLow, 1);
-        
-        var totWidth = node.childRight - node.childLeft;
-        var maxChildren = Math.floor(totWidth / options.minWidth);
+
+        var maxChildren = Math.floor(node.childWidth / options.minWidth);
+        node.maxChildren = maxChildren;
         var nChildren = Math.min(maxChildren, node.childIds.length);
-        var childWidth = (totWidth - options.horSpacing * (nChildren -1)) / nChildren;
+        var childWidth = (node.childWidth - options.horSpacing * (nChildren -1)) / nChildren;
         
         // Add child nodes
         for (var j = 0, child; j < nChildren; j++) {
             var child = document.getElementById(node.childIds[j]);
             
             child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + childWidth * j + options.horSpacing * j + 'px';
+            child.style.left = node.childLeft + j * (childWidth + options.horSpacing) + 'px';
             child.style.width = childWidth + 'px';
             child.style.display = 'block';
             
             setNode(child);
             
-            // TODO: stop child space from shrinking due to horizontal spacing
-            child.childLeft = child.offsetLeft + childWidth * j + options.horSpacing * (j - 1);
-            child.childRight = child.childLeft + childWidth + options.horSpacing;
+            child.childWidth = childWidth + (options.horSpacing * j);
             
             if (childWidth > options.maxWidth) {
                 child.style.width = options.maxWidth + 'px';
