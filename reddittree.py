@@ -7,7 +7,8 @@ link = "http://www.reddit.com/r/funny/comments/7b38f/the_uss_enterprise_totally_
 #link="http://www.reddit.com/r/funny/comments/7b30l/roger_ebert_receives_email_that_proves_the_theory/.json"
 link = "http://www.reddit.com/r/politics/comments/7b2t9/virginia_board_of_elections_secretary_nancy/.json"
 #link = "http://www.reddit.com/r/programming/comments/7hzgs/my_encounter_with_larry_page_through_a_piece_of/.json"
-
+link = "http://www.reddit.com/r/politics/comments/7b2t9/virginia_board_of_elections_secretary_nancy/.json"
+link = "http://www.reddit.com/r/programming/comments/7yruv/so_i_told_my_wife_i_do_have_a_social_life_i_share/.json"
 
 #txt = urllib2.urlopen(link).read()
 txt = urlfetch.fetch(link).content

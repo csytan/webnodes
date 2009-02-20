@@ -5,8 +5,8 @@ var WebNodes = function(root, graph, options){
         maxWidth: 400,
         linkColor: 'black',
         linkWidth: 10,
-        horSpacing: 30,
-        vertSpacing: 100
+        horSpace: 10, // Space on both sides of the node
+        vertSpace: 60
     }, options);
     
     function setNode(node) {
@@ -14,9 +14,9 @@ var WebNodes = function(root, graph, options){
         node.visibleChildren = [];
                 
         // represents the space where children may be layed out
-        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpacing;
-        node.childLeft = node.offsetLeft;
-        node.childWidth = node.offsetWidth;
+        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpace;
+        node.childLeft = node.offsetLeft - options.horSpace;
+        node.childWidth = node.offsetWidth + 2 * options.horSpace;
         return node;
     }
 
@@ -40,9 +40,6 @@ var WebNodes = function(root, graph, options){
 
     function expandNodes(row) {
         var new_row = [];
-        
-        // TODO: expand to container edges if first or last node in row
-        
         for (var i = 0, node; node = row[i]; i++) {
             if (node.childIds.length) {
                 new_row.push(node);
@@ -82,24 +79,24 @@ var WebNodes = function(root, graph, options){
         var maxChildren = Math.floor(node.childWidth / options.minWidth);
         node.maxChildren = maxChildren;
         var nChildren = Math.min(maxChildren, node.childIds.length);
-        var childWidth = (node.childWidth - options.horSpacing * (nChildren -1)) / nChildren;
+        var childWidth = node.childWidth / nChildren;
         
         // Add child nodes
         for (var j = 0, child; j < nChildren; j++) {
             var child = document.getElementById(node.childIds[j]);
             
             child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + j * (childWidth + options.horSpacing) + 'px';
-            child.style.width = childWidth + 'px';
+            child.style.left = node.childLeft + (j * childWidth) + options.horSpace + 'px';
+            child.style.width = childWidth - 2 * options.horSpace + 'px';
             child.style.display = 'block';
             
             setNode(child);
             
-            child.childWidth = childWidth + (options.horSpacing * j);
+            //child.childWidth = childWidth + (options.horSpace * j);
             
             if (childWidth > options.maxWidth) {
-                child.style.width = options.maxWidth + 'px';
-                child.style.left =  node.childLeft + childWidth * j + options.horSpacing * j  +  ((childWidth - options.maxWidth) / 2) + 'px';
+                //child.style.width = options.maxWidth + 'px';
+                //child.style.left =  node.childLeft + childWidth * j + options.horSpace * j  +  ((childWidth - options.maxWidth) / 2) + 'px';
             }
             
             node.visibleChildren.push(child);
