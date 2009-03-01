@@ -1,11 +1,12 @@
 html, body {
-	font-family: Georgia,"Times New Roman",Times,serif;
-	color: #D6A14B;
-	background-color: #FF703F;
+	font-family: "Helvetica Neue",Helvetica,Times,serif;
+	font-size: 18px;
+	color: #5c5c5c;
+	background-color: black;
 }
 
 a {
-	color: #336699;
+	color: #0074ae;
 }
 
 a:hover {
@@ -33,15 +34,20 @@ canvas {
 	position: absolute;
 }
 
+
+
 .comment {
 	position: absolute;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
-	background-color: #2C2F20;
+	background-color: #232323;
+	border: 2px solid #1F1F1F;
 	overflow-x: auto;
 	display: none;
-	max-height: 600px;
+	max-height: 300px;
+	min-width: 250px;
+	max-width: 500px;
 	z-index: 1;
 }
 

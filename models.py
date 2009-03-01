@@ -5,7 +5,9 @@ from google.appengine.api import memcache
 
 # ideas:
 # ability to make private replies to a comment
-
+# community dictionary support 
+    # namespace search (tlnet -> gamers -> wikipedia)
+# translations between words
 
 class User(db.Expando):
     favorites = db.ListProperty(db.Key)
