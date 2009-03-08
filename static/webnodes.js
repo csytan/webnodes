@@ -25,14 +25,8 @@ var WebNodes = function(root, graph, options){
             //console.log('removed', row);
             row = layoutChildren(row);
             //console.log('children', row);
-            
-            // find the max height of the document
-            for (var i=0, node; node=row[i]; i++) {
-                if (height < node.childTop)
-                    height = node.childTop;
-            }
         }
-        drawConnections(root, height);
+        drawConnections(root);
     }
 
     function expandNodes(row) {
@@ -111,13 +105,13 @@ var WebNodes = function(root, graph, options){
     function drawConnections(node, height) {
         var canvas = document.createElement('canvas');
         
-        canvas.width = $("#container").width();
-        canvas.height = height;
+        canvas.width = $(document).width();
+        canvas.height = $(document).height();
         
         $(canvas).css({
             top: 0,
             left: 0
-        }).appendTo("#container");
+        }).appendTo(document.body);
         
         // Initialize Excanvas
         if (window.G_vmlCanvasManager) {

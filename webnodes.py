@@ -44,7 +44,7 @@ class MainHandler(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
     
     def get(self):
-        context = {"graph":reddittree.graph, "comments":reddittree.comments, "root":"root"}
+        context = {"graph":reddittree.graph, "comments":reddittree.comments, "root":reddittree.ROOT}
         self.response.out.write(template.render(self.path, context))
 
 
