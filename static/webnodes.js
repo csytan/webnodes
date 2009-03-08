@@ -48,6 +48,8 @@ var WebNodes = function(root, graph, options){
             } else if (rightNode && node.childTop < rightNode.childTop) {
                 rightNode.childLeft = node.childLeft;
                 rightNode.childWidth += node.childWidth;
+            } else {
+                new_row.push(node);
             }
         }
         return new_row;
