@@ -34,21 +34,22 @@ canvas {
 	position: absolute;
 }
 
-
+.comment_container {
+    position: absolute;
+    display: none;
+    z-index: 1;
+}
 
 .comment {
-	position: absolute;
+    width: 240px;
+    margin: auto;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	background-color: #232323;
 	border: 2px solid #1F1F1F;
 	overflow-x: auto;
-	display: none;
 	max-height: 300px;
-	min-width: 250px;
-	max-width: 500px;
-	z-index: 1;
 }
 
 .commentButtons {

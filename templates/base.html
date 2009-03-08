@@ -24,10 +24,10 @@
             var graph = {{ graph }};
                 
             timeDiff.setStartTime();
-            var root = $("#{{ root }}").show().width("1000px")[0];
+            var root = $("#root").show().width("100%")[0];
             WebNodes(root, graph);
             
-            alert(timeDiff.getDiff());
+            //alert(timeDiff.getDiff());
         });
     </script>
     
@@ -46,20 +46,22 @@
 <body>
     <div id="container">
         {% for comment in comments %}
-        <div id="{{ comment.id }}" class="comment">
-            <div>
-                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
-                {{ comment.id }}
-                <div class="content">{{ comment.content }}</div>
-            </div>
-            <div class="commentButtons">
-                <a href="/comments/{{ comment.id }}">Rate Up</a>
-                <a href="/comments/{{ comment.id }}">Rate Down</a>
-                <a href="/comments/{{ comment.id }}">Link</a>
-                {% if comment.next_replies %}
-                    <a onclick="nextReplies({{ comment.next_replies }}">Next</a>
-                {% endif %}
-                <a href="/comments/{{ comment.id }}" onclick="submitReply('{{ comment.id }}');">Reply</a>
+        <div id="{{ comment.id }}" class="comment_container">
+            <div class="comment">
+                <div>
+                    <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                    {{ comment.id }}
+                    <div class="content">{{ comment.content }}</div>
+                </div>
+                <div class="commentButtons">
+                    <a href="/comments/{{ comment.id }}">Rate Up</a>
+                    <a href="/comments/{{ comment.id }}">Rate Down</a>
+                    <a href="/comments/{{ comment.id }}">Link</a>
+                    {% if comment.next_replies %}
+                        <a onclick="nextReplies({{ comment.next_replies }}">Next</a>
+                    {% endif %}
+                    <a href="/comments/{{ comment.id }}" onclick="submitReply('{{ comment.id }}');">Reply</a>
+                </div>
             </div>
         </div>
         {% endfor %}

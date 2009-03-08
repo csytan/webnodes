@@ -5,18 +5,20 @@ var WebNodes = function(root, graph, options){
         maxWidth: 400,
         linkColor: '#00557F',
         linkWidth: 5,
-        horSpace: 10, // Space on both sides of the node
         vertSpace: 60
     }, options);
     
     function setNode(node) {
         node.childIds = graph[node.id] || [];
         node.visibleChildren = [];
+        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpace;
+        node.childLeft = node.offsetLeft;
+        node.childWidth = node.offsetWidth;
         return node;
     }
-
-    function layout() {
-        var row = [setNode(root)];
+    
+    function layout(rootNode) {
+        var row = [setNode(rootNode)];
         var height = 0;
         while (row.length) {
             row = expandNodes(row);
@@ -35,28 +37,17 @@ var WebNodes = function(root, graph, options){
 
     function expandNodes(row) {
         var new_row = [];
-        for (var i = 0, node; node = row[i]; i++) {
-            node.childTop = node.offsetTop + node.offsetHeight + options.vertSpace;
-            node.childLeft = node.offsetLeft;
-            node.childWidth = node.offsetWidth;
-            
-            if (node.childIds.length) {
-                new_row.push(node);
-            }
-        }
-        
         for (var i=0, node; node=row[i]; i++) {
             var leftNode = row[i - 1];
             var rightNode = row[i + 1];
             
-            if (leftNode) {
-                node.childLeft = leftNode.offsetLeft + leftNode.offsetWidth;
-            } else {
-                node.childLeft = 0;
-            }
-            
-            if (rightNode) {
-                node.childWidth = rightNode.offsetLeft - node.childLeft -options.horSpace;
+            if (node.childIds.length) {
+                new_row.push(node);
+            } else if (leftNode && node.childTop < leftNode.childTop) {
+                leftNode.childWidth += node.childWidth;
+            } else if (rightNode && node.childTop < rightNode.childTop) {
+                rightNode.childLeft = node.childLeft;
+                rightNode.childWidth += node.childWidth;
             }
         }
         return new_row;
@@ -78,7 +69,6 @@ var WebNodes = function(root, graph, options){
         row.splice(indexLow, 1);
 
         var maxChildren = Math.floor(node.childWidth / options.minWidth);
-        node.maxChildren = maxChildren;
         var nChildren = Math.min(maxChildren, node.childIds.length);
         var childWidth = node.childWidth / nChildren;
         
@@ -87,17 +77,11 @@ var WebNodes = function(root, graph, options){
             var child = document.getElementById(node.childIds[j]);
             
             child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + (j * childWidth) + options.horSpace + 'px';
-            child.style.width = childWidth - 2 * options.horSpace + 'px';
+            child.style.left = node.childLeft + (j * childWidth) + 'px';
+            child.style.width = childWidth + 'px';
             child.style.display = 'block';
             
-            if (childWidth > options.maxWidth) {
-                child.style.width = options.maxWidth + 'px';
-            }
-            
             setNode(child);
-            
-            //child.childWidth = childWidth + (options.horSpace * j);
             
             node.visibleChildren.push(child);
             row.splice(indexLow++, 0, child);
@@ -150,5 +134,5 @@ var WebNodes = function(root, graph, options){
         ctx.closePath();
     }
     
-    layout();
+    layout(root);
 }
