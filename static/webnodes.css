@@ -35,7 +35,7 @@ canvas {
 }
 
 .comment {
-    width: 240px;
+    width: 290px;
     margin: auto;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -43,7 +43,6 @@ canvas {
 	background-color: #232323;
 	border: 2px solid #1F1F1F;
 	overflow-x: auto;
-	max-height: 300px;
 }
 
 .commentButtons {
@@ -53,7 +52,7 @@ canvas {
 
 
 .comment > div {
-	margin: 15px;
+	margin: 7px;
 }
 
 

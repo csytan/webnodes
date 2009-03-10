@@ -1,11 +1,10 @@
 var WebNodes = function(root, graph, options){
     // Fast Tree Layout    
     options = $.extend({
-        minWidth: 250,
-        maxWidth: 400,
+        minWidth: 300,
         linkColor: '#00557F',
-        linkWidth: 5,
-        vertSpace: 60
+        linkWidth: 4,
+        vertSpace: 30
     }, options);
     
     function setNode(node) {

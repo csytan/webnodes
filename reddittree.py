@@ -4,6 +4,8 @@ import urllib
 link = "http://www.reddit.com/r/programming/comments/7yruv/so_i_told_my_wife_i_do_have_a_social_life_i_share/.json"
 link = "http://www.reddit.com/r/reddit.com/comments/82uj2/for_all_of_reddits_antiestablishment_posturing/.json"
 link = 'http://www.reddit.com/r/politics/comments/830hm/everytime_you_ride_on_a_national_highway_remember/.json'
+link = 'http://www.reddit.com/r/programming/comments/830u9/wolfram_alpha_is_coming_and_it_could_be_as/.json'
+link = 'http://www.reddit.com/r/worldnews/comments/837fl/victim_will_get_to_blind_the_man_who_blinded_her/.json'
 
 comments = []
 graph = {}
