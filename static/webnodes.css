@@ -1,31 +1,31 @@
 html, body {
-	font-family: "Helvetica Neue",Helvetica,Times,serif;
-	font-size: 18px;
-	color: #5c5c5c;
-	background-color: black;
+    font-family: "Helvetica Neue",Helvetica,Times,serif;
+    font-size: 18px;
+    color: #5c5c5c;
+    background-color: black;
 }
 
 a {
-	color: #0074ae;
+    color: #0074AE;
 }
 
 a:hover {
-	background-color: #336699;
-	color: #2C2F20;
+    background-color: #336699;
+    color: #2C2F20;
 }
 
 blockquote {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	margin-left: 15px;
-	padding-left: 15px;
-	border-left: 5px solid #D6A14B;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 15px;
+    padding-left: 15px;
+    border-left: 5px solid #D6A14B;
 } 
 
 
 canvas {
-	z-index: 0;
-	position: absolute;
+    z-index: 0;
+    position: absolute;
 }
 
 .comment_container {
@@ -36,27 +36,38 @@ canvas {
 
 .comment {
     width: 290px;
+    max-height: 300px;
     margin: auto;
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	background-color: #232323;
-	border: 2px solid #1F1F1F;
-	overflow-x: auto;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    background-color: #232323;
+    border: 2px solid #1F1F1F;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.comment_container:hover {
+    z-index: 5;
+}
+
+.comment:hover {
+    border: 2px solid #003F5F;
+    max-height: 1000px;
 }
 
 .commentButtons {
-	display: none;
+    display: none;
 }
 
 
 
 .comment > div {
-	margin: 7px;
+    margin: 7px;
 }
 
 
 
 .commentButtons a {
-	margin: auto;
+    margin: auto;
 }

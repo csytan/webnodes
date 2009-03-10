@@ -4,13 +4,13 @@ var WebNodes = function(root, graph, options){
         minWidth: 300,
         linkColor: '#00557F',
         linkWidth: 4,
-        vertSpace: 30
+        vertSpace: 20
     }, options);
     
     function setNode(node) {
         node.childIds = graph[node.id] || [];
         node.visibleChildren = [];
-        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpace;
+        node.childTop = node.offsetTop + node.offsetHeight;
         node.childLeft = node.offsetLeft;
         node.childWidth = node.offsetWidth;
         return node;
@@ -36,9 +36,9 @@ var WebNodes = function(root, graph, options){
             
             if (node.childIds.length) {
                 new_row.push(node);
-            } else if (leftNode && node.childTop < leftNode.childTop) {
+            } else if (leftNode && node.childTop <= leftNode.childTop) {
                 leftNode.childWidth += node.childWidth;
-            } else if (rightNode && node.childTop < rightNode.childTop) {
+            } else if (rightNode && node.childTop <= rightNode.childTop) {
                 rightNode.childLeft = node.childLeft;
                 rightNode.childWidth += node.childWidth;
             } else {
@@ -67,6 +67,8 @@ var WebNodes = function(root, graph, options){
         var nChildren = Math.min(maxChildren, node.childIds.length);
         var childWidth = node.childWidth / nChildren;
         
+        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpace * nChildren;
+        
         // Add child nodes
         for (var j = 0, child; j < nChildren; j++) {
             var child = document.getElementById(node.childIds[j]);
@@ -88,7 +90,7 @@ var WebNodes = function(root, graph, options){
     function drawConnections(node) {
         var x = node.offsetLeft + node.offsetWidth / 2 - node.childLeft;
         var y = node.offsetTop + node.offsetHeight - 5;
-        var height = options.vertSpace + 10;
+        var height = node.visibleChildren.length * options.vertSpace + 10;
         
         var canvas = document.createElement('canvas');
         
