@@ -85,31 +85,19 @@ var WebNodes = function(root, graph, options){
         return row;
     }
     
-    function drawConnection(ctx, node) {
-        for (var i = 0, child; child = node.visibleChildren[i]; i++) {
-            var x = node.offsetLeft + node.offsetWidth / 2;
-            var y = node.offsetTop + node.offsetHeight - 5;
-            var childX = child.offsetLeft + child.offsetWidth / 2;
-            var childY = child.offsetTop + 5;
-            var dY = childY - y;
-            
-            ctx.moveTo(x, y);
-            //ctx.lineTo(childX, childY);
-            //ctx.quadraticCurveTo(childX, y, childX, childY);
-            ctx.bezierCurveTo(x, childY, childX, y + dY / 2, childX, childY);
-            drawConnection(ctx, child);
-        }
-    }
-    
-    function drawConnections(node, height) {
+    function drawConnections(node) {
+        var x = node.offsetLeft + node.offsetWidth / 2 - node.childLeft;
+        var y = node.offsetTop + node.offsetHeight - 5;
+        var height = options.vertSpace + 10;
+        
         var canvas = document.createElement('canvas');
         
-        canvas.width = $(document).width();
-        canvas.height = $(document).height();
-        
+        canvas.width = node.childWidth;
+        canvas.height = height;
+
         $(canvas).css({
-            top: 0,
-            left: 0
+            top: y,
+            left: node.childLeft
         }).appendTo(document.body);
         
         // Initialize Excanvas
@@ -117,16 +105,21 @@ var WebNodes = function(root, graph, options){
             window.G_vmlCanvasManager.initElement(canvas);
         }
         
-        var ctx = canvas.getContext("2d");
+        var ctx = canvas.getContext('2d');
         ctx.strokeStyle = options.linkColor;
         ctx.lineWidth = options.linkWidth;
         
-        ctx.beginPath();
-        
-        drawConnection(ctx, node);
-        
-        ctx.stroke();
-        ctx.closePath();
+        for (var i = 0, child; child = node.visibleChildren[i]; i++) {
+            var childX = child.offsetLeft + child.offsetWidth / 2 - node.childLeft;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            //ctx.lineTo(childX, height);
+            ctx.bezierCurveTo(x, height, childX, height/2, childX, height);
+            ctx.stroke();
+            ctx.closePath();
+            drawConnections(child);
+        }
     }
     
     layout(root);
