@@ -8,6 +8,7 @@ link = 'http://www.reddit.com/r/programming/comments/830u9/wolfram_alpha_is_comi
 link = 'http://www.reddit.com/r/worldnews/comments/837fl/victim_will_get_to_blind_the_man_who_blinded_her/.json'
 #link = 'http://www.reddit.com/r/programming/comments/83i5n/the_rubber_duck_method_of_debugging/.json'
 #link = 'http://www.reddit.com/r/programming/comments/83ee0/speaking_as_a_programmer_itunes_is_really/.json'
+link = 'http://www.reddit.com/r/worldnews/comments/85f36/australian_government_adds_wikileaks_to_banned/.json'
 
 comments = []
 graph = {}

@@ -47,13 +47,10 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="comment_container">
             <div class="comment">
+                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                <div class="content">{{ comment.content }}</div>
                 <a href="#" class="prev pagination">Prev</a>
                 <a href="#" class="next pagination">Next</a>
-                <div>
-                    <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
-                    <div class="content">{{ comment.content }}</div>
-                </div>
-
             </div>
         </div>
     {% endfor %}

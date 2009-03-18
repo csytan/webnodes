@@ -1,21 +1,11 @@
 var WebNodes = function(root, graph, options){
     // Fast Tree Layout    
     options = $.extend({
-        minWidth: 300,
-        linkColor: '#00557F',
-        linkWidth: 4,
+        minWidth: 400,
+        linkColor: '#AFAFAF',
+        linkWidth: 5,
         vertSpace: 20
     }, options);
-    
-    function setNode(node) {
-        node.childIds = graph[node.id] || [];
-        node.start = node.start || 0;
-        node.visibleChildren = [];
-        node.childTop = node.offsetTop + node.offsetHeight;
-        node.childLeft = node.offsetLeft;
-        node.childWidth = node.offsetWidth;
-        return node;
-    }
     
     function layout(rootNode) {
         var row = [setNode(rootNode)];
@@ -26,11 +16,18 @@ var WebNodes = function(root, graph, options){
             row = layoutChildren(row);
             //console.log('children', row);
         }
-        drawConnections(root);
     }
-
-    function nextPage(node, childIds) {
-        
+    
+    layout(root); 
+    
+    function setNode(node) {
+        node.childIds = graph[node.id] || [];
+        node.start = node.start || 0;
+        node.visibleChildren = [];
+        node.childTop = node.offsetTop + node.offsetHeight;
+        node.childLeft = node.offsetLeft;
+        node.childWidth = node.offsetWidth;
+        return node;
     }
 
     function expandNodes(row) {
@@ -86,7 +83,7 @@ var WebNodes = function(root, graph, options){
             row.splice(indexLow++, 0, child);
         }
         
-
+        drawConnections(node);
         
         return row;
     }
@@ -124,11 +121,9 @@ var WebNodes = function(root, graph, options){
             ctx.bezierCurveTo(x, height, childX, height/2, childX, height);
             ctx.stroke();
             ctx.closePath();
-            drawConnections(child);
         }
     }
     
-    layout(root);
     
     $('.pagination').live('click', function(e) {
         var node = $(this).closest('.comment_container')[0];
@@ -138,15 +133,13 @@ var WebNodes = function(root, graph, options){
         } else {
             node.start -= node.visibleChildren.length;
         }
-        var scroll = $(window).scrollTop();
-        $(document.body).height($(document).height());
-        
-        $('canvas').hide();
+
+        $(document.body).height($(document).height());        
+        $('canvas').remove();
         $('.comment_container').hide();
         $(root).show();
         layout(root);
-        
-        //$(window).scrollTop(scroll);
+        $(document.body).css('height', 'auto');
         return false;
     });
 }

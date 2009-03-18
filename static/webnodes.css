@@ -1,28 +1,31 @@
 body {
-    font-family: "Helvetica Neue",Helvetica,Times,serif;
+    font-family: Georgia,"Helvetica Neue",Helvetica,Times,serif;
     font-size: 16px;
-    color: #5c5c5c;
-    background-color: black;
+    color: black;
+    background-color: #826F4F;
     padding-top: 20px;
     padding-bottom: 20px;
+    font-weight: 400;
+    color: #333333;
+    line-height: 24px;
 }
 
 a {
-    color: #0074AE;
+    font-weight:normal;
+    text-decoration:none;
 }
 
-a:hover {
-    background-color: #336699;
-    color: #2C2F20;
+a:link {
+    color:#CC0000;
 }
 
-blockquote {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 15px;
-    padding-left: 15px;
-    border-left: 5px solid #D6A14B;
-} 
+a:visited {
+    color:#666666;
+}
+
+a:hover, a:active {
+    color: #333333;
+}
 
 
 canvas {
@@ -34,22 +37,21 @@ canvas {
     position: absolute;
     display: none;
     z-index: 1;
-    width: 300px;
+    width: 400px;
 }
 
 .comment {
-    width: 290px;
-    max-height: 300px;
+    width: 360px;
+    padding: 10px;
     margin: auto;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    background-color: #232323;
-    border: 2px solid #1F1F1F;
-    overflow-x: auto;
-    overflow-y: hidden;
+    background-color: #EFE7E0;
+    -webkit-box-shadow: -5px 5px 25px #3F321B;
+    -moz-box-shadow: -5px 5px 20px #5F5035;
+    box-shadow: -5px 5px 20px #5F5035;
+    
 }
 
-.comment:hover {
-    border: 2px solid #00354F;
+.comment .content {
+    overflow: hidden;
+    max-height: 500px;
 }
