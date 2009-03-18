@@ -6,6 +6,8 @@ link = "http://www.reddit.com/r/reddit.com/comments/82uj2/for_all_of_reddits_ant
 link = 'http://www.reddit.com/r/politics/comments/830hm/everytime_you_ride_on_a_national_highway_remember/.json'
 link = 'http://www.reddit.com/r/programming/comments/830u9/wolfram_alpha_is_coming_and_it_could_be_as/.json'
 link = 'http://www.reddit.com/r/worldnews/comments/837fl/victim_will_get_to_blind_the_man_who_blinded_her/.json'
+#link = 'http://www.reddit.com/r/programming/comments/83i5n/the_rubber_duck_method_of_debugging/.json'
+#link = 'http://www.reddit.com/r/programming/comments/83ee0/speaking_as_a_programmer_itunes_is_really/.json'
 
 comments = []
 graph = {}
@@ -52,1390 +54,576 @@ graph = simplejson.dumps(graph)
 
 
 
-"""
-[
-  {
-    "data" : {
-      "children" : [
-        {
-          "data" : {
-            "author" : "heyt",
-            "clicked" : false,
-            "created" : 1236491414,
-            "domain" : "samoth3.deviantart.com",
-            "downs" : 193,
-            "hidden" : false,
-            "id" : "82ye9",
-            "likes" : null,
-            "name" : "t3_82ye9",
-            "num_comments" : 79,
-            "saved" : false,
-            "score" : 481,
-            "subreddit" : "reddit.com",
-            "subreddit_id" : "t5_6",
-            "title" : "Hey guys! Show some love and support for my good friend Thomas. Was diagnosed with ALS in 2001 (is totally paralyzed except for his eyes.) Check the art he draws only with his eyes. Funny guy too. Light hearted about his diagnosis.",
-            "ups" : 674,
-            "url" : "http://samoth3.deviantart.com/"
-          },
-          "kind" : "t3"
-        }
-      ]
-    },
-    "kind" : "Listing"
-  },
-  {
-    "data" : {
-      "children" : [
-        {
-          "data" : {
-            "author" : "nmaunder",
-            "body" : "\"when I was first diagnosed with ALS the doctor gave me five years to live, but when I told him I couldn't pay the bill he gave me five more. Seems to be working.\"\n\nNice!\n\n\n",
-            "created" : 1236542244,
-            "downs" : 11,
-            "id" : "c083q6g",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083q6g",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "IntolerantFaith",
-                      "body" : "I think we should all give this a try.",
-                      "created" : 1236554855,
-                      "downs" : 0,
-                      "id" : "c083sl8",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083sl8",
-                      "parent_id" : "t1_c083q6g",
-                      "replies" : null,
-                      "ups" : 10
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 92
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "JustinTC",
-            "body" : "I can't even draw that well with my hands\n",
-            "created" : 1236549796,
-            "downs" : 4,
-            "id" : "c083rgt",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083rgt",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "yayweb20",
-                      "body" : "Neither can he.",
-                      "created" : 1236553469,
-                      "downs" : 9,
-                      "id" : "c083sa7",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083sa7",
-                      "parent_id" : "t1_c083rgt",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "adamrgolf",
-                                "body" : ":o",
-                                "created" : 1236557047,
-                                "downs" : 0,
-                                "id" : "c083t5o",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083t5o",
-                                "parent_id" : "t1_c083sa7",
-                                "replies" : null,
-                                "ups" : 9
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 62
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 47
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "seanalltogether",
-            "body" : "I'm always amazed when someone can express so much with so few strokes\n\nhttp://fc75.deviantart.com/fs40/f/2009/015/a/6/Alter_Number_1_by_samoth3.jpg",
-            "created" : 1236526349,
-            "downs" : 10,
-            "id" : "c083nwt",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083nwt",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "TyPower",
-                      "body" : "I am an artist myself and I find the story inspiring. The next time I 'don't feel like painting' out of difficulty I'll think of Thomas. Sometimes I avoid painting because pulling good work out of myself is often a precarious affair. On the one hand I have the dream result envisioned mentally and on the other I have what I have on the canvas. 1 out of 5 I hit the jackpot and get the rush of success. The other 4 depress me because they \"just fell short of getting there\".\r\n\r\nThomas' story just made me relax.\r\n\r\nGonna undertake a fresh 36\" x 36\" canvas tomorrow with renewed vigour.\r\n\r\nThanks for the inspiration!",
-                      "created" : 1236537959,
-                      "downs" : 1,
-                      "id" : "c083pn9",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083pn9",
-                      "parent_id" : "t1_c083nwt",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "HunterTV",
-                                "body" : "The thing about art is that you have to play to your own particular strength. If you get bogged down because you can't solo like Jimmy Page or photograph like Ansel Adams you're just missing whatever makes your art yours.\n\nI just started learning freehand drawing with a Wacom I bought, and I have to remind myself of this constantly.",
-                                "created" : 1236541812,
-                                "downs" : 1,
-                                "id" : "c083q4e",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083q4e",
-                                "parent_id" : "t1_c083pn9",
-                                "replies" : {
-                                  "data" : {
-                                    "children" : [
-                                      {
-                                        "data" : {
-                                          "author" : "crazedgremlin",
-                                          "body" : "I bought a Wacom Graphire tablet a few years ago and I still have a ridiculously hard time drawing with it.  I just expect it to either feel like a paintbrush or a pencil, but it refuses.  ...Maybe if I could get some extra friction between the pen and the plastic...",
-                                          "created" : 1236552948,
-                                          "downs" : 0,
-                                          "id" : "c083s66",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083s66",
-                                          "parent_id" : "t1_c083q4e",
-                                          "replies" : {
-                                            "data" : {
-                                              "children" : [
-                                                {
-                                                  "data" : {
-                                                    "author" : "iofthestorm",
-                                                    "body" : "There are actually some felt-tip nibs or whatever you call them that you can get for Wacom styluses, I've heard they add some friction. I think they're under $5 so definitely worth checking out if you're using it for art. I have a tablet PC that I use for taking notes and I was going to look into one of those, but never cared enough to actually get one.",
-                                                    "created" : 1236566241,
-                                                    "downs" : 0,
-                                                    "id" : "c083vwx",
-                                                    "likes" : null,
-                                                    "link_id" : "t3_82ye9",
-                                                    "name" : "t1_c083vwx",
-                                                    "parent_id" : "t1_c083s66",
-                                                    "replies" : null,
-                                                    "ups" : 2
-                                                  },
-                                                  "kind" : "t1"
-                                                },
-                                                {
-                                                  "data" : {
-                                                    "author" : "HunterTV",
-                                                    "body" : "It takes a lot of practice. For one thing, you're not looking where your pen tip is, you're looking at the screen.\n\nFor another, unless you have a really big ass tablet, the 1:1 relationship between a smaller tablet and a larger screen can be difficult to get used to. Even though  I start seeing the pixels in the strokes, which is a little unusual to get used to in itself, zooming in for precise strokes helps.\n\nI'll have to try the paper trick notouch suggested below though.\n\nTweaking your tablet settings helps too. I must've played with the settings for weeks before I settled on comfortable settings, which I promptly backed up.\n\nIf it's any encouragement, I got the tablet last Christmas, and [this](http://imgur.com/H91L.jpg) was the first proper piece I made after getting used to it, and I did [this one](http://imgur.com/H94D.jpg) two months later.",
-                                                    "created" : 1236558175,
-                                                    "downs" : 0,
-                                                    "id" : "c083th3",
-                                                    "likes" : null,
-                                                    "link_id" : "t3_82ye9",
-                                                    "name" : "t1_c083th3",
-                                                    "parent_id" : "t1_c083s66",
-                                                    "replies" : null,
-                                                    "ups" : 2
-                                                  },
-                                                  "kind" : "t1"
-                                                },
-                                                {
-                                                  "data" : {
-                                                    "author" : "notouch",
-                                                    "body" : "Try tape a piece of paper on your wacom. Though I find plastic bag's surface works better (not the grocery plastic bags, the slightly thicker ones from clothes stores).",
-                                                    "created" : 1236555898,
-                                                    "downs" : 0,
-                                                    "id" : "c083suz",
-                                                    "likes" : null,
-                                                    "link_id" : "t3_82ye9",
-                                                    "name" : "t1_c083suz",
-                                                    "parent_id" : "t1_c083s66",
-                                                    "replies" : null,
-                                                    "ups" : 1
-                                                  },
-                                                  "kind" : "t1"
-                                                }
-                                              ]
-                                            },
-                                            "kind" : "Listing"
-                                          },
-                                          "ups" : 3
-                                        },
-                                        "kind" : "t1"
-                                      }
-                                    ]
-                                  },
-                                  "kind" : "Listing"
-                                },
-                                "ups" : 16
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 24
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "jerrygofixit",
-                      "body" : "You should check out Isketch.net and go to the '5 strokes' room, it's unbelievable.  ",
-                      "created" : 1236553479,
-                      "downs" : 0,
-                      "id" : "c083sa9",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083sa9",
-                      "parent_id" : "t1_c083nwt",
-                      "replies" : null,
-                      "ups" : 2
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "howardhus",
-                      "body" : "I am way more impressed by the strengt he has and that he never gave up. This one is my favorite [work of art](http://tinyurl.com/simpleartwork).\n",
-                      "created" : 1236533601,
-                      "downs" : 48,
-                      "id" : "c083p1r",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083p1r",
-                      "parent_id" : "t1_c083nwt",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "orbat",
-                                "body" : "You do realize Rick rolls were never funny?",
-                                "created" : 1236546627,
-                                "downs" : 4,
-                                "id" : "c083qvu",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083qvu",
-                                "parent_id" : "t1_c083p1r",
-                                "replies" : {
-                                  "data" : {
-                                    "children" : [
-                                      {
-                                        "data" : {
-                                          "author" : "Retsoka",
-                                          "body" : "yes they were and are",
-                                          "created" : 1236551991,
-                                          "downs" : 8,
-                                          "id" : "c083rya",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083rya",
-                                          "parent_id" : "t1_c083qvu",
-                                          "replies" : null,
-                                          "ups" : 4
-                                        },
-                                        "kind" : "t1"
-                                      }
-                                    ]
-                                  },
-                                  "kind" : "Listing"
-                                },
-                                "ups" : 7
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 6
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "heffocheffefer",
-                      "body" : "How about when it's just [one stroke](http://graphics1.snopes.com/photos/arts/graphics/onestroke.jpg \"[Jesus alert]\").",
-                      "created" : 1236530268,
-                      "downs" : 29,
-                      "id" : "c083oj8",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083oj8",
-                      "parent_id" : "t1_c083nwt",
-                      "replies" : null,
-                      "ups" : 4
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 66
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Anzi",
-            "body" : "Great art, and a great friend for posting this.",
-            "created" : 1236534001,
-            "downs" : 0,
-            "id" : "c083p3s",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083p3s",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "heyt",
-                      "body" : "Thanks man.  My father and sister visited him today and I felt very bad because I had to work.  I had no clue about his work and seriously, for a person that has lost so much, its amazing that he has so much strength left.  He is really an inspiration.  Thanks reddit for the awesome comments!",
-                      "created" : 1236534731,
-                      "downs" : 0,
-                      "id" : "c083p7x",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083p7x",
-                      "parent_id" : "t1_c083p3s",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "unamerican",
-                                "body" : "Give him my best, and tell him to keep kickin' ass.  By no means should he let up on the ass kickin' front.  The ass kickin' must continue.\n\nSounds like a great guy with a terrible diagnosis.  I'm glad he has a friend like you.",
-                                "created" : 1236543776,
-                                "downs" : 0,
-                                "id" : "c083qfb",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083qfb",
-                                "parent_id" : "t1_c083p7x",
-                                "replies" : null,
-                                "ups" : 9
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 24
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 21
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "fingertron",
-            "body" : "Wow that's amazing! How does he do it?",
-            "created" : 1236524275,
-            "downs" : 2,
-            "id" : "c083nl1",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083nl1",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "heyt",
-                      "body" : "He uses an infared computer system made for quads and blinks to set the pencil/pen to draw and then moves his eye to the place he wants to go, then blinks again, to stop movement. After that, it is a vector system and he can adjust size, erase, etc...  pretty neat for a person that can ONLY move his eyes.",
-                      "created" : 1236534038,
-                      "downs" : 8,
-                      "id" : "c083p43",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083p43",
-                      "parent_id" : "t1_c083nl1",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "docgravel",
-                                "body" : "Can you get some more details for me?  I've worked on an on screen keyboard with english language word prediction and auto completion for people with disabilities.  We partnered with Eyetech DS, which is essentially two IR lights aimed at your eyes with a high quality digital camera in the center that tracks the movement of the shine in your eyes.  It worked pretty well, but there is no way I could have ever used it to create art like this, hence my curiosity.",
-                                "created" : 1236548366,
-                                "downs" : 0,
-                                "id" : "c083r65",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083r65",
-                                "parent_id" : "t1_c083p43",
-                                "replies" : {
-                                  "data" : {
-                                    "children" : [
-                                      {
-                                        "data" : {
-                                          "author" : "banjobill",
-                                          "body" : "I would be very interested to hear about this too. Currently doing research with eye tracking in VR field.",
-                                          "created" : 1236550516,
-                                          "downs" : 1,
-                                          "id" : "c083rlm",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083rlm",
-                                          "parent_id" : "t1_c083r65",
-                                          "replies" : null,
-                                          "ups" : 9
-                                        },
-                                        "kind" : "t1"
-                                      },
-                                      {
-                                        "data" : {
-                                          "author" : "jerrygofixit",
-                                          "body" : "For loss of some better words, that's in-fucking-credible. ",
-                                          "created" : 1236553552,
-                                          "downs" : 0,
-                                          "id" : "c083say",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083say",
-                                          "parent_id" : "t1_c083r65",
-                                          "replies" : null,
-                                          "ups" : 3
-                                        },
-                                        "kind" : "t1"
-                                      },
-                                      {
-                                        "data" : {
-                                          "author" : "diizeh",
-                                          "body" : "http://c4q.org/",
-                                          "created" : 1236566779,
-                                          "downs" : 0,
-                                          "id" : "c083w3h",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083w3h",
-                                          "parent_id" : "t1_c083r65",
-                                          "replies" : null,
-                                          "ups" : 1
-                                        },
-                                        "kind" : "t1"
-                                      }
-                                    ]
-                                  },
-                                  "kind" : "Listing"
-                                },
-                                "ups" : 13
-                              },
-                              "kind" : "t1"
-                            },
-                            {
-                              "data" : {
-                                "author" : "italkshit",
-                                "body" : "That and they hooked up a super laser to his penis.  When he goes to reddit's NSFW section, he creates works of art.\n\nSeriously, hell of a job.  To do that with your eyes has to take a lot of focus (no pun intended).",
-                                "created" : 1236535507,
-                                "downs" : 21,
-                                "id" : "c083pbx",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083pbx",
-                                "parent_id" : "t1_c083p43",
-                                "replies" : null,
-                                "ups" : 8
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 65
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "Mr_A",
-                      "body" : "Drawing with your eyes is easy. It's learning to hold the pencil that takes practice.",
-                      "created" : 1236531728,
-                      "downs" : 6,
-                      "id" : "c083or9",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083or9",
-                      "parent_id" : "t1_c083nl1",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "rossifumi",
-                                "body" : "said the guy who never tried it before.  put your money where your mouth is and start drawing and show everyone",
-                                "created" : 1236548765,
-                                "downs" : 24,
-                                "id" : "c083r8p",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083r8p",
-                                "parent_id" : "t1_c083or9",
-                                "replies" : {
-                                  "data" : {
-                                    "children" : [
-                                      {
-                                        "data" : {
-                                          "author" : "maxd",
-                                          "body" : "You're stupid.",
-                                          "created" : 1236551230,
-                                          "downs" : 0,
-                                          "id" : "c083rqp",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083rqp",
-                                          "parent_id" : "t1_c083r8p",
-                                          "replies" : null,
-                                          "ups" : 11
-                                        },
-                                        "kind" : "t1"
-                                      },
-                                      {
-                                        "data" : {
-                                          "author" : "hett",
-                                          "body" : "Wow, you're fucking oblivious.",
-                                          "created" : 1236559009,
-                                          "downs" : 0,
-                                          "id" : "c083tq0",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083tq0",
-                                          "parent_id" : "t1_c083r8p",
-                                          "replies" : null,
-                                          "ups" : 2
-                                        },
-                                        "kind" : "t1"
-                                      }
-                                    ]
-                                  },
-                                  "kind" : "Listing"
-                                },
-                                "ups" : 2
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 41
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "MarkByers",
-                      "body" : "With his eyes.",
-                      "created" : 1236549015,
-                      "downs" : 1,
-                      "id" : "c083rau",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083rau",
-                      "parent_id" : "t1_c083nl1",
-                      "replies" : null,
-                      "ups" : 2
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "redleader",
-                      "body" : "I also want to know",
-                      "created" : 1236529611,
-                      "downs" : 5,
-                      "id" : "c083of7",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083of7",
-                      "parent_id" : "t1_c083nl1",
-                      "replies" : null,
-                      "ups" : 3
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 29
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "narwhals",
-            "body" : "Great stuff man, very inspiring. Its so easy for us to just keep on retreating into our own shells because of the daily routine which grinds us like a old worn out machine till we really become just that. Then suddenly you come across people like him who defy everything and you feel like a human again.\n\nI used to draw very well in school. Won a few competition and such but then the whole \"life\" got hold of me and now I spent most of the time coding and forgetting about every single resolution I ever made to do something which could have resulted in a bit more fun in life. I think I just found some inspiration to try to break out of this fucked up lifestyle.\n\nThanks and give him my regards.",
-            "created" : 1236544702,
-            "downs" : 1,
-            "id" : "c083qks",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083qks",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "gatsby137",
-                      "body" : "Narwhals, you are hereby ordered by Reddit to create some art and post a link to it. You have until 01 May. We're waiting.",
-                      "created" : 1236551593,
-                      "downs" : 1,
-                      "id" : "c083rub",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083rub",
-                      "parent_id" : "t1_c083qks",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "m741",
-                                "body" : "Listen, now, you're going to die, Raymond K. Hessel, tonight. You might die in one second or in one hour, you decide. So lie to me... Fill in the blank. What does Raymond Hessel want to be when he grows up?\n\nA vet, you said, you want to be a vet, a veterinarian.\n\nThat means school. You have to go to school for that.\n\nIt means too much school, you said.\n\nYou could be in school working your ass off, or you could be dead. You choose...\n\nSo, I said, go back to school. If you wake up tomorrow morning, you find a way to get back to school.\n\nRaymong K. K. Hessel, your dinner is going to taste better than any meal you've eaten, and tomorrow will be the most beautiful day of your entire life.",
-                                "created" : 1236559410,
-                                "downs" : 0,
-                                "id" : "c083tur",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083tur",
-                                "parent_id" : "t1_c083rub",
-                                "replies" : null,
-                                "ups" : 3
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 13
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 11
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Arcesius",
-            "body" : "Get him to do more; he's got an audience here.",
-            "created" : 1236550151,
-            "downs" : 0,
-            "id" : "c083rj6",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083rj6",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 5
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "mattormeg",
-            "body" : "I had a buddy who died from ALS. It's a tough thing to watch, and I imagine even tougher to go through. Your pal Thomas kicks ass. Thanks for cluing me in to this guy.",
-            "created" : 1236555973,
-            "downs" : 0,
-            "id" : "c083svp",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083svp",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 3
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "manthrax",
-            "body" : "Fuckin way better artist than me. Grrrr.\n\n",
-            "created" : 1236528041,
-            "downs" : 0,
-            "id" : "c083o6q",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083o6q",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "whiffybatter",
-                      "body" : "Seriously -- his \"Desert Pearl\" face is really beautiful.",
-                      "created" : 1236536974,
-                      "downs" : 1,
-                      "id" : "c083pin",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083pin",
-                      "parent_id" : "t1_c083o6q",
-                      "replies" : null,
-                      "ups" : 4
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 13
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Tanuki0",
-            "body" : "That's really impressive. It's great that your friend can still express himself through art.",
-            "created" : 1236549095,
-            "downs" : 0,
-            "id" : "c083rbe",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083rbe",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 4
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "SceneScenery",
-            "body" : "Have you heard of Jason Becker?  He's in a similar situation but instead of drawing, he writes music.  http://www.youtube.com/watch?v=tYIZP1hrfZI  ",
-            "created" : 1236569829,
-            "downs" : 0,
-            "id" : "c083x4t",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083x4t",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "thelilacgirl",
-            "body" : "This is awesome!  Thank you so much for sharing.  I would purchase a print if this artist was selling his work.  On a related note, it's good news that the Obama administration has over-turned the prior archaic laws that banned stem cell research, which could show a lot of promise with ALS.  ",
-            "created" : 1236553588,
-            "downs" : 0,
-            "id" : "c083sb8",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083sb8",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 2
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "nixonrichard",
-            "body" : "\"Man in hat\" = sued by Nintendo",
-            "created" : 1236517868,
-            "downs" : 1,
-            "id" : "c083maz",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083maz",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "gatsby137",
-                      "body" : "It's-a me, Mario's lawyer!",
-                      "created" : 1236551754,
-                      "downs" : 0,
-                      "id" : "c083rvq",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083rvq",
-                      "parent_id" : "t1_c083maz",
-                      "replies" : null,
-                      "ups" : 9
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "AverageCanadian",
-                      "body" : "It would be difficult to find a worse PR move than trying to sue somebody with ALS, especially if they are in the late stages of it. ",
-                      "created" : 1236554642,
-                      "downs" : 0,
-                      "id" : "c083sj6",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083sj6",
-                      "parent_id" : "t1_c083maz",
-                      "replies" : null,
-                      "ups" : 3
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 13
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "joharilanng",
-            "body" : "Can we get more details on this like how long it takes him, the system he uses etc?\n\nWould like to know more.",
-            "created" : 1236538346,
-            "downs" : 0,
-            "id" : "c083pp0",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083pp0",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 4
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "acangiano",
-            "body" : "Inspiring work. Can you please ask Thomas if he can think of any software that would make his life easier when using his computer?",
-            "created" : 1236565279,
-            "downs" : 0,
-            "id" : "c083vkm",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083vkm",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "happyhappy",
-            "body" : "Show him some mercy and kill him.",
-            "created" : 1236564850,
-            "downs" : 0,
-            "id" : "c083vgh",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083vgh",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Earthstepper",
-            "body" : "Thomas...keep on kicking ass for the working class buddy!",
-            "created" : 1236563433,
-            "downs" : 0,
-            "id" : "c083v1i",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083v1i",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "jgarfink",
-            "body" : "ALS is awful. I'm glad he found a way to keep up his spirits.",
-            "created" : 1236549706,
-            "downs" : 0,
-            "id" : "c083rg6",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083rg6",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 2
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Matthew1",
-            "body" : "Thank you for posting this ~ very uplifting!",
-            "created" : 1236549681,
-            "downs" : 1,
-            "id" : "c083rfz",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083rfz",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 3
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "ikovachi",
-            "body" : "wow!!!!  this work is awesome",
-            "created" : 1236560434,
-            "downs" : 0,
-            "id" : "c083u68",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083u68",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "kaiise",
-            "body" : "\"shopped\"",
-            "created" : 1236559561,
-            "downs" : 0,
-            "id" : "c083twk",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083twk",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Bedrovelsen",
-            "body" : "Sweet.\nYou might as well be as happy as possible no matter your situation. It really helps your healing or if not healing then the life you have left. No point in being depressed for the rest of your time.",
-            "created" : 1236557989,
-            "downs" : 0,
-            "id" : "c083tew",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083tew",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Uncial",
-            "body" : "To Thomas: there's just no keeping your talent down-- you have drawn wonderful things with your eyes, and I'd love to see more of your work. Three cheers for you!",
-            "created" : 1236553375,
-            "downs" : 2,
-            "id" : "c083s9i",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083s9i",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 2
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "r_schleufer",
-            "body" : "I know his drawings are good compared to 90% of all people, but it is really impressive for someone that can draw with only his eyes.\n\nI'm not sure what I'd do if I was paralyzed. I would find some method to continue doing art, but I'm not sure if I'd continue drawing.",
-            "created" : 1236531149,
-            "downs" : 0,
-            "id" : "c083oo9",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083oo9",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 3
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "CuilHandLuke",
-            "body" : "Upvoted also for use of Xara Xtreme.  I've been using it for 15+ years for almost all my graphic work.  Easy to use easy to learn and even has a free Linux version.",
-            "created" : 1236550191,
-            "downs" : 0,
-            "id" : "c083rjj",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083rjj",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "infoaddicted",
-                      "body" : "So you use the Windows or Linux version?  The Linux version is disappointingly  unstable.",
-                      "created" : 1236554784,
-                      "downs" : 0,
-                      "id" : "c083skd",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083skd",
-                      "parent_id" : "t1_c083rjj",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "CuilHandLuke",
-                                "body" : "I use the Windows version.  The Linux version won't do animations or multipage PDFs.  Also I haven't use the Linux version enough to push it to its limits.",
-                                "created" : 1236560505,
-                                "downs" : 0,
-                                "id" : "c083u6u",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083u6u",
-                                "parent_id" : "t1_c083skd",
-                                "replies" : null,
-                                "ups" : 1
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 1
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "tehbored",
-            "body" : "Does he have one of those things that Stephen Hawking has that lets him speak? Does it sound the same as Hawking's?",
-            "created" : 1236527649,
-            "downs" : 1,
-            "id" : "c083o4s",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083o4s",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "heyt",
-                      "body" : "yeah, and he has 12 voices to choose from.  Used to be a psych teacher.  Very cool dude.  ",
-                      "created" : 1236534142,
-                      "downs" : 0,
-                      "id" : "c083p4m",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083p4m",
-                      "parent_id" : "t1_c083o4s",
-                      "replies" : null,
-                      "ups" : 15
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 4
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "howardhus",
-            "body" : "he also can move the cheek.",
-            "created" : 1236533409,
-            "downs" : 2,
-            "id" : "c083p0h",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083p0h",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 3
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "chickinkickir",
-            "body" : "Love..no doubt..",
-            "created" : 1236518879,
-            "downs" : 1,
-            "id" : "c083mib",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083mib",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 5
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "sardak",
-            "body" : "Nicely done, fluid lines and, yes, he's funny.",
-            "created" : 1236537196,
-            "downs" : 0,
-            "id" : "c083pjq",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083pjq",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Devaney1984",
-            "body" : "That's very cool, and how the hell do 110 people down vote this story? ",
-            "created" : 1236552960,
-            "downs" : 1,
-            "id" : "c083s6d",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083s6d",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "Stick",
-                      "body" : "With the limbs they have that still work.",
-                      "created" : 1236553147,
-                      "downs" : 2,
-                      "id" : "c083s7u",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083s7u",
-                      "parent_id" : "t1_c083s6d",
-                      "replies" : {
-                        "data" : {
-                          "children" : [
-                            {
-                              "data" : {
-                                "author" : "infoaddicted",
-                                "body" : "Knee-jerk reaction by reddit cynics, of which there are plenty.",
-                                "created" : 1236554695,
-                                "downs" : 3,
-                                "id" : "c083sjl",
-                                "likes" : null,
-                                "link_id" : "t3_82ye9",
-                                "name" : "t1_c083sjl",
-                                "parent_id" : "t1_c083s7u",
-                                "replies" : {
-                                  "data" : {
-                                    "children" : [
-                                      {
-                                        "data" : {
-                                          "author" : "mercurialohearn",
-                                          "body" : "doesn't \"reddit\" mean \"cynic\" in klingon?",
-                                          "created" : 1236567139,
-                                          "downs" : 0,
-                                          "id" : "c083w7w",
-                                          "likes" : null,
-                                          "link_id" : "t3_82ye9",
-                                          "name" : "t1_c083w7w",
-                                          "parent_id" : "t1_c083sjl",
-                                          "replies" : null,
-                                          "ups" : 1
-                                        },
-                                        "kind" : "t1"
-                                      }
-                                    ]
-                                  },
-                                  "kind" : "Listing"
-                                },
-                                "ups" : 2
-                              },
-                              "kind" : "t1"
-                            }
-                          ]
-                        },
-                        "kind" : "Listing"
-                      },
-                      "ups" : 10
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 1
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "Thangalin",
-            "body" : "Line art = png; photographs = jpg.",
-            "created" : 1236528434,
-            "downs" : 20,
-            "id" : "c083o8v",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083o8v",
-            "parent_id" : "t3_82ye9",
-            "replies" : {
-              "data" : {
-                "children" : [
-                  {
-                    "data" : {
-                      "author" : "RECURSIVE_META_JOKE",
-                      "body" : "*Right clicks image, selects properties and checks file extension*\n\nTHIS IS AN OUTRAGE.  I DON'T CARE IF YOU'RE A PARALYZED ALS PATIENT WITH NO MOTOR FUNCTION WHATSOEVER, YOU SHOULD SAVE YOUR PRODIGIOUS AND INSPIRING ARTWORK IN A LOSSLESS FORMAT.",
-                      "created" : 1236534806,
-                      "downs" : 3,
-                      "id" : "c083p8e",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083p8e",
-                      "parent_id" : "t1_c083o8v",
-                      "replies" : null,
-                      "ups" : 28
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "dickbutt",
-                      "body" : "SVG might be better.",
-                      "created" : 1236537126,
-                      "downs" : 0,
-                      "id" : "c083pjd",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083pjd",
-                      "parent_id" : "t1_c083o8v",
-                      "replies" : null,
-                      "ups" : 5
-                    },
-                    "kind" : "t1"
-                  },
-                  {
-                    "data" : {
-                      "author" : "rsda",
-                      "body" : "Fail at life.",
-                      "created" : 1236540821,
-                      "downs" : 1,
-                      "id" : "c083q00",
-                      "likes" : null,
-                      "link_id" : "t3_82ye9",
-                      "name" : "t1_c083q00",
-                      "parent_id" : "t1_c083o8v",
-                      "replies" : null,
-                      "ups" : 5
-                    },
-                    "kind" : "t1"
-                  }
-                ]
-              },
-              "kind" : "Listing"
-            },
-            "ups" : 9
-          },
-          "kind" : "t1"
-        },
-        {
-          "data" : {
-            "author" : "sysstemlord",
-            "body" : "!(your personal army)",
-            "created" : 1236552855,
-            "downs" : 6,
-            "id" : "c083s58",
-            "likes" : null,
-            "link_id" : "t3_82ye9",
-            "name" : "t1_c083s58",
-            "parent_id" : "t3_82ye9",
-            "replies" : null,
-            "ups" : 2
-          },
-          "kind" : "t1"
-        }
-      ]
-    },
-    "kind" : "Listing"
-  }
-]
+
+def hot_topics():
+    response = urllib.urlopen('http://www.reddit.com/.json').read()
+    data = simplejson.loads(response)
+    
+    topics = []
+    for topic in data['data']['children']:
+        topics.append({
+            'title': data['title']
+        })
 
 """
+{
+  "data" : {
+    "children" : [
+      {
+        "data" : {
+          "author" : "prondose",
+          "clicked" : false,
+          "created" : 1236690899,
+          "domain" : "i399.photobucket.com",
+          "downs" : 619,
+          "hidden" : false,
+          "id" : "83id1",
+          "likes" : null,
+          "name" : "t3_83id1",
+          "num_comments" : 295,
+          "saved" : false,
+          "score" : 1514,
+          "subreddit" : "pics",
+          "subreddit_id" : "t5_2qh0u",
+          "title" : "Pedobear asks a question on Yahoo! Answers",
+          "ups" : 2133,
+          "url" : "http://i399.photobucket.com/albums/pp79/dnlslm9/LittleGirl.jpg"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "Siderman1",
+          "clicked" : false,
+          "created" : 1236718773,
+          "domain" : "self.reddit.com",
+          "downs" : 402,
+          "hidden" : false,
+          "id" : "83irg",
+          "likes" : null,
+          "name" : "t3_83irg",
+          "num_comments" : 455,
+          "saved" : false,
+          "score" : 1101,
+          "subreddit" : "reddit.com",
+          "subreddit_id" : "t5_6",
+          "title" : "My Friend from RE/MAX: \"The new RE/DDIT logo pissed everyone off who was older than 30 at my office. They all think we're being mocked--which we are.\"",
+          "ups" : 1503,
+          "url" : "http://www.reddit.com/comments/83irg/my_friend_from_remax_the_new_reddit_logo_pissed/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "lamby",
+          "clicked" : false,
+          "created" : 1236714567,
+          "domain" : "lists.ethernal.org",
+          "downs" : 191,
+          "hidden" : false,
+          "id" : "83i5n",
+          "likes" : null,
+          "name" : "t3_83i5n",
+          "num_comments" : 201,
+          "saved" : false,
+          "score" : 785,
+          "subreddit" : "programming",
+          "subreddit_id" : "t5_2fwo",
+          "title" : "The Rubber Duck method of debugging",
+          "ups" : 976,
+          "url" : "http://lists.ethernal.org/oldarchives/cantlug-0211/msg00174.html"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "entor",
+          "clicked" : false,
+          "created" : 1236717959,
+          "domain" : "whitehouse.gov",
+          "downs" : 207,
+          "hidden" : false,
+          "id" : "83in6",
+          "likes" : null,
+          "name" : "t3_83in6",
+          "num_comments" : 124,
+          "saved" : false,
+          "score" : 480,
+          "subreddit" : "politics",
+          "subreddit_id" : "t5_2cneq",
+          "title" : "Obama releases memo restricting use of presidential signing statements, and urging agency reviews of all such Bush actions. Now is the time to shed light on the past abuse of Executive power!",
+          "ups" : 687,
+          "url" : "http://www.whitehouse.gov/the_press_office/Memorandum-on-Presidential-Signing-Statements/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "rootbeerfloat",
+          "clicked" : false,
+          "created" : 1236723130,
+          "domain" : "theirtoys.com",
+          "downs" : 175,
+          "hidden" : false,
+          "id" : "83jg1",
+          "likes" : null,
+          "name" : "t3_83jg1",
+          "num_comments" : 89,
+          "saved" : false,
+          "score" : 295,
+          "subreddit" : "WTF",
+          "subreddit_id" : "t5_2qh61",
+          "title" : "The most comprehensive guide to finding adult content, EVER. (Nothing Graphic, Topic is Maybe NSFW)",
+          "ups" : 470,
+          "url" : "http://theirtoys.com/sexblog/adult-surfers-guide-to-the-internet.html"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "Altras",
+          "clicked" : false,
+          "created" : 1236712097,
+          "domain" : "youtube.com",
+          "downs" : 176,
+          "hidden" : false,
+          "id" : "83huc",
+          "likes" : null,
+          "name" : "t3_83huc",
+          "num_comments" : 182,
+          "saved" : false,
+          "score" : 509,
+          "subreddit" : "science",
+          "subreddit_id" : "t5_mouw",
+          "title" : "Refreshingly, the new Fox TV show Lie To Me got it right when it comes to lie detectors (Video restored after Fox had it taken down!)",
+          "ups" : 685,
+          "url" : "http://www.youtube.com/watch?v=oEZTt_Ciiws&amp;feature=channel_page"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "mitchwright",
+          "clicked" : false,
+          "created" : 1236704433,
+          "domain" : "marcofolio.net",
+          "downs" : 346,
+          "hidden" : false,
+          "id" : "83kk6",
+          "likes" : null,
+          "name" : "t3_83kk6",
+          "num_comments" : 173,
+          "saved" : false,
+          "score" : 151,
+          "subreddit" : "funny",
+          "subreddit_id" : "t5_2qh33",
+          "title" : "Tuck and Roll! [GIF]",
+          "ups" : 497,
+          "url" : "http://www.marcofolio.net/images/stories/fun/imagedump/imgdmp_0807_2/july_08_2_04.gif"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "p3on",
+          "clicked" : false,
+          "created" : 1236687370,
+          "domain" : "self.worldnews",
+          "downs" : 522,
+          "hidden" : false,
+          "id" : "83fdv",
+          "likes" : null,
+          "name" : "t3_83fdv",
+          "num_comments" : 283,
+          "saved" : false,
+          "score" : 1228,
+          "subreddit" : "worldnews",
+          "subreddit_id" : "t5_2qh13",
+          "title" : "Reddit: Stop linking to the Daily Mail (dailymail.co.uk), it's a useless tabloid. If something is newsworth you can find it somewhere more credible.",
+          "ups" : 1750,
+          "url" : "http://www.reddit.com/comments/83fdv/reddit_stop_linking_to_the_daily_mail/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "Facepuncher",
+          "clicked" : false,
+          "created" : 1236733638,
+          "domain" : "blog.bull3t.me.uk",
+          "downs" : 133,
+          "hidden" : false,
+          "id" : "83l99",
+          "likes" : null,
+          "name" : "t3_83l99",
+          "num_comments" : 124,
+          "saved" : false,
+          "score" : 105,
+          "subreddit" : "technology",
+          "subreddit_id" : "t5_2qh16",
+          "title" : "The Norton Antivirus cover-up: A mysterious program known as pifts.exe associated with the AV program is attempting to contact a server in Africa. Symantec is hush-hush. ",
+          "ups" : 238,
+          "url" : "http://blog.bull3t.me.uk/archives/internet/the-mysterious-norton-cover-up-and-piftsexe/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "jack4640",
+          "clicked" : false,
+          "created" : 1236718808,
+          "domain" : "self.atheism",
+          "downs" : 145,
+          "hidden" : false,
+          "id" : "83irs",
+          "likes" : null,
+          "name" : "t3_83irs",
+          "num_comments" : 134,
+          "saved" : false,
+          "score" : 166,
+          "subreddit" : "atheism",
+          "subreddit_id" : "t5_2qh2p",
+          "title" : "Wouldn't it be more productive if pastors preached about fiscal responsibility, credit debt and healthy lifestyle choices rather than THE GAYS ARE COMING TO ABORT YOU?",
+          "ups" : 311,
+          "url" : "http://www.reddit.com/comments/83irs/wouldnt_it_be_more_productive_if_pastors_preached/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "saurabhdas",
+          "clicked" : false,
+          "created" : 1236720985,
+          "domain" : "ted.com",
+          "downs" : 55,
+          "hidden" : false,
+          "id" : "83j3f",
+          "likes" : null,
+          "name" : "t3_83j3f",
+          "num_comments" : 88,
+          "saved" : false,
+          "score" : 183,
+          "subreddit" : "technology",
+          "subreddit_id" : "t5_2qh16",
+          "title" : "Awesomeness at TED: The best technology I've seen in quite a while!",
+          "ups" : 238,
+          "url" : "http://www.ted.com/index.php/talks/pattie_maes_demos_the_sixth_sense.html"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "bearwave",
+          "clicked" : false,
+          "created" : 1236720825,
+          "domain" : "nynerd.com",
+          "downs" : 308,
+          "hidden" : false,
+          "id" : "83j2i",
+          "likes" : null,
+          "name" : "t3_83j2i",
+          "num_comments" : 121,
+          "saved" : false,
+          "score" : 213,
+          "subreddit" : "funny",
+          "subreddit_id" : "t5_2qh33",
+          "title" : "Change has come to the Whitehouse [Pic]",
+          "ups" : 521,
+          "url" : "http://nynerd.com/change-has-come-to-the-whitehouse/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "drongo",
+          "clicked" : false,
+          "created" : 1236692432,
+          "domain" : "guardian.co.uk",
+          "downs" : 77,
+          "hidden" : false,
+          "id" : "83ilj",
+          "likes" : null,
+          "name" : "t3_83ilj",
+          "num_comments" : 151,
+          "saved" : false,
+          "score" : 205,
+          "subreddit" : "worldnews",
+          "subreddit_id" : "t5_2qh13",
+          "title" : "UK police sweeping powers of arrest: \"People can now be (and have been) arrested and detained for not wearing a seatbelt, dropping litter, shouting in the presence of a police officer, climbing a tree, and building a snowman.\"",
+          "ups" : 282,
+          "url" : "http://www.guardian.co.uk/commentisfree/henryporter/2009/mar/06/civil-liberties-police"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "stilesjp",
+          "clicked" : false,
+          "created" : 1236727268,
+          "domain" : "msnbc.msn.com",
+          "downs" : 114,
+          "hidden" : false,
+          "id" : "83k4y",
+          "likes" : null,
+          "name" : "t3_83k4y",
+          "num_comments" : 300,
+          "saved" : false,
+          "score" : 167,
+          "subreddit" : "WTF",
+          "subreddit_id" : "t5_2qh61",
+          "title" : "Teenage girl kills herself after 'sexting' images were posted online by her ex-boyfriend.",
+          "ups" : 281,
+          "url" : "http://www.msnbc.msn.com/id/29546030/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "mrbroom",
+          "clicked" : false,
+          "created" : 1236718532,
+          "domain" : "open.salon.com",
+          "downs" : 80,
+          "hidden" : false,
+          "id" : "83iq9",
+          "likes" : null,
+          "name" : "t3_83iq9",
+          "num_comments" : 67,
+          "saved" : false,
+          "score" : 133,
+          "subreddit" : "funny",
+          "subreddit_id" : "t5_2qh33",
+          "title" : "Why Is Rush Getting Such Bad Press?",
+          "ups" : 213,
+          "url" : "http://open.salon.com/blog/mjwycha/2009/03/08/a_defence_of_rush_against_intolorant_liberals"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "blargfrit",
+          "clicked" : false,
+          "created" : 1236703073,
+          "domain" : "milkandcookies.com",
+          "downs" : 749,
+          "hidden" : false,
+          "id" : "83gx3",
+          "likes" : null,
+          "name" : "t3_83gx3",
+          "num_comments" : 346,
+          "saved" : false,
+          "score" : 244,
+          "subreddit" : "funny",
+          "subreddit_id" : "t5_2qh33",
+          "title" : "RELIGION! (Front page of Digg, then censored by youtube. See the PSA that's got the internet talking)",
+          "ups" : 993,
+          "url" : "http://www.milkandcookies.com/link/151455/detail/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "billybaldwin",
+          "clicked" : false,
+          "created" : 1236733755,
+          "domain" : "youtube.com",
+          "downs" : 32,
+          "hidden" : false,
+          "id" : "83l9z",
+          "likes" : null,
+          "name" : "t3_83l9z",
+          "num_comments" : 30,
+          "saved" : false,
+          "score" : 46,
+          "subreddit" : "funny",
+          "subreddit_id" : "t5_2qh33",
+          "title" : "Guido Beach: A short time ago, off a NJ exit ramp far, far away... [VID]",
+          "ups" : 78,
+          "url" : "http://www.youtube.com/watch?v=kyAzwREVBZs"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "worldnewsnow",
+          "clicked" : false,
+          "created" : 1236743041,
+          "domain" : "inewsit.com",
+          "downs" : 31,
+          "hidden" : false,
+          "id" : "83moq",
+          "likes" : null,
+          "name" : "t3_83moq",
+          "num_comments" : 34,
+          "saved" : false,
+          "score" : 29,
+          "subreddit" : "worldnews",
+          "subreddit_id" : "t5_2qh13",
+          "title" : "Footage of Witch craft people being burned in Kenya NOT FOR THE FAINT HEARTED",
+          "ups" : 60,
+          "url" : "http://www.inewsit.com/video/gallery/Five-people-suspected-to-be-witchcrafts-were-bruterly-murded-in-kisii-Nyamataro-Village"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "badiozamzam",
+          "clicked" : false,
+          "created" : 1236722589,
+          "domain" : "youtube.com",
+          "downs" : 13,
+          "hidden" : false,
+          "id" : "83jcn",
+          "likes" : null,
+          "name" : "t3_83jcn",
+          "num_comments" : 20,
+          "saved" : false,
+          "score" : 49,
+          "subreddit" : "atheism",
+          "subreddit_id" : "t5_2qh2p",
+          "title" : "Critics of Sharia are silenced at the UN - 13 March 2008",
+          "ups" : 62,
+          "url" : "http://www.youtube.com/watch?v=XrVIv1s5qzo"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "InsomniakPM",
+          "clicked" : false,
+          "created" : 1236726654,
+          "domain" : "chrysler5thavenue.blogspot.com",
+          "downs" : 73,
+          "hidden" : false,
+          "id" : "83k0x",
+          "likes" : null,
+          "name" : "t3_83k0x",
+          "num_comments" : 29,
+          "saved" : false,
+          "score" : 47,
+          "subreddit" : "technology",
+          "subreddit_id" : "t5_2qh16",
+          "title" : "What is PIFTS and why is Symantec covering it up?",
+          "ups" : 120,
+          "url" : "http://chrysler5thavenue.blogspot.com/2009/03/piftsexe.html"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "Facepuncher",
+          "clicked" : false,
+          "created" : 1236733648,
+          "domain" : "blog.bull3t.me.uk",
+          "downs" : 44,
+          "hidden" : false,
+          "id" : "83l9b",
+          "likes" : null,
+          "name" : "t3_83l9b",
+          "num_comments" : 12,
+          "saved" : false,
+          "score" : 35,
+          "subreddit" : "worldnews",
+          "subreddit_id" : "t5_2qh13",
+          "title" : "The Norton Antivirus cover-up: A mysterious program known as pifts.exe associated with the AV program is attempting to contact a server in Africa. Symantec is hush-hush. ",
+          "ups" : 79,
+          "url" : "http://blog.bull3t.me.uk/archives/internet/the-mysterious-norton-cover-up-and-piftsexe/"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "Mithridates",
+          "clicked" : false,
+          "created" : 1236727925,
+          "domain" : "en.wikipedia.org",
+          "downs" : 34,
+          "hidden" : false,
+          "id" : "83k94",
+          "likes" : null,
+          "name" : "t3_83k94",
+          "num_comments" : 18,
+          "saved" : false,
+          "score" : 29,
+          "subreddit" : "atheism",
+          "subreddit_id" : "t5_2qh2p",
+          "title" : "What Christianity could have been: Marcionism, a branch of Christianity rivaling even the Church of Rome in the 2nd century that saw the God of the Old Testament as a lesser demiurge and the source of evil.",
+          "ups" : 63,
+          "url" : "http://en.wikipedia.org/wiki/Marcionism"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "GreekStyle",
+          "clicked" : false,
+          "created" : 1236722072,
+          "domain" : "iht.com",
+          "downs" : 62,
+          "hidden" : false,
+          "id" : "83j9g",
+          "likes" : null,
+          "name" : "t3_83j9g",
+          "num_comments" : 70,
+          "saved" : false,
+          "score" : 117,
+          "subreddit" : "politics",
+          "subreddit_id" : "t5_2cneq",
+          "title" : "Turkish document showing 972,000 Ottoman Armenians disappeared from official population records from 1915 through 1916 is met with silence.",
+          "ups" : 179,
+          "url" : "http://www.iht.com/articles/2009/03/09/europe/turkey.php"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "democracy101",
+          "clicked" : false,
+          "created" : 1236709540,
+          "domain" : "populistamerica.com",
+          "downs" : 143,
+          "hidden" : false,
+          "id" : "83hk6",
+          "likes" : null,
+          "name" : "t3_83hk6",
+          "num_comments" : 196,
+          "saved" : false,
+          "score" : 202,
+          "subreddit" : "politics",
+          "subreddit_id" : "t5_2cneq",
+          "title" : "Peter Schiff: \"By simply clinging to tax cuts as their single economic miracle cure, Republicans risk further marginalization.\"",
+          "ups" : 345,
+          "url" : "http://www.populistamerica.com/rush_to_judgment"
+        },
+        "kind" : "t3"
+      },
+      {
+        "data" : {
+          "author" : "ChevChelios",
+          "clicked" : false,
+          "created" : 1236735558,
+          "domain" : "quicken.intuit.com",
+          "downs" : 26,
+          "hidden" : false,
+          "id" : "83lku",
+          "likes" : null,
+          "name" : "t3_83lku",
+          "num_comments" : 15,
+          "saved" : false,
+          "score" : 127,
+          "subreddit" : "reddit.com",
+          "subreddit_id" : "t5_6",
+          "title" : "Hidden millionaires: Lessons from unconventional money management",
+          "ups" : 153,
+          "url" : "http://quicken.intuit.com/personal-finance-articles/fun-with-finances/Hidden-Millionaires-Lessons-From-Unconventional-Money-Management.html"
+        },
+        "kind" : "t3"
+      }
+    ]
+  },
+  "kind" : "Listing"
+}
+
+"""
+
+

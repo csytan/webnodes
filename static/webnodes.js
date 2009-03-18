@@ -9,6 +9,7 @@ var WebNodes = function(root, graph, options){
     
     function setNode(node) {
         node.childIds = graph[node.id] || [];
+        node.start = node.start || 0;
         node.visibleChildren = [];
         node.childTop = node.offsetTop + node.offsetHeight;
         node.childLeft = node.offsetLeft;
@@ -26,6 +27,10 @@ var WebNodes = function(root, graph, options){
             //console.log('children', row);
         }
         drawConnections(root);
+    }
+
+    function nextPage(node, childIds) {
+        
     }
 
     function expandNodes(row) {
@@ -64,18 +69,15 @@ var WebNodes = function(root, graph, options){
         row.splice(indexLow, 1);
 
         var maxChildren = Math.floor(node.childWidth / options.minWidth);
-        var nChildren = Math.min(maxChildren, node.childIds.length);
-        var childWidth = node.childWidth / nChildren;
+        var nChildren = Math.min(maxChildren, node.childIds.length - node.start);
         
-        node.childTop = node.offsetTop + node.offsetHeight + options.vertSpace * nChildren;
+        node.childTop += options.vertSpace * nChildren;
         
         // Add child nodes
         for (var j = 0, child; j < nChildren; j++) {
-            var child = document.getElementById(node.childIds[j]);
-            
+            var child = document.getElementById(node.childIds[node.start + j]);
             child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + (j * childWidth) + 'px';
-            child.style.width = childWidth + 'px';
+            child.style.left = node.childLeft + (j * options.minWidth) + 'px';
             child.style.display = 'block';
             
             setNode(child);
@@ -83,6 +85,8 @@ var WebNodes = function(root, graph, options){
             node.visibleChildren.push(child);
             row.splice(indexLow++, 0, child);
         }
+        
+
         
         return row;
     }
@@ -125,4 +129,24 @@ var WebNodes = function(root, graph, options){
     }
     
     layout(root);
+    
+    $('.pagination').live('click', function(e) {
+        var node = $(this).closest('.comment_container')[0];
+
+        if ($(this).hasClass('next')) {
+            node.start += node.visibleChildren.length;
+        } else {
+            node.start -= node.visibleChildren.length;
+        }
+        var scroll = $(window).scrollTop();
+        $(document.body).height($(document).height());
+        
+        $('canvas').hide();
+        $('.comment_container').hide();
+        $(root).show();
+        layout(root);
+        
+        //$(window).scrollTop(scroll);
+        return false;
+    });
 }

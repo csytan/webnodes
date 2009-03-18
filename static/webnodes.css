@@ -1,8 +1,10 @@
-html, body {
+body {
     font-family: "Helvetica Neue",Helvetica,Times,serif;
-    font-size: 18px;
+    font-size: 16px;
     color: #5c5c5c;
     background-color: black;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 a {
@@ -32,6 +34,7 @@ canvas {
     position: absolute;
     display: none;
     z-index: 1;
+    width: 300px;
 }
 
 .comment {
@@ -47,27 +50,6 @@ canvas {
     overflow-y: hidden;
 }
 
-.comment_container:hover {
-    z-index: 5;
-}
-
 .comment:hover {
-    border: 2px solid #003F5F;
-    max-height: 1000px;
-}
-
-.commentButtons {
-    display: none;
-}
-
-
-
-.comment > div {
-    margin: 7px;
-}
-
-
-
-.commentButtons a {
-    margin: auto;
+    border: 2px solid #00354F;
 }
