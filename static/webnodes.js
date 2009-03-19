@@ -70,9 +70,19 @@ var WebNodes = function(root, graph, options){
         var maxChildren = Math.floor(node.childWidth / options.minWidth);
         var nChildren = Math.min(maxChildren, node.childIds.length - node.start);
         var childWidth = node.childWidth / nChildren;
-                
-        if (nChildren < node.childIds.length) {
-            $(node).find('.pagination').show();
+        
+        if (node.start + nChildren < node.childIds.length) {
+            $(node).find('.pagination').show()
+            .find('span').text(node.start + 1 + ' / '+ node.childIds.length);
+        } else {
+            $(node).find('a.next');
+        }
+        
+        if (node.start && node.start >= nChildren) {
+            $(node).find('.pagination').show()
+            .find('span').text(node.start + 1 + ' / ' + node.childIds.length);
+        } else {
+            $(node).find('a.prev');
         }
         
         node.childTop = node.offsetTop + node.offsetHeight;
