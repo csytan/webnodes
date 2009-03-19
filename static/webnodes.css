@@ -1,7 +1,7 @@
 body {
     font-family: Georgia,"Helvetica Neue",Helvetica,Times,serif;
     font-size: 16px;
-    color: black;
+    color: #000000;
     background-color: #826F4F;
     padding-top: 20px;
     padding-bottom: 20px;
@@ -37,21 +37,26 @@ canvas {
     position: absolute;
     display: none;
     z-index: 1;
-    width: 400px;
+    width: 350px;
+    /*border: 1px dotted white;*/
 }
 
 .comment {
-    width: 360px;
+    width: 310px;
     padding: 10px;
     margin: auto;
     background-color: #EFE7E0;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
-    -moz-box-shadow: -5px 5px 20px #5F5035;
-    box-shadow: -5px 5px 20px #5F5035;
-    
+    -moz-box-shadow: -5px 5px 25px #3F321B;
+    box-shadow: -5px 5px 25px #3F321B;
 }
 
 .comment .content {
     overflow: hidden;
-    max-height: 500px;
+    max-height: 400px;
+}
+
+.comment .pagination {
+    display: none;
+    text-align: center;
 }

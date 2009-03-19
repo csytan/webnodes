@@ -24,7 +24,7 @@
             graph = {{ graph }};
                 
             timeDiff.setStartTime();
-            root = $("#{{ root }}").width('95%').show()[0];
+            root = $("#{{ root }}").width('98%').show()[0];
             WebNodes(root, graph);
             
             //alert(timeDiff.getDiff());
@@ -49,8 +49,10 @@
             <div class="comment">
                 <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
                 <div class="content">{{ comment.content }}</div>
-                <a href="#" class="prev pagination">Prev</a>
-                <a href="#" class="next pagination">Next</a>
+                <div class="pagination">
+                    <a href="#" class="prev">Prev</a>
+                    <a href="#" class="next">Next</a>
+                </div>
             </div>
         </div>
     {% endfor %}

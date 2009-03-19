@@ -1,7 +1,7 @@
 var WebNodes = function(root, graph, options){
     // Fast Tree Layout    
     options = $.extend({
-        minWidth: 400,
+        minWidth: 350,
         linkColor: '#AFAFAF',
         linkWidth: 5,
         vertSpace: 20
@@ -38,9 +38,11 @@ var WebNodes = function(root, graph, options){
             
             if (node.childIds.length) {
                 new_row.push(node);
-            } else if (leftNode && node.childTop <= leftNode.childTop) {
+            } else if (leftNode && node.childTop <= leftNode.childTop && 
+                    leftNode.childIds.length - leftNode.start > Math.floor(leftNode.childWidth / options.minWidth)) {
                 leftNode.childWidth += node.childWidth;
-            } else if (rightNode && node.childTop <= rightNode.childTop) {
+            } else if (rightNode && node.childTop <= rightNode.childTop && 
+                    rightNode.childIds.length - rightNode.start > Math.floor(rightNode.childWidth / options.minWidth)) {
                 rightNode.childLeft = node.childLeft;
                 rightNode.childWidth += node.childWidth;
             } else {
@@ -67,15 +69,24 @@ var WebNodes = function(root, graph, options){
 
         var maxChildren = Math.floor(node.childWidth / options.minWidth);
         var nChildren = Math.min(maxChildren, node.childIds.length - node.start);
+        var childWidth = node.childWidth / nChildren;
+                
+        if (nChildren < node.childIds.length) {
+            $(node).find('.pagination').show();
+        }
+        
+        node.childTop = node.offsetTop + node.offsetHeight;
         
         node.childTop += options.vertSpace * nChildren;
+        node.nChildren = maxChildren;
         
         // Add child nodes
         for (var j = 0, child; j < nChildren; j++) {
             var child = document.getElementById(node.childIds[node.start + j]);
             child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + (j * options.minWidth) + 'px';
+            child.style.left = node.childLeft + (j * childWidth) + 'px';
             child.style.display = 'block';
+            child.style.width = childWidth + 'px';
             
             setNode(child);
             
@@ -125,13 +136,13 @@ var WebNodes = function(root, graph, options){
     }
     
     
-    $('.pagination').live('click', function(e) {
+    $('.pagination a').live('click', function(e) {
         var node = $(this).closest('.comment_container')[0];
 
         if ($(this).hasClass('next')) {
-            node.start += node.visibleChildren.length;
+            node.start += node.nChildren;
         } else {
-            node.start -= node.visibleChildren.length;
+            node.start -= node.nChildren;
         }
 
         $(document.body).height($(document).height());        
