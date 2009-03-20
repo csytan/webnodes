@@ -9,12 +9,9 @@ var WebNodes = function(root, graph, options){
     
     function layout(rootNode) {
         var row = [setNode(rootNode)];
-        var height = 0;
         while (row.length) {
-            row = expandNodes(row);
-            //console.log('removed', row);
-            row = layoutChildren(row);
-            //console.log('children', row);
+            row = removeNodes(row);
+            row = addChildNodes(row);
         }
     }
     
@@ -30,7 +27,7 @@ var WebNodes = function(root, graph, options){
         return node;
     }
 
-    function expandNodes(row) {
+    function removeNodes(row) {
         var new_row = [];
         for (var i=0, node; node=row[i]; i++) {
             var leftNode = row[i - 1];
@@ -51,68 +48,72 @@ var WebNodes = function(root, graph, options){
         }
         return new_row;
     }
-        
-    function layoutChildren(row) {
-        var lowest;
-        var indexLow = 0;
+    
+    function addChildNodes(row) {
+        var lowest, index = 0;
         for (var i = 0, node; node = row[i]; i++) {
-            if (!lowest || ( node.childTop < lowest.childTop )) {
+            if (!lowest || ( node.childTop < lowest.childTop ) || (!lowest.childIds.length)) {
                 lowest = node;
-                indexLow = i;
+                index = i;
             }
         }
         
         if (!lowest) return row;
         
-        node = lowest;
-        row.splice(indexLow, 1);
-
+        var kids = layoutChildren(lowest);
+        drawConnections(lowest, kids);
+        
+        var left = row.slice(0, index);
+        var right = row.slice(index + 1);
+        return left.concat(kids, right);
+    }
+    
+    function layoutChildren(node) {
         var maxChildren = Math.floor(node.childWidth / options.minWidth);
         var nChildren = Math.min(maxChildren, node.childIds.length - node.start);
         var childWidth = node.childWidth / nChildren;
+        var kids = [];
         
+        // Pagination
+        $(node).find('.pagination').hide();
         if (node.start + nChildren < node.childIds.length) {
             $(node).find('.pagination').show()
             .find('span').text(node.start + 1 + ' / '+ node.childIds.length);
+            $(node).find('a.next').css('visibility', 'visible');
         } else {
-            $(node).find('a.next');
+            $(node).find('a.next').css('visibility', 'hidden');
         }
         
-        if (node.start && node.start >= nChildren) {
+        if (node.start) {
             $(node).find('.pagination').show()
             .find('span').text(node.start + 1 + ' / ' + node.childIds.length);
+            $(node).find('a.prev').css('visibility', 'visible');
         } else {
-            $(node).find('a.prev');
+            $(node).find('a.prev').css('visibility', 'hidden');
         }
         
         node.childTop = node.offsetTop + node.offsetHeight;
-        
         node.childTop += options.vertSpace * nChildren;
         node.nChildren = maxChildren;
         
         // Add child nodes
-        for (var j = 0, child; j < nChildren; j++) {
-            var child = document.getElementById(node.childIds[node.start + j]);
+        for (var i = 0, child; i < nChildren; i++) {
+            var child = document.getElementById(node.childIds[node.start + i]);
             child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + (j * childWidth) + 'px';
+            child.style.left = node.childLeft + (i * childWidth) + 'px';
             child.style.display = 'block';
             child.style.width = childWidth + 'px';
             
             setNode(child);
-            
-            node.visibleChildren.push(child);
-            row.splice(indexLow++, 0, child);
+            kids.push(child);
         }
-        
-        drawConnections(node);
-        
-        return row;
+        return kids;
     }
     
-    function drawConnections(node) {
+    function drawConnections(node, kids) {
         var x = node.offsetLeft + node.offsetWidth / 2 - node.childLeft;
         var y = node.offsetTop + node.offsetHeight - 5;
-        var height = node.visibleChildren.length * options.vertSpace + 10;
+        var height = kids.length * options.vertSpace + 10;
         
         var canvas = document.createElement('canvas');
         
@@ -133,7 +134,7 @@ var WebNodes = function(root, graph, options){
         ctx.strokeStyle = options.linkColor;
         ctx.lineWidth = options.linkWidth;
         
-        for (var i = 0, child; child = node.visibleChildren[i]; i++) {
+        for (var i = 0, child; child = kids[i]; i++) {
             var childX = child.offsetLeft + child.offsetWidth / 2 - node.childLeft;
             
             ctx.beginPath();
