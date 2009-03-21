@@ -3,10 +3,10 @@ body {
     font-size: 16px;
     color: #000000;
     background-color: #826F4F;
-    padding-top: 20px;
     font-weight: 400;
     color: #333333;
     line-height: 24px;
+    margin: 0px;
 }
 
 a {
@@ -32,6 +32,17 @@ canvas {
     position: absolute;
 }
 
+#header {
+    background-color: black;
+}
+
+#content {
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+}
+
 .comment_container {
     position: absolute;
     display: none;
@@ -40,11 +51,14 @@ canvas {
     /*border: 1px dotted white;*/
 }
 
+.comment, .topic {
+    background-color: #EFE7E0;
+}
+
 .comment {
     width: 310px;
     padding: 10px;
     margin: auto;
-    background-color: #EFE7E0;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
     -moz-box-shadow: -5px 5px 25px #3F321B;
     box-shadow: -5px 5px 25px #3F321B;
@@ -67,4 +81,11 @@ canvas {
 .comment .pagination a {
     margin-left: 30px;
     margin-right: 30px;
+}
+
+.topic {
+    width: 300px;
+    padding: 5px;
+    margin: 5px;
+    float: left;
 }

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+
+{% block style %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+    {% for topic in topics %}
+        <div class="topic">
+            <a href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
+            <br>
+            <span>
+                {{ topic.score }} points, 
+                {{ topic.num_comments }} comments, 
+                by {{ topic.author }}
+            </span>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+

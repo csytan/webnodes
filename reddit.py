@@ -2,8 +2,9 @@ from django.utils import simplejson
 import urllib
 
 
-def get_thread_data(link):
-    response = urllib.urlopen(link + '.json').read()
+def get_thread_data(id):
+    response = urllib.urlopen('http://reddit.com/comments/' + \
+        id + '/.json').read()
     nodes = simplejson.loads(response)
     
     comments = []

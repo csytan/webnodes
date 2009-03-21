@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+    #content {
+        width: auto;
+    }
+</style>
+{% endblock %}
+
+
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function(){
+         var timeDiff  =  {
+            setStartTime:function (){
+                d = new Date();
+                time  = d.getTime();
+            },
+            getDiff:function (){
+                d = new Date();
+                return (d.getTime()-time);
+            }
+        }
+            
+        graph = {{ graph }};
+            
+        timeDiff.setStartTime();
+        root = $("#{{ root }}").width('100%').show()[0];
+        WebNodes(root, graph);
+        
+        //alert(timeDiff.getDiff());
+    });
+</script>
+
+<noscript>
+    <style type="text/css">
+        .comment {
+            display: block;
+            position: relative;
+            margin: 10px;
+        }
+    </style>
+</noscript>
+{% endblock %}
+
+
+{% block content %}
+    {% for comment in comments %}
+        <div id="{{ comment.id }}" class="comment_container">
+            <div class="comment">
+                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                <span class="score">({{ comment.score }})</span>
+                <div class="content">{{ comment.content }}</div>
+                <div class="pagination">
+                    <a href="#" class="prev">Prev</a>
+                    <a href="#" class="next">Next</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

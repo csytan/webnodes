@@ -10,25 +10,16 @@ from google.appengine.ext.webapp import template
 import reddit
 
 
-
-class MainHandler(webapp.RequestHandler):
-    path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
-    
-    def get(self):
-        context = reddit.get_thread_data('http://www.reddit.com/r/science/comments/866ss/forty_years_after_the_start_of_belyaev_experiment/')
-        html = template.render(self.path, context)
-        self.response.out.write(html)
-
 class RedditHandler(webapp.RequestHandler):
-    path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
+    path = os.path.join(os.path.dirname(__file__), 'templates','hot_topics.html')
 
     def get(self):
-        context = reddit.get_thread_data('http://www.reddit.com/r/science/comments/866ss/forty_years_after_the_start_of_belyaev_experiment/')
+        context = {'topics': reddit.hot_topics()}
         html = template.render(self.path, context)
         self.response.out.write(html)
 
 class RedditThreadHandler(webapp.RequestHandler):
-    path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
+    path = os.path.join(os.path.dirname(__file__), 'templates','index.html')
 
     def get(self, link):
         context = reddit.get_thread_data(link)
@@ -36,9 +27,9 @@ class RedditThreadHandler(webapp.RequestHandler):
         self.response.out.write(html)
 
 application = webapp.WSGIApplication([
-        ('/reddit/(.+)', RedditThreadHandler),
+        ('/', RedditHandler),
         ('/reddit/', RedditHandler),
-        ('/', MainHandler)
+        ('/reddit/(.+)', RedditThreadHandler),
     ], debug=True)
 
 
