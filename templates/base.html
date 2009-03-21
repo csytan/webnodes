@@ -48,6 +48,7 @@
         <div id="{{ comment.id }}" class="comment_container">
             <div class="comment">
                 <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                <span class="score">({{ comment.score }})</span>
                 <div class="content">{{ comment.content }}</div>
                 <div class="pagination">
                     <a href="#" class="prev">Prev</a>

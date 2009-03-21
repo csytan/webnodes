@@ -7,50 +7,37 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
 
 # Local imports
-from models import Comment
+import reddit
 
-
-import reddittree
-
-class CommentHandler(webapp.RequestHandler):
-    path = os.path.join(os.path.dirname(__file__), "templates", "base.html")
-    
-    def get(self, id):
-        comment = Comment.get_by_id(int(id))
-        self.response.out.write(template.render(self.path, comment.context))
-
-    def post(self, id):
-        content = self.request.get("content")
-        
-        if id:
-            reply_to = Comment.get_by_id(int(id))
-        else:
-            reply_to = None
-            
-        comment = Comment(content=content, reply_to=reply_to)
-        comment.put()
-        self.response.out.write(template.render(self.path, comment.context))
-
-class RepliesHandler(webapp.RequestHandler):
-    def get(self, id):
-        pass
-        
-    def post(self, id):
-        content = self.request.get("content")
-        
 
 
 class MainHandler(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
     
     def get(self):
-        context = {"graph":reddittree.graph, "comments":reddittree.comments, "root":reddittree.ROOT}
-        self.response.out.write(template.render(self.path, context))
+        context = reddit.get_thread_data('http://www.reddit.com/r/science/comments/866ss/forty_years_after_the_start_of_belyaev_experiment/')
+        html = template.render(self.path, context)
+        self.response.out.write(html)
 
+class RedditHandler(webapp.RequestHandler):
+    path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
 
+    def get(self):
+        context = reddit.get_thread_data('http://www.reddit.com/r/science/comments/866ss/forty_years_after_the_start_of_belyaev_experiment/')
+        html = template.render(self.path, context)
+        self.response.out.write(html)
+
+class RedditThreadHandler(webapp.RequestHandler):
+    path = os.path.join(os.path.dirname(__file__), 'templates','base.html')
+
+    def get(self, link):
+        context = reddit.get_thread_data(link)
+        html = template.render(self.path, context)
+        self.response.out.write(html)
 
 application = webapp.WSGIApplication([
-        ('/comments/(\d*)', CommentHandler),
+        ('/reddit/(.+)', RedditThreadHandler),
+        ('/reddit/', RedditHandler),
         ('/', MainHandler)
     ], debug=True)
 

@@ -9,8 +9,9 @@ var WebNodes = function(root, graph, options){
     
     function layout(rootNode) {
         var row = [setNode(rootNode)];
-        while (row.length) {
+        while (row) {
             row = removeNodes(row);
+            row = removeNodes(row); // for those hard to reach areas
             row = addChildNodes(row);
         }
     }
@@ -20,7 +21,6 @@ var WebNodes = function(root, graph, options){
     function setNode(node) {
         node.childIds = graph[node.id] || [];
         node.start = node.start || 0;
-        node.visibleChildren = [];
         node.childTop = node.offsetTop + node.offsetHeight;
         node.childLeft = node.offsetLeft;
         node.childWidth = node.offsetWidth;
@@ -30,18 +30,18 @@ var WebNodes = function(root, graph, options){
     function removeNodes(row) {
         var new_row = [];
         for (var i=0, node; node=row[i]; i++) {
-            var leftNode = row[i - 1];
-            var rightNode = row[i + 1];
+            var left = row[i - 1];
+            var right = row[i + 1];
             
             if (node.childIds.length) {
                 new_row.push(node);
-            } else if (leftNode && node.childTop <= leftNode.childTop && 
-                    leftNode.childIds.length - leftNode.start > Math.floor(leftNode.childWidth / options.minWidth)) {
-                leftNode.childWidth += node.childWidth;
-            } else if (rightNode && node.childTop <= rightNode.childTop && 
-                    rightNode.childIds.length - rightNode.start > Math.floor(rightNode.childWidth / options.minWidth)) {
-                rightNode.childLeft = node.childLeft;
-                rightNode.childWidth += node.childWidth;
+            } else if (left && node.childTop <= left.childTop && 
+                    left.childIds.length - left.start > Math.floor(left.childWidth / options.minWidth)) {
+                left.childWidth += node.childWidth;
+            } else if (right && node.childTop <= right.childTop && 
+                    right.childIds.length - right.start > Math.floor(right.childWidth / options.minWidth)) {
+                right.childLeft = node.childLeft;
+                right.childWidth += node.childWidth;
             } else {
                 new_row.push(node);
             }
@@ -50,15 +50,16 @@ var WebNodes = function(root, graph, options){
     }
     
     function addChildNodes(row) {
-        var lowest, index = 0;
+        var lowest=row[0], index = 0;
         for (var i = 0, node; node = row[i]; i++) {
-            if (!lowest || ( node.childTop < lowest.childTop ) || (!lowest.childIds.length)) {
+            if (node.childTop < lowest.childTop && node.childIds.length) {
                 lowest = node;
                 index = i;
             }
         }
         
-        if (!lowest) return row;
+        if (!lowest) return null;
+        if (!lowest.childIds.length) return null;
         
         var kids = layoutChildren(lowest);
         drawConnections(lowest, kids);
@@ -77,24 +78,25 @@ var WebNodes = function(root, graph, options){
         // Pagination
         $(node).find('.pagination').hide();
         if (node.start + nChildren < node.childIds.length) {
-            $(node).find('.pagination').show()
-            .find('span').text(node.start + 1 + ' / '+ node.childIds.length);
-            $(node).find('a.next').css('visibility', 'visible');
+            $(node).find('.pagination').show();
+            $(node).find('a.next').css('visibility', 'visible')
+            .text('Next ' + (node.childIds.length - node.start - nChildren) + ' >');
         } else {
             $(node).find('a.next').css('visibility', 'hidden');
         }
         
         if (node.start) {
-            $(node).find('.pagination').show()
-            .find('span').text(node.start + 1 + ' / ' + node.childIds.length);
-            $(node).find('a.prev').css('visibility', 'visible');
+            $(node).find('.pagination').show();
+            $(node).find('a.prev').css('visibility', 'visible')
+            .text('< Prev ' + node.start);
         } else {
             $(node).find('a.prev').css('visibility', 'hidden');
         }
         
         node.childTop = node.offsetTop + node.offsetHeight;
         node.childTop += options.vertSpace * nChildren;
-        node.nChildren = maxChildren;
+        
+        if (!node.kids_per_page) node.kids_per_page = maxChildren;
         
         // Add child nodes
         for (var i = 0, child; i < nChildren; i++) {
@@ -151,17 +153,18 @@ var WebNodes = function(root, graph, options){
         var node = $(this).closest('.comment_container')[0];
 
         if ($(this).hasClass('next')) {
-            node.start += node.nChildren;
+            node.start += node.kids_per_page;
         } else {
-            node.start -= node.nChildren;
+            node.start -= node.kids_per_page;
+            if (node.start < 0) node.start = 0;
         }
-
-        $(document.body).height($(document).height());        
+        
+        $(document.body).css('min-height', $(document).height());        
         $('canvas').remove();
         $('.comment_container').hide();
         $(root).show();
         layout(root);
-        $(document.body).css('height', 'auto');
+        
         return false;
     });
 }
