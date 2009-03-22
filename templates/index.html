@@ -5,6 +5,11 @@
     #content {
         width: auto;
     }
+    
+    #{{ root }} {
+        width: 100%;
+        display: block;
+    }
 </style>
 {% endblock %}
 
@@ -23,10 +28,10 @@
             }
         }
             
-        graph = {{ graph }};
+        graph = {{ graph|safe }};
             
         timeDiff.setStartTime();
-        root = $("#{{ root }}").width('100%').show()[0];
+        root = $("#{{ root }}")[0];
         WebNodes(root, graph);
         
         //alert(timeDiff.getDiff());

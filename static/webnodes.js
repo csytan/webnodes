@@ -167,4 +167,16 @@ var WebNodes = function(root, graph, options){
         
         return false;
     });
+    
+    $('.comment .content').live('click', function(e) {
+        if ($(this).height() == 400) {
+            $(this).css('max-height', 1000);
+            $(this).closest('.comment').animate({'width':'95%'});
+            $(this).closest('.comment_container').css('z-index', 100);
+        } else {
+            $(this).css('max-height', 400);
+            $(this).closest('.comment').animate({'width':310});
+            $(this).closest('.comment_container').css('z-index', 1);
+        }
+    });
 }
