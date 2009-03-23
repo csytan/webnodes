@@ -52,7 +52,7 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="comment_container">
             <div class="comment">
-                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
                 <div class="content">
                     <span>{{ comment.content|safe }}</span>
