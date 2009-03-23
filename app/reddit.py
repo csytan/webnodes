@@ -2,6 +2,11 @@ from django.utils import simplejson
 import urllib
 
 
+def hot_topics():
+    response = urllib.urlopen('http://www.reddit.com/r/programming/.json').read()
+    data = simplejson.loads(response)
+    return [topic['data'] for topic in data['data']['children']]
+
 def get_thread_data(id):
     response = urllib.urlopen('http://reddit.com/comments/' + \
         id + '/.json').read()
@@ -52,7 +57,3 @@ def get_thread_data(id):
     }
 
 
-def hot_topics():
-    response = urllib.urlopen('http://www.reddit.com/.json').read()
-    data = simplejson.loads(response)
-    return [topic['data'] for topic in data['data']['children']]

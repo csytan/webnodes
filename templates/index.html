@@ -7,7 +7,7 @@
     }
     
     #{{ root }} {
-        width: 100%;
+        width: 95%;
         display: block;
     }
 </style>
@@ -15,6 +15,10 @@
 
 
 {% block script %}
+<!--[if IE]>
+    <script type="text/javascript" src="/static/excanvas.js"></script>
+<![endif]-->
+<script type="text/javascript" src="/static/webnodes.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
          var timeDiff  =  {
@@ -37,26 +41,24 @@
         //alert(timeDiff.getDiff());
     });
 </script>
-
-<noscript>
-    <style type="text/css">
-        .comment {
-            display: block;
-            position: relative;
-            margin: 10px;
-        }
-    </style>
-</noscript>
 {% endblock %}
 
 
 {% block content %}
+    <noscript>
+        <p style="text-align: center">Sorry, this site requires javascript</p>
+    </noscript>
+
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="comment_container">
             <div class="comment">
                 <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
-                <div class="content">{{ comment.content }}</div>
+                <div class="content">
+                    <span>{{ comment.content|safe }}</span>
+                </div>
+                <a href="#" class="more">More...</a>
+                <a href="#" class="less">Less...</a>
                 <div class="pagination">
                     <a href="#" class="prev">Prev</a>
                     <a href="#" class="next">Next</a>

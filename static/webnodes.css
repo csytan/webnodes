@@ -75,6 +75,14 @@ canvas {
     max-height: 400px;
 }
 
+.comment .content span {
+    position: relative;
+}
+
+.comment a.more, .comment a.less {
+    display: none;
+}
+
 .comment .pagination {
     display: none;
     text-align: center;

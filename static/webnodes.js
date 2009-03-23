@@ -106,6 +106,10 @@ var WebNodes = function(root, graph, options){
             child.style.display = 'block';
             child.style.width = childWidth + 'px';
             
+            if ($(child).find('.content').height() == 400) {
+                $(child).find('a.more').show();
+            }
+            
             setNode(child);
             kids.push(child);
         }
@@ -168,15 +172,25 @@ var WebNodes = function(root, graph, options){
         return false;
     });
     
-    $('.comment .content').live('click', function(e) {
-        if ($(this).height() == 400) {
-            $(this).css('max-height', 1000);
-            $(this).closest('.comment').animate({'width':'95%'});
-            $(this).closest('.comment_container').css('z-index', 100);
-        } else {
-            $(this).css('max-height', 400);
-            $(this).closest('.comment').animate({'width':310});
-            $(this).closest('.comment_container').css('z-index', 1);
-        }
+    $('.comment a.more').live('click', function(e) {
+        var comment = $(this).closest('.comment');
+        comment.find('.content span')
+        .animate({top:'-=400'}, function(){
+            if (this.offsetHeight < -this.offsetTop + 400)
+                comment.find('a.more').hide();
+        });
+        comment.find('a.less').show();
+        return false;
+    });
+    
+    $('.comment a.less').live('click', function(e) {
+        var comment = $(this).closest('.comment');
+        comment.find('.content span')
+        .animate({top:'+=400'}, function(){
+            if (this.offsetTop > 0)
+                comment.find('a.less').hide();
+        });
+        comment.find('a.more').show();
+        return false;
     });
 }
