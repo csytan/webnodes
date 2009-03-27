@@ -1,7 +1,7 @@
 var WebNodes = function(root, graph, options){
     // Fast Tree Layout    
     options = $.extend({
-        minWidth: 350,
+        minWidth: 400,
         linkColor: '#AFAFAF',
         linkWidth: 5,
         vertSpace: 20
@@ -50,16 +50,15 @@ var WebNodes = function(root, graph, options){
     }
     
     function addChildNodes(row) {
-        var lowest=row[0], index = 0;
+        var lowest = row[0], index = 0;
         for (var i = 0, node; node = row[i]; i++) {
-            if (node.childTop < lowest.childTop && node.childIds.length) {
+            if (!lowest.childIds.length || (node.childTop < lowest.childTop && node.childIds.length)) {
                 lowest = node;
                 index = i;
             }
         }
         
         if (!lowest) return null;
-        if (!lowest.childIds.length) return null;
         
         var kids = layoutChildren(lowest);
         drawConnections(lowest, kids);
@@ -76,19 +75,19 @@ var WebNodes = function(root, graph, options){
         var kids = [];
         
         // Pagination
-        $(node).find('.pagination').hide();
+        $(node).find('.pagination').css('visibility', 'hidden');
         if (node.start + nChildren < node.childIds.length) {
-            $(node).find('.pagination').show();
+            $(node).find('.pagination').css('visibility', 'visible');
             $(node).find('a.next').css('visibility', 'visible')
-            .text('Next ' + (node.childIds.length - node.start - nChildren) + ' >');
+            .text('Next ' + (node.childIds.length - node.start - nChildren) + ' »');
         } else {
             $(node).find('a.next').css('visibility', 'hidden');
         }
         
         if (node.start) {
-            $(node).find('.pagination').show();
+            $(node).find('.pagination').css('visibility', 'visible');
             $(node).find('a.prev').css('visibility', 'visible')
-            .text('< Prev ' + node.start);
+            .text('« Prev ' + node.start);
         } else {
             $(node).find('a.prev').css('visibility', 'hidden');
         }
@@ -96,7 +95,8 @@ var WebNodes = function(root, graph, options){
         node.childTop = node.offsetTop + node.offsetHeight;
         node.childTop += options.vertSpace * nChildren;
         
-        if (!node.kids_per_page) node.kids_per_page = maxChildren;
+        node.maxChildren = maxChildren;
+        node.nChildren = nChildren;
         
         // Add child nodes
         for (var i = 0, child; i < nChildren; i++) {
@@ -107,7 +107,7 @@ var WebNodes = function(root, graph, options){
             child.style.width = childWidth + 'px';
             
             if ($(child).find('.content').height() == 400) {
-                $(child).find('a.more').show();
+                $(child).find('.scroll').show();
             }
             
             setNode(child);
@@ -157,9 +157,9 @@ var WebNodes = function(root, graph, options){
         var node = $(this).closest('.comment_container')[0];
 
         if ($(this).hasClass('next')) {
-            node.start += node.kids_per_page;
+            node.start += node.nChildren;
         } else {
-            node.start -= node.kids_per_page;
+            node.start -= node.maxChildren;
             if (node.start < 0) node.start = 0;
         }
         
@@ -168,29 +168,28 @@ var WebNodes = function(root, graph, options){
         $('.comment_container').hide();
         $(root).show();
         layout(root);
-        
         return false;
     });
     
     $('.comment a.more').live('click', function(e) {
         var comment = $(this).closest('.comment');
         comment.find('.content span')
-        .animate({top:'-=400'}, function(){
+        .animate({top:'-=200'}, function(){
             if (this.offsetHeight < -this.offsetTop + 400)
-                comment.find('a.more').hide();
+                comment.find('a.more').css('visibility', 'hidden');
         });
-        comment.find('a.less').show();
+        comment.find('a.less').css('visibility', 'visible');
         return false;
     });
     
     $('.comment a.less').live('click', function(e) {
         var comment = $(this).closest('.comment');
         comment.find('.content span')
-        .animate({top:'+=400'}, function(){
+        .animate({top:'+=200'}, function(){
             if (this.offsetTop > 0)
-                comment.find('a.less').hide();
+                comment.find('a.less').css('visibility', 'hidden');
         });
-        comment.find('a.more').show();
+        comment.find('a.more').css('visibility', 'visible');
         return false;
     });
 }

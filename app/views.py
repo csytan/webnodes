@@ -17,11 +17,11 @@ def expire_page(path):
 
 ### Request handlers ###
 def reddit_topics(request):
-    return render_to_response('hot_topics.html', {
+    return render_to_response('topics.html', {
         'topics': reddit.hot_topics()
     })
 
 def reddit_thread(request, id):
     context = reddit.get_thread_data(id)
-    return render_to_response('index.html', context)
+    return render_to_response('thread.html', context)
 

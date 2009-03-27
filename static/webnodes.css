@@ -42,7 +42,7 @@ canvas {
     margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
-    width: 1000px;
+    width: 100%;
 }
 
 .comment_container {
@@ -50,7 +50,6 @@ canvas {
     display: none;
     z-index: 1;
     width: 350px;
-    /*border: 1px dotted white;*/
 }
 
 .comment, .topic {
@@ -58,7 +57,7 @@ canvas {
 }
 
 .comment {
-    width: 310px;
+    width: 360px;
     padding: 10px;
     margin: auto;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
@@ -79,12 +78,16 @@ canvas {
     position: relative;
 }
 
-.comment a.more, .comment a.less {
+.comment .scroll {
     display: none;
 }
 
+.comment a.less {
+    visibility: hidden;
+}
+
 .comment .pagination {
-    display: none;
+    visibility: hidden;
     text-align: center;
 }
 
@@ -94,8 +97,6 @@ canvas {
 }
 
 .topic {
-    width: 300px;
     padding: 5px;
     margin: 5px;
-    float: left;
 }

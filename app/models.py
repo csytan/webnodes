@@ -9,27 +9,30 @@ from google.appengine.api import memcache
     # namespace search (tlnet -> gamers -> wikipedia)
 # translations between words
 
-class User(db.Expando):
+class User(db.Model):
     favorites = db.ListProperty(db.Key)
     email = db.EmailProperty()
 
-class Topic(db.Expando):
+class Topic(db.Model):
     name = db.StringProperty()
+    tags = db.StringListProperty()
 
 
 
-class Comment(db.Expando):
+class Comment(db.Model):
     topic = db.ReferenceProperty(Topic)
     reply_to = db.SelfReferenceProperty()
-    #author = db.UserProperty()
+    author = db.UserProperty()
     added = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
-    content = db.TextProperty()
+    body = db.TextProperty()
     rating = db.IntegerProperty(default=0)
-    #tags = db.StringListProperty()
     
     def id(self):
         return self.key().id()
+    
+    def add_reply(self, body):
+        pass
     
     def get_replies(self, sort='-rating'):
         query = Comment.all()

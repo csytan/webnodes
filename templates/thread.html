@@ -31,11 +31,9 @@
                 return (d.getTime()-time);
             }
         }
-            
-        graph = {{ graph|safe }};
-            
-        timeDiff.setStartTime();
-        root = $("#{{ root }}")[0];
+        
+        var graph = {{ graph|safe }};
+        var root = $("#{{ root }}")[0];
         WebNodes(root, graph);
         
         //alert(timeDiff.getDiff());
@@ -55,10 +53,12 @@
                 <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
                 <div class="content">
-                    <span>{{ comment.content|safe }}</span>
+                    <span>{{ comment.body|safe }}</span>
                 </div>
-                <a href="#" class="more">More...</a>
-                <a href="#" class="less">Less...</a>
+                <div class="scroll">
+                    <a href="#" class="more">More...</a>
+                    <a href="#" class="less">Less...</a>
+                </div>
                 <div class="pagination">
                     <a href="#" class="prev">Prev</a>
                     <a href="#" class="next">Next</a>

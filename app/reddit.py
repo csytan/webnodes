@@ -25,7 +25,7 @@ def get_thread_data(id):
             # root comment
             comments.append(data)
             data['id'] = data['name']
-            data['content'] = data['title'] + '<br><a href="'+ data['url'] + '">Link</a>'
+            data['body'] = data['title'] + '<br><a href="'+ data['url'] + '">Link</a>'
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
             data['score'] = ups - downs
@@ -35,7 +35,6 @@ def get_thread_data(id):
             # normal comment
             comments.append(data)
             data['id'] = data['name']
-            data['content'] = data['body']
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
             data['score'] = ups - downs
