@@ -52,13 +52,7 @@
             <div class="comment">
                 <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
-                <div class="content">
-                    <span>{{ comment.body|safe }}</span>
-                </div>
-                <div class="scroll">
-                    <a href="#" class="more">More...</a>
-                    <a href="#" class="less">Less...</a>
-                </div>
+                <div class="body">{{ comment.body|safe }}</div>
                 <div class="pagination">
                     <a href="#" class="prev">Prev</a>
                     <a href="#" class="next">Next</a>

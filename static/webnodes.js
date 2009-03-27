@@ -106,10 +106,6 @@ var WebNodes = function(root, graph, options){
             child.style.display = 'block';
             child.style.width = childWidth + 'px';
             
-            if ($(child).find('.content').height() == 400) {
-                $(child).find('.scroll').show();
-            }
-            
             setNode(child);
             kids.push(child);
         }
@@ -168,28 +164,6 @@ var WebNodes = function(root, graph, options){
         $('.comment_container').hide();
         $(root).show();
         layout(root);
-        return false;
-    });
-    
-    $('.comment a.more').live('click', function(e) {
-        var comment = $(this).closest('.comment');
-        comment.find('.content span')
-        .animate({top:'-=200'}, function(){
-            if (this.offsetHeight < -this.offsetTop + 400)
-                comment.find('a.more').css('visibility', 'hidden');
-        });
-        comment.find('a.less').css('visibility', 'visible');
-        return false;
-    });
-    
-    $('.comment a.less').live('click', function(e) {
-        var comment = $(this).closest('.comment');
-        comment.find('.content span')
-        .animate({top:'+=200'}, function(){
-            if (this.offsetTop > 0)
-                comment.find('a.less').css('visibility', 'hidden');
-        });
-        comment.find('a.more').css('visibility', 'visible');
         return false;
     });
 }

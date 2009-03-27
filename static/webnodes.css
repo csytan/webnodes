@@ -69,21 +69,9 @@ canvas {
     color: grey;
 }
 
-.comment .content {
-    overflow: hidden;
+.comment .body {
+    overflow: auto;
     max-height: 400px;
-}
-
-.comment .content span {
-    position: relative;
-}
-
-.comment .scroll {
-    display: none;
-}
-
-.comment a.less {
-    visibility: hidden;
 }
 
 .comment .pagination {
