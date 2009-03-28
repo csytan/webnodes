@@ -7,8 +7,8 @@ var WebNodes = function(root, graph, options){
         vertSpace: 20
     }, options);
     
-    function layout(rootNode) {
-        var row = [setNode(rootNode)];
+    function layout(root) {
+        var row = [initNode(root)];
         while (row) {
             row = removeNodes(row);
             row = removeNodes(row); // for those hard to reach areas
@@ -18,7 +18,7 @@ var WebNodes = function(root, graph, options){
     
     layout(root); 
     
-    function setNode(node) {
+    function initNode(node) {
         node.childIds = graph[node.id] || [];
         node.start = node.start || 0;
         node.childTop = node.offsetTop + node.offsetHeight;
@@ -26,7 +26,20 @@ var WebNodes = function(root, graph, options){
         node.childWidth = node.offsetWidth;
         return node;
     }
-
+    
+    function setNode(node) {
+        node.kidIds = graph[node.id] || [];
+        node.start = node.start || 0;
+        node.kidsTop = node.offsetTop + node.offsetHeight + 
+                        options.vertSpace * node.nKids;
+        node.kidsLeft = node.kidsLeft || node.offsetLeft;
+        node.kidsWidth = node.kidsWidth || node.offsetWidth;
+        
+        node.maxKids = Math.floor(node.kidsWidth / options.minWidth);
+        node.nKids = Math.min(node.maxKids, node.kidIds.length - node.start);
+        return node;
+    }
+    
     function removeNodes(row) {
         var new_row = [];
         for (var i=0, node; node=row[i]; i++) {
@@ -61,8 +74,6 @@ var WebNodes = function(root, graph, options){
         if (!lowest) return null;
         
         var kids = layoutChildren(lowest);
-        drawConnections(lowest, kids);
-        
         var left = row.slice(0, index);
         var right = row.slice(index + 1);
         return left.concat(kids, right);
@@ -74,27 +85,7 @@ var WebNodes = function(root, graph, options){
         var childWidth = node.childWidth / nChildren;
         var kids = [];
         
-        // Pagination
-        $(node).find('.pagination').css('visibility', 'hidden');
-        if (node.start + nChildren < node.childIds.length) {
-            $(node).find('.pagination').css('visibility', 'visible');
-            $(node).find('a.next').css('visibility', 'visible')
-            .text('Next ' + (node.childIds.length - node.start - nChildren) + ' »');
-        } else {
-            $(node).find('a.next').css('visibility', 'hidden');
-        }
-        
-        if (node.start) {
-            $(node).find('.pagination').css('visibility', 'visible');
-            $(node).find('a.prev').css('visibility', 'visible')
-            .text('« Prev ' + node.start);
-        } else {
-            $(node).find('a.prev').css('visibility', 'hidden');
-        }
-        
-        node.childTop = node.offsetTop + node.offsetHeight;
         node.childTop += options.vertSpace * nChildren;
-        
         node.maxChildren = maxChildren;
         node.nChildren = nChildren;
         
@@ -106,10 +97,32 @@ var WebNodes = function(root, graph, options){
             child.style.display = 'block';
             child.style.width = childWidth + 'px';
             
-            setNode(child);
+            initNode(child);
             kids.push(child);
         }
+        
+        showPagination(node);
+        drawConnections(node, kids);
         return kids;
+    }
+    
+    function showPagination(node) {
+        $(node).find('.pagination').css('visibility', 'hidden');
+        if (node.start + node.nChildren < node.childIds.length) {
+            $(node).find('.pagination').css('visibility', 'visible');
+            $(node).find('a.next').css('visibility', 'visible')
+            .text('Next ' + (node.childIds.length - node.start - node.nChildren) + ' »');
+        } else {
+            $(node).find('a.next').css('visibility', 'hidden');
+        }
+        
+        if (node.start) {
+            $(node).find('.pagination').css('visibility', 'visible');
+            $(node).find('a.prev').css('visibility', 'visible')
+            .text('« Prev ' + node.start);
+        } else {
+            $(node).find('a.prev').css('visibility', 'hidden');
+        }
     }
     
     function drawConnections(node, kids) {
@@ -148,7 +161,7 @@ var WebNodes = function(root, graph, options){
         }
     }
     
-    
+    // Events
     $('.pagination a').live('click', function(e) {
         var node = $(this).closest('.comment_container')[0];
 
