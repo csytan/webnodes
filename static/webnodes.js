@@ -7,37 +7,38 @@ var WebNodes = function(root, graph, options){
         vertSpace: 20
     }, options);
     
+    layout(root);
+    
     function layout(root) {
+        $(root).css({
+            left: 0,
+            width: '95%',
+            display: 'block'
+        });
         var row = [initNode(root)];
         while (row) {
             row = removeNodes(row);
             row = removeNodes(row); // for those hard to reach areas
-            row = addChildNodes(row);
+            showNavButtons(row);
+            row = addNodes(row);
         }
     }
     
-    layout(root); 
-    
     function initNode(node) {
-        node.childIds = graph[node.id] || [];
-        node.start = node.start || 0;
-        node.childTop = node.offsetTop + node.offsetHeight;
-        node.childLeft = node.offsetLeft;
-        node.childWidth = node.offsetWidth;
+        node.kids = graph[node.id] || []; // list of DOM ids
+        node.start = node.start || 0; // pagination index
+        node.priority = node.priority || 0;
+        node.kidsLeft = node.offsetLeft;
+        node.kidsWidth = node.offsetWidth;
+        node.kidsTop = node.offsetTop + node.offsetHeight;
+        updateNode(node);
         return node;
     }
     
-    function setNode(node) {
-        node.kidIds = graph[node.id] || [];
-        node.start = node.start || 0;
-        node.kidsTop = node.offsetTop + node.offsetHeight + 
-                        options.vertSpace * node.nKids;
-        node.kidsLeft = node.kidsLeft || node.offsetLeft;
-        node.kidsWidth = node.kidsWidth || node.offsetWidth;
-        
+    function updateNode(node) {
         node.maxKids = Math.floor(node.kidsWidth / options.minWidth);
-        node.nKids = Math.min(node.maxKids, node.kidIds.length - node.start);
-        return node;
+        node.nKids = Math.min(node.maxKids, node.kids.length - node.start);
+        node.needsSpace = node.kids.length - node.start > node.maxKids;
     }
     
     function removeNodes(row) {
@@ -46,15 +47,26 @@ var WebNodes = function(root, graph, options){
             var left = row[i - 1];
             var right = row[i + 1];
             
-            if (node.childIds.length) {
+            if (left && left.priority > node.priority && left.needsSpace) {
+                left.kidsWidth += node.kidsWidth;
+                if (left.kidsTop < node.kidsTop)
+                    left.kidsTop = node.kidsTop + options.vertSpace;
+                updateNode(left);
+            } else if (right && right.priority > node.priority && right.needsSpace) {
+                right.kidsLeft = node.kidsLeft;
+                right.kidsWidth += node.kidsWidth;
+                if (right.kidsTop < node.kidsTop)
+                    right.kidsTop = node.kidsTop + options.vertSpace;
+                updateNode(right);
+            } else if (node.kids.length - node.start) {
                 new_row.push(node);
-            } else if (left && node.childTop <= left.childTop && 
-                    left.childIds.length - left.start > Math.floor(left.childWidth / options.minWidth)) {
-                left.childWidth += node.childWidth;
-            } else if (right && node.childTop <= right.childTop && 
-                    right.childIds.length - right.start > Math.floor(right.childWidth / options.minWidth)) {
-                right.childLeft = node.childLeft;
-                right.childWidth += node.childWidth;
+            } else if (left && node.kidsTop <= left.kidsTop && left.needsSpace) {
+                left.kidsWidth += node.kidsWidth;
+                updateNode(left);
+            } else if (right && node.kidsTop <= right.kidsTop && right.needsSpace) {
+                right.kidsLeft = node.kidsLeft;
+                right.kidsWidth += node.kidsWidth;
+                updateNode(right);
             } else {
                 new_row.push(node);
             }
@@ -62,82 +74,76 @@ var WebNodes = function(root, graph, options){
         return new_row;
     }
     
-    function addChildNodes(row) {
+    function addNodes(row) {
         var lowest = row[0], index = 0;
         for (var i = 0, node; node = row[i]; i++) {
-            if (!lowest.childIds.length || (node.childTop < lowest.childTop && node.childIds.length)) {
+            if (!lowest.kids.length || (node.kidsTop < lowest.kidsTop && node.kids.length)) {
                 lowest = node;
                 index = i;
             }
         }
-        
         if (!lowest) return null;
         
-        var kids = layoutChildren(lowest);
+        var kids = layoutKids(lowest);
         var left = row.slice(0, index);
         var right = row.slice(index + 1);
         return left.concat(kids, right);
     }
     
-    function layoutChildren(node) {
-        var maxChildren = Math.floor(node.childWidth / options.minWidth);
-        var nChildren = Math.min(maxChildren, node.childIds.length - node.start);
-        var childWidth = node.childWidth / nChildren;
+    function layoutKids(node) {
+        var width = node.kidsWidth / node.nKids;
+        node.kidsTop += options.vertSpace * node.nKids;
         var kids = [];
         
-        node.childTop += options.vertSpace * nChildren;
-        node.maxChildren = maxChildren;
-        node.nChildren = nChildren;
-        
-        // Add child nodes
-        for (var i = 0, child; i < nChildren; i++) {
-            var child = document.getElementById(node.childIds[node.start + i]);
-            child.style.top = node.childTop + 'px';
-            child.style.left = node.childLeft + (i * childWidth) + 'px';
-            child.style.display = 'block';
-            child.style.width = childWidth + 'px';
+        for (var i = 0, kid; i < node.nKids; i++) {
+            var kid = document.getElementById(node.kids[node.start + i]);
+            kid.style.top = node.kidsTop + 'px';
+            kid.style.left = node.kidsLeft + (i * width) + 'px';
+            kid.style.display = 'block';
+            kid.style.width = width + 'px';
             
-            initNode(child);
-            kids.push(child);
+            initNode(kid);
+            kids.push(kid);
         }
         
-        showPagination(node);
         drawConnections(node, kids);
         return kids;
     }
     
-    function showPagination(node) {
-        $(node).find('.pagination').css('visibility', 'hidden');
-        if (node.start + node.nChildren < node.childIds.length) {
-            $(node).find('.pagination').css('visibility', 'visible');
-            $(node).find('a.next').css('visibility', 'visible')
-            .text('Next ' + (node.childIds.length - node.start - node.nChildren) + ' »');
-        } else {
-            $(node).find('a.next').css('visibility', 'hidden');
-        }
+    function showNavButtons(nodes) {
+        for (var i=0, node; node=nodes[i]; i++) {
+            $(node).find('.pagination').css('visibility', 'hidden');
+            var next = node.kids.length - node.start - node.nKids;
+            if (next > 0) {
+                $(node).find('.pagination').css('visibility', 'visible');
+                $(node).find('a.next').css('visibility', 'visible')
+                .text('Next ' + next + ' »');
+            } else {
+                $(node).find('a.next').css('visibility', 'hidden');
+            }
         
-        if (node.start) {
-            $(node).find('.pagination').css('visibility', 'visible');
-            $(node).find('a.prev').css('visibility', 'visible')
-            .text('« Prev ' + node.start);
-        } else {
-            $(node).find('a.prev').css('visibility', 'hidden');
+            if (node.start) {
+                $(node).find('.pagination').css('visibility', 'visible');
+                $(node).find('a.prev').css('visibility', 'visible')
+                .text('« Prev ' + node.start);
+            } else {
+                $(node).find('a.prev').css('visibility', 'hidden');
+            }
         }
     }
     
     function drawConnections(node, kids) {
-        var x = node.offsetLeft + node.offsetWidth / 2 - node.childLeft;
+        var x = node.offsetLeft + node.offsetWidth / 2 - node.kidsLeft;
         var y = node.offsetTop + node.offsetHeight - 5;
-        var height = kids.length * options.vertSpace + 10;
-        
+        var height = node.kidsTop - node.offsetTop - node.offsetHeight + 10;
         var canvas = document.createElement('canvas');
         
-        canvas.width = node.childWidth;
+        canvas.width = node.kidsWidth;
         canvas.height = height;
 
         $(canvas).css({
             top: y,
-            left: node.childLeft
+            left: node.kidsLeft
         }).appendTo(document.body);
         
         // Initialize Excanvas
@@ -149,13 +155,13 @@ var WebNodes = function(root, graph, options){
         ctx.strokeStyle = options.linkColor;
         ctx.lineWidth = options.linkWidth;
         
-        for (var i = 0, child; child = kids[i]; i++) {
-            var childX = child.offsetLeft + child.offsetWidth / 2 - node.childLeft;
+        for (var i = 0, kid; kid = kids[i]; i++) {
+            var kidX = kid.offsetLeft + kid.offsetWidth / 2 - node.kidsLeft;
             
             ctx.beginPath();
             ctx.moveTo(x, 0);
-            //ctx.lineTo(childX, height);
-            ctx.bezierCurveTo(x, height, childX, height/2, childX, height);
+            //ctx.lineTo(kidX, height);
+            ctx.bezierCurveTo(x, height, kidX, height/2, kidX, height);
             ctx.stroke();
             ctx.closePath();
         }
@@ -166,10 +172,12 @@ var WebNodes = function(root, graph, options){
         var node = $(this).closest('.comment_container')[0];
 
         if ($(this).hasClass('next')) {
-            node.start += node.nChildren;
-        } else {
-            node.start -= node.maxChildren;
+            node.start += node.nKids;
+        } else if ($(this).hasClass('prev')) {
+            node.start -= node.maxKids;
             if (node.start < 0) node.start = 0;
+        } else {
+            node.priority++;
         }
         
         $(document.body).css('min-height', $(document).height());        

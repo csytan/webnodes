@@ -1,8 +1,8 @@
 body {
-    font-family: 'Gill Sans','Gill Sans MT','Ikarius ADF',Candara,Jara,sans-serif;
+    font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
     font-size: 17px;
     color: #000000;
-    background-color: #826F4F;
+    background: #826F4F url('/static/bg.png') repeat-x scroll 0 0;
     font-weight: 400;
     color: #333333;
     line-height: 24px;
@@ -35,7 +35,6 @@ canvas {
 #header {
     background-color: #4F3D1D;
     height: 30px;
-    opacity: 0.8;
 }
 
 #content {
@@ -54,15 +53,18 @@ canvas {
 
 .comment, .topic {
     background-color: #EFE7E0;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+    -webkit-box-shadow: -5px 5px 25px #3F321B;
+    -moz-box-shadow: -5px 5px 25px #3F321B;
+    box-shadow: -5px 5px 25px #3F321B;
 }
 
 .comment {
     width: 360px;
     padding: 10px;
     margin: auto;
-    -webkit-box-shadow: -5px 5px 25px #3F321B;
-    -moz-box-shadow: -5px 5px 25px #3F321B;
-    box-shadow: -5px 5px 25px #3F321B;
 }
 
 .comment .score {
@@ -87,4 +89,5 @@ canvas {
 .topic {
     padding: 5px;
     margin: 5px;
+    margin-bottom: 10px;
 }
