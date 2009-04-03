@@ -77,17 +77,21 @@ canvas {
 }
 
 .comment .pagination {
-    visibility: hidden;
     text-align: center;
 }
 
 .comment .pagination a {
+    visibility: hidden;
     margin-left: 30px;
     margin-right: 30px;
+}
+
+.comment .pagination a.expand {
+    visibility: visible;
 }
 
 .topic {
     padding: 5px;
     margin: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }

@@ -7,6 +7,8 @@ var WebNodes = function(root, graph, options){
         vertSpace: 20
     }, options);
     
+    var priority = 1;
+    
     layout(root);
     
     function layout(root) {
@@ -177,7 +179,7 @@ var WebNodes = function(root, graph, options){
             node.start -= node.maxKids;
             if (node.start < 0) node.start = 0;
         } else {
-            node.priority++;
+            node.priority = priority++;
         }
         
         $(document.body).css('min-height', $(document).height());        
