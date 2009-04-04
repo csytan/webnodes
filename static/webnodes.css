@@ -87,7 +87,9 @@ canvas {
 }
 
 .topic {
+    width: 450px;
     padding: 5px;
-    margin: 5px;
+    margin: auto;
     margin-bottom: 15px;
+    
 }
