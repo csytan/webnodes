@@ -86,10 +86,6 @@ canvas {
     margin-right: 30px;
 }
 
-.comment .pagination a.expand {
-    visibility: visible;
-}
-
 .topic {
     padding: 5px;
     margin: 5px;

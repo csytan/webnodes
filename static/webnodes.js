@@ -6,9 +6,7 @@ var WebNodes = function(root, graph, options){
         linkWidth: 5,
         vertSpace: 20
     }, options);
-    
-    var priority = 1;
-    
+        
     layout(root);
     
     function layout(root) {
@@ -43,37 +41,36 @@ var WebNodes = function(root, graph, options){
         node.needsSpace = node.kids.length - node.start > node.maxKids;
     }
     
-    function removeNodes(row) {
-        var new_row = [];
-        for (var i=0, node; node=row[i]; i++) {
-            var left = row[i - 1];
-            var right = row[i + 1];
+    function expand(node, node2) {
+        if (node.needsSpace && 
+            ((node.kidsTop + 50 > node2.kidsTop && !node2.kids.length) ||
+            node.priority > node2.priority)) {
             
-            if (left && left.priority > node.priority && left.needsSpace) {
-                left.kidsWidth += node.kidsWidth;
-                if (left.kidsTop < node.kidsTop)
-                    left.kidsTop = node.kidsTop + options.vertSpace;
-                updateNode(left);
-            } else if (right && right.priority > node.priority && right.needsSpace) {
-                right.kidsLeft = node.kidsLeft;
-                right.kidsWidth += node.kidsWidth;
-                if (right.kidsTop < node.kidsTop)
-                    right.kidsTop = node.kidsTop + options.vertSpace;
-                updateNode(right);
-            } else if (node.kids.length - node.start) {
-                new_row.push(node);
-            } else if (left && node.kidsTop <= left.kidsTop && left.needsSpace) {
-                left.kidsWidth += node.kidsWidth;
-                updateNode(left);
-            } else if (right && node.kidsTop <= right.kidsTop && right.needsSpace) {
-                right.kidsLeft = node.kidsLeft;
-                right.kidsWidth += node.kidsWidth;
-                updateNode(right);
+            node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
+            node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
+            node.kidsWidth += node2.kidsWidth;
+            node.kidsTop = Math.max(node.kidsTop, node2.kidsTop);
+            updateNode(node);
+            return true;
+        }
+        return false;
+    }
+    
+    function removeNodes(row) {
+        var next_row = [];
+        for (var i=0, node; node=row[i]; i+=2){
+            var node2 = row[i+1];
+            if (!node2) {
+                next_row.push(node);
+            } else if (expand(node, node2)) {
+                next_row.push(node);
+            } else if (expand(node2, node)) {
+                next_row.push(node2);
             } else {
-                new_row.push(node);
+                next_row.push(node, node2);
             }
         }
-        return new_row;
+        return next_row;
     }
     
     function addNodes(row) {
@@ -120,8 +117,9 @@ var WebNodes = function(root, graph, options){
                 $(node).find('.pagination').css('visibility', 'visible');
                 $(node).find('a.next').css('visibility', 'visible')
                 .text('Next ' + next + ' »');
+                $(node).find('a.expand').css('visibility', 'visible');
             } else {
-                $(node).find('a.next').css('visibility', 'hidden');
+                $(node).find('a.next, a.expand').css('visibility', 'hidden');
             }
         
             if (node.start) {
@@ -170,14 +168,16 @@ var WebNodes = function(root, graph, options){
     }
     
     // Events
+    var priority = 1;
     $('.pagination a').live('click', function(e) {
         var node = $(this).closest('.comment_container')[0];
 
         if ($(this).hasClass('next')) {
+            node.prev_starts = node.prev_starts || [];
+            node.prev_starts.push(node.start);
             node.start += node.nKids;
         } else if ($(this).hasClass('prev')) {
-            node.start -= node.maxKids;
-            if (node.start < 0) node.start = 0;
+            node.start = node.prev_starts.pop();
         } else {
             node.priority = priority++;
         }
