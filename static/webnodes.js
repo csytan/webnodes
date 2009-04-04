@@ -45,10 +45,8 @@ $.fn.treeLayout = function(graph, options){
     }
 
     function expand(node, node2) {
-        if (node.needsSpace && 
-            ((node.kidsTop + 50 > node2.kidsTop && !node2.kids.length) ||
-            node.priority > node2.priority)) {
-
+        if (node.needsSpace && (node.priority > node2.priority ||
+        (!node2.kids.length && node.kidsTop + 50 > node2.kidsTop))) {
             node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
             node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
             node.kidsWidth += node2.kidsWidth;
@@ -61,17 +59,16 @@ $.fn.treeLayout = function(graph, options){
 
     function removeNodes(row) {
         var next_row = [];
-        for (var i=0, node; node=row[i]; i+=2){
+        for (var i=0, node; node=row[i]; i++){
             var node2 = row[i+1];
-            if (!node2) {
-                next_row.push(node);
-            } else if (expand(node, node2)) {
-                next_row.push(node);
-            } else if (expand(node2, node)) {
-                next_row.push(node2);
-            } else {
-                next_row.push(node, node2);
+            if (node2) {
+                if (expand(node, node2)) {
+                    i++;
+                } else if (expand(node2, node)) {
+                    continue;
+                }
             }
+            next_row.push(node);
         }
         return next_row;
     }
@@ -114,23 +111,23 @@ $.fn.treeLayout = function(graph, options){
 
     function showNavButtons(nodes) {
         for (var i=0, node; node=nodes[i]; i++) {
-            $(node).find('.pagination').css('visibility', 'hidden');
+            var pagination = $(node).find('.pagination').css('visibility', 'hidden');
             var next = node.kids.length - node.start - node.nKids;
             if (next > 0) {
-                $(node).find('.pagination').css('visibility', 'visible');
-                $(node).find('a.next').css('visibility', 'visible')
+                pagination.css('visibility', 'visible')
+                .children('a.next').css('visibility', 'visible')
                 .text('Next ' + next + ' »');
-                $(node).find('a.expand').css('visibility', 'visible');
+                pagination.children('a.expand').css('visibility', 'visible');
             } else {
-                $(node).find('a.next, a.expand').css('visibility', 'hidden');
+                pagination.children('a.next, a.expand').css('visibility', 'hidden');
             }
 
             if (node.start) {
-                $(node).find('.pagination').css('visibility', 'visible');
-                $(node).find('a.prev').css('visibility', 'visible')
+                pagination.css('visibility', 'visible')
+                .children('a.prev').css('visibility', 'visible')
                 .text('« Prev ' + node.start);
             } else {
-                $(node).find('a.prev').css('visibility', 'hidden');
+                pagination.children('a.prev').css('visibility', 'hidden');
             }
         }
     }
