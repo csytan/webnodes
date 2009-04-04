@@ -3,7 +3,10 @@
 {% block style %}
 <style>
     #content {
-        width: auto;
+        width: 95%;
+        margin: auto;
+        position: relative;
+        padding-top: 30px;
     }
 </style>
 {% endblock %}
@@ -16,22 +19,14 @@
 <script type="text/javascript" src="/static/webnodes.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-         var timeDiff  =  {
-            setStartTime:function (){
-                d = new Date();
-                time  = d.getTime();
-            },
-            getDiff:function (){
-                d = new Date();
-                return (d.getTime()-time);
-            }
-        }
+        var d = new Date();
+        var start = d.getTime();
         
         var graph = {{ graph|safe }};
-        var root = $("#{{ root }}")[0];
-        WebNodes(root, graph);
+        $('#{{ root }}').treeLayout(graph);
         
-        //alert(timeDiff.getDiff());
+        d = new Date();
+        //alert(d.getTime() - start);
     });
 </script>
 {% endblock %}
