@@ -181,22 +181,22 @@ $.fn.initThread = function(graph, options){
         } else if ($(this).hasClass('expand')){
             node.priority = priority++;
         } else if ($(this).hasClass('reply')) {
-            var p_node = $('#reply_form').data('parent');
+            var p_node = $('#reply_container').data('parent');
             if (p_node)
                 delete p_node.kids;
-            node.kids = ['reply_form'];
-            $('#reply_form').data('parent', node);
+            node.kids = ['reply_container'];
+            $('#reply_container').data('parent', node);
         }
 
         $(document.body).css('min-height', $(document).height());
         container.children('canvas').remove();
         container.children('.comment_container').hide();
         layout();
-        tinyMCE.init({
-            mode: 'textareas',
-            theme: 'simple',
-            content_css : '/static/webnodes.css'
-        })
+        
+        
+        new nicEditor({
+            buttonList: ['bold','italic','underline','left','center','link','unlink']
+        }).panelInstance('reply_textarea');
         return false;
     });
     
@@ -204,7 +204,7 @@ $.fn.initThread = function(graph, options){
         delete $(this).closest('.comment_container')
         .data('parent').kids;
         
-        $('#reply_form').hide();
+        $('#reply_container').hide();
         $(document.body).css('min-height', $(document).height());
         container.children('canvas').remove();
         container.children('.comment_container').hide();

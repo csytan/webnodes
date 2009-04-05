@@ -16,7 +16,6 @@
 <!--[if IE]>
     <script type="text/javascript" src="/static/excanvas.js"></script>
 <![endif]-->
-<script type="text/javascript" src="/static/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript" src="/static/webnodes.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -54,13 +53,15 @@
         </div>
     {% endfor %}
     
-    <div id="reply_form" class="comment_container">
+    <div id="reply_container" class="comment_container">
         <div class="comment">
-            <form action="/comments" method="get">
-                <textarea name="content" style="height:300px; width:100%"></textarea>
+            <form id="reply_form" action="/comments" method="get">
+                <textarea id="reply_textarea" name="content" style="height:300px; width:100%"></textarea>
             </form>
             <a id="reply_cancel" href="#">Cancel</a>
             <input type="submit" value="Reply">
         </div>
     </div>
+    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
+    
 {% endblock %}
