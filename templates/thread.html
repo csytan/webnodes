@@ -16,6 +16,7 @@
 <!--[if IE]>
     <script type="text/javascript" src="/static/excanvas.js"></script>
 <![endif]-->
+<script type="text/javascript" src="/static/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript" src="/static/webnodes.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -23,7 +24,7 @@
         var start = d.getTime();
         
         var graph = {{ graph|safe }};
-        $('#{{ root }}').treeLayout(graph);
+        $('#{{ root }}').initThread(graph);
         
         d = new Date();
         //alert(d.getTime() - start);
@@ -44,11 +45,22 @@
                 <span class="score">({{ comment.score }})</span>
                 <div class="body">{{ comment.body|safe }}</div>
                 <div class="pagination">
-                    <a href="#" class="prev">Prev</a>
-                    <a href="#" class="expand">+</a>
-                    <a href="#" class="next">Next</a>
+                    <a class="prev" href="#">Prev</a>
+                    <a class="expand" href="#">+</a>
+                    <a class="next" href="#">Next</a>
+                    <a class="reply" href="#">reply</a>
                 </div>
             </div>
         </div>
     {% endfor %}
+    
+    <div id="reply_form" class="comment_container">
+        <div class="comment">
+            <form action="/comments" method="get">
+                <textarea name="content" style="height:300px; width:100%"></textarea>
+            </form>
+            <a id="reply_cancel" href="#">Cancel</a>
+            <input type="submit" value="Reply">
+        </div>
+    </div>
 {% endblock %}

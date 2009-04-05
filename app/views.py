@@ -6,6 +6,14 @@ from django.utils.cache import get_cache_key
 
 # Local imports
 import reddit
+import models
+#import lib.html5lib
+
+from lib import html5lib
+from html5lib import sanitizer
+
+p = html5lib.HTMLParser(tokenizer=sanitizer.HTMLSanitizer)
+p.parse("<script>alert('foo');</script>")
 
 
 ### Helper functions ###

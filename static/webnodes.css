@@ -1,7 +1,6 @@
 body {
     font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
     font-size: 17px;
-    color: #000000;
     background: #826F4F url('/static/bg.png') repeat-x scroll 0 0;
     font-weight: 400;
     color: #333333;
@@ -86,10 +85,22 @@ canvas {
     margin-right: 30px;
 }
 
+.comment:hover .pagination a.reply {
+    visibility: visible;
+}
+
 .topic {
     width: 450px;
     padding: 5px;
     margin: auto;
     margin-bottom: 15px;
-    
+}
+
+body.mceContentBody {
+    font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
+    font-size: 17px;
+    color: #000000;
+    font-weight: 400;
+    color: #333333;
+    background: none;
 }

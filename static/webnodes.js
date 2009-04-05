@@ -1,6 +1,6 @@
 (function($){
 
-$.fn.treeLayout = function(graph, options){
+$.fn.initThread = function(graph, options){
     var root = this.css({
         left: 0,
         width: this.parent().width()
@@ -28,7 +28,7 @@ $.fn.treeLayout = function(graph, options){
     }
     
     function initNode(node) {
-        node.kids = graph[node.id] || []; // list of DOM ids
+        node.kids = node.kids || graph[node.id] || []; // list of DOM ids
         node.start = node.start || 0; // pagination index
         node.priority = node.priority || 0;
         node.kidsLeft = node.offsetLeft;
@@ -117,7 +117,7 @@ $.fn.treeLayout = function(graph, options){
                 pagination.css('visibility', 'visible')
                 .children('a.next').css('visibility', 'visible')
                 .text('Next ' + next + ' »');
-                pagination.children('a.expand').css('visibility', 'visible');
+                //pagination.children('a.expand').css('visibility', 'visible');
             } else {
                 pagination.children('a.next, a.expand').css('visibility', 'hidden');
             }
@@ -178,10 +178,33 @@ $.fn.treeLayout = function(graph, options){
             node.start += node.nKids;
         } else if ($(this).hasClass('prev')) {
             node.start = node.prev_starts.pop();
-        } else {
+        } else if ($(this).hasClass('expand')){
             node.priority = priority++;
+        } else if ($(this).hasClass('reply')) {
+            var p_node = $('#reply_form').data('parent');
+            if (p_node)
+                delete p_node.kids;
+            node.kids = ['reply_form'];
+            $('#reply_form').data('parent', node);
         }
 
+        $(document.body).css('min-height', $(document).height());
+        container.children('canvas').remove();
+        container.children('.comment_container').hide();
+        layout();
+        tinyMCE.init({
+            mode: 'textareas',
+            theme: 'simple',
+            content_css : '/static/webnodes.css'
+        })
+        return false;
+    });
+    
+    $('#reply_cancel').click(function(e){
+        delete $(this).closest('.comment_container')
+        .data('parent').kids;
+        
+        $('#reply_form').hide();
         $(document.body).css('min-height', $(document).height());
         container.children('canvas').remove();
         container.children('.comment_container').hide();
