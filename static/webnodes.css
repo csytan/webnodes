@@ -75,17 +75,18 @@ canvas {
     max-height: 400px;
 }
 
-.comment .pagination {
+.comment .buttons {
+    width: 100%;
     text-align: center;
 }
 
-.comment .pagination a {
+.comment .buttons a {
+    float: left;
+    width: 25%;
     visibility: hidden;
-    margin-left: 30px;
-    margin-right: 30px;
 }
 
-.comment:hover .pagination a.reply {
+.comment:hover .buttons a.reply {
     visibility: visible;
 }
 

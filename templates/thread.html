@@ -43,12 +43,13 @@
                 <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
                 <div class="body">{{ comment.body|safe }}</div>
-                <div class="pagination">
-                    <a class="prev" href="#">Prev</a>
+                <div class="buttons">
                     <a class="expand" href="#">+</a>
-                    <a class="next" href="#">Next</a>
+                    <a class="prev" href="#">prev</a>
+                    <a class="next" href="#">next</a>
                     <a class="reply" href="#">reply</a>
                 </div>
+                <div style="clear:left"></div>
             </div>
         </div>
     {% endfor %}

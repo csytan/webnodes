@@ -27,6 +27,13 @@ $.fn.initThread = function(graph, options){
         }
     }
     
+    function update() {
+        $(document.body).css('min-height', $(document).height());
+        container.children('canvas').remove();
+        container.children('.comment_container').hide();
+        layout();
+    }
+    
     function initNode(node) {
         node.kids = node.kids || graph[node.id] || []; // list of DOM ids
         node.start = node.start || 0; // pagination index
@@ -47,7 +54,6 @@ $.fn.initThread = function(graph, options){
     function expand(node, node2) {
         if (node.needsSpace && (node.priority > node2.priority ||
         (!node2.kids.length && node.kidsTop + 50 > node2.kidsTop))) {
-            node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
             node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
             node.kidsWidth += node2.kidsWidth;
             node.kidsTop = Math.max(node.kidsTop, node2.kidsTop);
@@ -100,7 +106,6 @@ $.fn.initThread = function(graph, options){
             kid.style.left = node.kidsLeft + (i * width) + 'px';
             kid.style.display = 'block';
             kid.style.width = width + 'px';
-
             initNode(kid);
             kids.push(kid);
         }
@@ -111,23 +116,22 @@ $.fn.initThread = function(graph, options){
 
     function showNavButtons(nodes) {
         for (var i=0, node; node=nodes[i]; i++) {
-            var pagination = $(node).find('.pagination').css('visibility', 'hidden');
             var next = node.kids.length - node.start - node.nKids;
             if (next > 0) {
-                pagination.css('visibility', 'visible')
-                .children('a.next').css('visibility', 'visible')
+                $(node).find('a.next')
+                .css('visibility', 'visible')
                 .text('Next ' + next + ' »');
-                //pagination.children('a.expand').css('visibility', 'visible');
+                //$(node).find('a.expand').css('visibility', 'visible');
             } else {
-                pagination.children('a.next, a.expand').css('visibility', 'hidden');
+                $(node).find('a.next, a.expand').css('visibility', 'hidden');
             }
-
+            
             if (node.start) {
-                pagination.css('visibility', 'visible')
-                .children('a.prev').css('visibility', 'visible')
+                $(node).find('a.prev')
+                .css('visibility', 'visible')
                 .text('« Prev ' + node.start);
             } else {
-                pagination.children('a.prev').css('visibility', 'hidden');
+                $(node).find('a.prev').css('visibility', 'hidden');
             }
         }
     }
@@ -157,10 +161,8 @@ $.fn.initThread = function(graph, options){
 
         for (var i = 0, kid; kid = kids[i]; i++) {
             var kidX = kid.offsetLeft + kid.offsetWidth / 2 - node.kidsLeft;
-
             ctx.beginPath();
             ctx.moveTo(x, 0);
-            //ctx.lineTo(kidX, height);
             ctx.bezierCurveTo(x, height, kidX, height/2, kidX, height);
             ctx.stroke();
             ctx.closePath();
@@ -168,47 +170,56 @@ $.fn.initThread = function(graph, options){
     }
 
     // Events
-    var priority = 1;
-    $('.pagination a').live('click', function(e) {
+    $('.comment a.next, .comment a.prev').live('click', function(e) {
         var node = $(this).closest('.comment_container')[0];
-
         if ($(this).hasClass('next')) {
             node.prev_starts = node.prev_starts || [];
             node.prev_starts.push(node.start);
             node.start += node.nKids;
-        } else if ($(this).hasClass('prev')) {
+        } else {
             node.start = node.prev_starts.pop();
-        } else if ($(this).hasClass('expand')){
-            node.priority = priority++;
-        } else if ($(this).hasClass('reply')) {
-            var p_node = $('#reply_container').data('parent');
-            if (p_node)
-                delete p_node.kids;
-            node.kids = ['reply_container'];
-            $('#reply_container').data('parent', node);
         }
-
-        $(document.body).css('min-height', $(document).height());
-        container.children('canvas').remove();
-        container.children('.comment_container').hide();
-        layout();
+        update();
+        return false;
+    });
+    
+    var priority = 1;
+    $('.comment a.expand').live('click', function(e){
+        var node = $(this).closest('.comment_container')[0];
+        node.priority = priority++;
+        update();
+        return false;
+    });
+    
+    var editor;
+    var reply_node;
+    $('.comment a.reply').live('click', function(e){
+        var node = $(this).closest('.comment_container')[0];
+        if (reply_node) {
+            delete reply_node.kids;
+            reply_node.start = reply_node.old_start;
+        }
+        reply_node = node;
         
+        node.kids = ['reply_container'];
+        node.old_start = node.start;
+        node.start = 0;
         
-        new nicEditor({
-            buttonList: ['bold','italic','underline','left','center','link','unlink']
-        }).panelInstance('reply_textarea');
+        update();
+        
+        if(!editor) {
+            editor = new nicEditor({
+                buttonList: ['bold','italic','underline','left','center','link','unlink']
+            }).panelInstance('reply_textarea');
+        }
+        editor.instanceById('reply_textarea').elm.focus();
         return false;
     });
     
     $('#reply_cancel').click(function(e){
-        delete $(this).closest('.comment_container')
-        .data('parent').kids;
-        
-        $('#reply_container').hide();
-        $(document.body).css('min-height', $(document).height());
-        container.children('canvas').remove();
-        container.children('.comment_container').hide();
-        layout();
+        reply_node.start = reply_node.old_start;
+        delete reply_node.kids;
+        update();
         return false;
     });
 }
