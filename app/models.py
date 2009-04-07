@@ -1,22 +1,26 @@
 from google.appengine.ext import db
 from google.appengine.api import memcache
+from google.appengine.api import users
 
-
-
-# ideas:
-# ability to make private replies to a comment
-# community dictionary support 
-    # namespace search (tlnet -> gamers -> wikipedia)
-# translations between words
-
-class User(db.Model):
-    favorites = db.ListProperty(db.Key)
-    email = db.EmailProperty()
 
 class Topic(db.Model):
-    name = db.StringProperty()
+    title = db.StringProperty()
     tags = db.StringListProperty()
-
+    root_comment_id = db.StringProperty()
+    
+    @classmethod
+    def hot_topics(cls):
+        pass
+        
+    def comments_by_rating(self):
+        query = Comment.all().filter('topic =', self)
+        comments = query.order('-rating').fetch()
+        graph = {}
+        for comment in comments:
+            graph[comment.id] = comment.get_replies()
+        
+        #add root if not there
+        return comments, graph
 
 
 class Comment(db.Model):
@@ -28,31 +32,37 @@ class Comment(db.Model):
     body = db.TextProperty()
     rating = db.IntegerProperty(default=0)
     
+    replies_rating = db.ListProperty(int)
+    replies_date = db.ListProperty(int)
+    
+    
     def id(self):
         return self.key().id()
     
     def add_reply(self, body):
-        pass
+        reply = Comment(
+            topic=self.topic,
+            reply_to=self,
+            author=users.get_current_user(),
+            body=body
+        )
+        reply.put()
+        
+        self.replies_rating = None
+        self.replies_date = None
+        self.put()
+        return reply
     
-    def get_replies(self, sort='-rating'):
+    def get_reply_ids(self):
         query = Comment.all()
         query.filter('reply_to =', self)
-        query.order(sort)
-        return query.fetch()
-    
-    def fetch_subgraph(self, width=10, depth=20, max=50):
-        """Fetches a subgraph of comments"""
-        replies = [reply.id for reply in self.get_replies()]
-        subgraph = {comment.id: replies}
-    
-        while replies and depth > 0 and max >= len(subgraph):
-            depth -= 1
-            next_replies = []
-            for reply in replies[:width]:
-                next_replies.extend(graph.get(reply, []))
-            replies = next_replies
-
-        return subgraph
-    
+        query.order('-updated')
+        replies = query.fetch()
+        
+        if sort == '-rating':
+            self.replies_rating = [reply.id for reply in replies]
+        else:
+            self.replies_date = [reply.id for reply in replies]
+        return replies
 
     

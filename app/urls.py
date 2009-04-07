@@ -3,5 +3,5 @@
 urlpatterns = patterns('app.views',
     (r'^$', 'reddit_topics'),
     (r'^reddit$', 'reddit_topics'),
-    (r'^reddit/(.+)$', 'reddit_thread')
+    (r'^reddit/(.+)$', 'reddit_topic')
 )

@@ -43,11 +43,10 @@ canvas {
     width: 100%;
 }
 
-.comment_container {
+.comment_box {
     position: absolute;
     display: none;
     z-index: 1;
-    width: 350px;
 }
 
 .comment, .topic {
@@ -63,6 +62,7 @@ canvas {
 .comment {
     width: 360px;
     padding: 10px;
+    padding-bottom: 5px;
     margin: auto;
 }
 
@@ -97,11 +97,3 @@ canvas {
     margin-bottom: 15px;
 }
 
-body.mceContentBody {
-    font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
-    font-size: 17px;
-    color: #000000;
-    font-weight: 400;
-    color: #333333;
-    background: none;
-}

@@ -38,7 +38,7 @@
     </noscript>
 
     {% for comment in comments %}
-        <div id="{{ comment.id }}" class="comment_container">
+        <div id="{{ comment.id }}" class="comment_box">
             <div class="comment">
                 <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
@@ -54,15 +54,15 @@
         </div>
     {% endfor %}
     
-    <div id="reply_container" class="comment_container">
+    <div id="reply_container" class="comment_box">
         <div class="comment">
-            <form id="reply_form" action="/comments" method="get">
+            <form id="reply_form" action="/comments" method="post">
+                <input type="hidden" name="parent" value="{{ parent_id }}">
                 <textarea id="reply_textarea" name="content" style="height:300px; width:100%"></textarea>
+                <a id="reply_cancel" href="#">Cancel</a>
+                <input type="submit" value="Reply">
             </form>
-            <a id="reply_cancel" href="#">Cancel</a>
-            <input type="submit" value="Reply">
         </div>
     </div>
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
-    
+    <script type="text/javascript" src="/static/nicEdit/nicEdit.js"></script>
 {% endblock %}

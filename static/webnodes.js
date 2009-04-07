@@ -10,7 +10,7 @@ $.fn.initThread = function(graph, options){
     options = $.extend({
         minWidth: 400,
         linkColor: '#AFAFAF',
-        linkWidth: 5,
+        linkWidth: 6,
         vertSpace: 20
     }, options);
     
@@ -30,7 +30,7 @@ $.fn.initThread = function(graph, options){
     function update() {
         $(document.body).css('min-height', $(document).height());
         container.children('canvas').remove();
-        container.children('.comment_container').hide();
+        container.children('.comment_box').hide();
         layout();
     }
     
@@ -171,7 +171,7 @@ $.fn.initThread = function(graph, options){
 
     // Events
     $('.comment a.next, .comment a.prev').live('click', function(e) {
-        var node = $(this).closest('.comment_container')[0];
+        var node = $(this).closest('.comment_box')[0];
         if ($(this).hasClass('next')) {
             node.prev_starts = node.prev_starts || [];
             node.prev_starts.push(node.start);
@@ -185,7 +185,7 @@ $.fn.initThread = function(graph, options){
     
     var priority = 1;
     $('.comment a.expand').live('click', function(e){
-        var node = $(this).closest('.comment_container')[0];
+        var node = $(this).closest('.comment_box')[0];
         node.priority = priority++;
         update();
         return false;
@@ -194,7 +194,7 @@ $.fn.initThread = function(graph, options){
     var editor;
     var reply_node;
     $('.comment a.reply').live('click', function(e){
-        var node = $(this).closest('.comment_container')[0];
+        var node = $(this).closest('.comment_box')[0];
         if (reply_node) {
             delete reply_node.kids;
             reply_node.start = reply_node.old_start;
@@ -209,7 +209,8 @@ $.fn.initThread = function(graph, options){
         
         if(!editor) {
             editor = new nicEditor({
-                buttonList: ['bold','italic','underline','left','center','link','unlink']
+                buttonList: ['bold','italic','underline','left','center','link','unlink'],
+                iconsPath: '/static/nicEdit/nicEditorIcons.gif'
             }).panelInstance('reply_textarea');
         }
         editor.instanceById('reply_textarea').elm.focus();
