@@ -10,6 +10,11 @@
 {% endblock %}
 
 {% block content %}
+    <form action="/topics" method="POST">
+        {{ form.as_p }}
+        <input type="submit" value="Submit" />
+    </form>
+
     {% for topic in topics %}
         <div class="topic">
             <a href="/reddit/{{ topic.id }}">{{ topic.title }}</a>

@@ -214,7 +214,13 @@ $.fn.initThread = function(graph, options){
             }).panelInstance('reply_textarea');
         }
         editor.instanceById('reply_textarea').elm.focus();
+        
+        $('#parent_id').val(node.id);
         return false;
+    });
+    
+    $('#reply_form').submit(function(){
+        $('#reply_textarea').val(nicEditors.findEditor('reply_textarea').getContent());
     });
     
     $('#reply_cancel').click(function(e){

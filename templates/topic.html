@@ -57,8 +57,8 @@
     <div id="reply_container" class="comment_box">
         <div class="comment">
             <form id="reply_form" action="/comments" method="post">
-                <input type="hidden" name="parent" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="content" style="height:300px; width:100%"></textarea>
+                <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
+                <textarea id="reply_textarea" name="body" style="height:300px; width:100%"></textarea>
                 <a id="reply_cancel" href="#">Cancel</a>
                 <input type="submit" value="Reply">
             </form>
