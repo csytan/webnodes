@@ -16,14 +16,14 @@
 <!--[if IE]>
     <script type="text/javascript" src="/static/excanvas.js"></script>
 <![endif]-->
-<script type="text/javascript" src="/static/webnodes.js"></script>
+<script type="text/javascript" src="/static/topic.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         var d = new Date();
         var start = d.getTime();
         
         var graph = {{ graph|safe }};
-        $('#{{ root }}').initThread(graph);
+        $('#{{ root }}').initTopic(graph);
         
         d = new Date();
         //alert(d.getTime() - start);
@@ -58,11 +58,12 @@
         <div class="comment">
             <form id="reply_form" action="/comments" method="post">
                 <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="body" style="height:300px; width:100%"></textarea>
+                <textarea id="reply_textarea" name="body" style="height:200px; width:100%"></textarea>
                 <a id="reply_cancel" href="#">Cancel</a>
                 <input type="submit" value="Reply">
             </form>
         </div>
     </div>
-    <script type="text/javascript" src="/static/nicEdit/nicEdit.js"></script>
+    
+    <script type="text/javascript" src="/static/tiny_mce/tiny_mce.js"></script>
 {% endblock %}

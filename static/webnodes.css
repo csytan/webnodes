@@ -75,6 +75,11 @@ canvas {
     max-height: 400px;
 }
 
+.comment .body p {
+    margin: 0px;
+    padding: 0px;
+}
+
 .comment .buttons {
     width: 100%;
     text-align: center;
@@ -96,4 +101,10 @@ canvas {
     margin: auto;
     margin-bottom: 15px;
 }
+
+body.mceContentBody {
+    background: none;
+    background-color: #EFE7E0;
+}
+
 

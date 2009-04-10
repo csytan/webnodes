@@ -35,6 +35,7 @@ def topics(request):
             title = form.cleaned_data['title']
             body = form.cleaned_data['body']
             topic = Topic.create(title=title, body=body)
+            expire_page('/topics/' + str(topic_id))
             return HttpResponseRedirect('/topics/' + str(topic.id))
     else:
         form = TopicForm()

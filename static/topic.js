@@ -1,6 +1,6 @@
 (function($){
 
-$.fn.initThread = function(graph, options){
+$.fn.initTopic = function(graph, options){
     var root = this.css({
         left: 0,
         width: this.parent().width()
@@ -191,7 +191,7 @@ $.fn.initThread = function(graph, options){
         return false;
     });
     
-    var editor;
+    var tiny_mce = false;
     var reply_node;
     $('.comment a.reply').live('click', function(e){
         var node = $(this).closest('.comment_box')[0];
@@ -207,20 +207,16 @@ $.fn.initThread = function(graph, options){
         
         update();
         
-        if(!editor) {
-            editor = new nicEditor({
-                buttonList: ['bold','italic','underline','left','center','link','unlink'],
-                iconsPath: '/static/nicEdit/nicEditorIcons.gif'
-            }).panelInstance('reply_textarea');
+        if (!tiny_mce) {
+            editor = tinyMCE.init({
+                mode : "textareas",
+                content_css : "/static/webnodes.css"
+            });
+            tiny_mce = true;
         }
-        editor.instanceById('reply_textarea').elm.focus();
         
         $('#parent_id').val(node.id);
         return false;
-    });
-    
-    $('#reply_form').submit(function(){
-        $('#reply_textarea').val(nicEditors.findEditor('reply_textarea').getContent());
     });
     
     $('#reply_cancel').click(function(e){

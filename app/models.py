@@ -35,7 +35,7 @@ class Topic(db.Model):
         
     def get_comments(self):
         query = Comment.all().filter('topic =', self)
-        comments = query.order('-rating').fetch(1000)
+        comments = query.order('-created').fetch(1000)
         
         graph = {}
         for comment in comments:

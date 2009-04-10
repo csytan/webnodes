@@ -30,18 +30,8 @@ indexes:
   - name: updated
     direction: desc
 
-# Used 2 times in query history.
 - kind: Comment
-  ancestor: yes
-
-# Used 2 times in query history.
-- kind: Thread
   properties:
-  - name: created
-    direction: desc
-
-# Used once in query history.
-- kind: Torrent
-  properties:
+  - name: topic
   - name: created
     direction: desc
