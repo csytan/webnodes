@@ -35,14 +35,17 @@ def topics(request):
             title = form.cleaned_data['title']
             body = form.cleaned_data['body']
             topic = Topic.create(title=title, body=body)
-            expire_page('/topics/' + str(topic_id))
-            return HttpResponseRedirect('/topics/' + str(topic.id))
-    else:
-        form = TopicForm()
-        
+            redirect = '/topics/' + str(topic.id)
+            expire_page(redirect)
+            return HttpResponseRedirect(redirect)
+    
     return render_to_response('topics.html', {
-        'topics': Topic.hot_topics(),
-        'form': form
+        'topics': Topic.hot_topics()
+    })
+    
+def topics_new(request):
+    return render_to_response('topics_new.html', {
+        'form': TopicForm()
     })
     
 def topic(request, id):
@@ -67,7 +70,7 @@ def comments(request):
         
 
 def reddit_topics(request):
-    return render_to_response('topics.html', {
+    return render_to_response('reddit_topics.html', {
         'topics': reddit.hot_topics()
     })
 

@@ -209,7 +209,9 @@ $.fn.initTopic = function(graph, options){
         
         if (!tiny_mce) {
             editor = tinyMCE.init({
-                mode : "textareas",
+                mode : "exact",
+                elements: 'reply_textarea',
+                auto_focus: 'reply_textarea',
                 content_css : "/static/webnodes.css"
             });
             tiny_mce = true;

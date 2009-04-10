@@ -12,7 +12,7 @@
 {% block content %}
     {% for topic in topics %}
         <div class="topic">
-            <a href="/topics/{{ topic.id }}">{{ topic.title }}</a>
+            <a href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
             <br>
             <span>
                 {{ topic.score }} points, 
@@ -22,5 +22,3 @@
         </div>
     {% endfor %}
 {% endblock %}
-
-
