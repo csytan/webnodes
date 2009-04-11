@@ -12,6 +12,7 @@ class Tag(db.Model):
     def name(self):
         return self.key().name()
 
+
 class Topic(db.Model):
     title = db.StringProperty()
     tags = db.StringListProperty()

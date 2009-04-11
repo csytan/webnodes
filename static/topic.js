@@ -211,6 +211,10 @@ $.fn.initTopic = function(graph, options){
         if (!tiny_mce) {
             tinyMCE.init({
                 mode : "exact",
+                theme : 'advanced',
+                theme_advanced_buttons1 : "bold,italic,|,blockquote,code,|,link,unlink,image",
+                theme_advanced_buttons2 : "",
+                theme_advanced_buttons3 : "",
                 elements: 'reply_textarea',
                 auto_focus: 'reply_textarea',
                 content_css : "/static/webnodes.css"
