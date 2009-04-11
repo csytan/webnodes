@@ -5,6 +5,7 @@ $.fn.initTopic = function(graph, options){
         left: 0,
         width: this.parent().width()
     });
+    root.find('.body').css('max-height', 1000);
     var container = this.parent();
     
     options = $.extend({
@@ -208,7 +209,7 @@ $.fn.initTopic = function(graph, options){
         update();
         
         if (!tiny_mce) {
-            editor = tinyMCE.init({
+            tinyMCE.init({
                 mode : "exact",
                 elements: 'reply_textarea',
                 auto_focus: 'reply_textarea',

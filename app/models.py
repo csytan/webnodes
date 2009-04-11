@@ -5,6 +5,13 @@ from google.appengine.api import users
 
 from lib import feedparser
 
+class Tag(db.Model):
+    num_topics = db.IntegerProperty(default=0)
+    
+    @property
+    def name(self):
+        return self.key().name()
+
 class Topic(db.Model):
     title = db.StringProperty()
     tags = db.StringListProperty()
@@ -48,14 +55,16 @@ class Topic(db.Model):
 
 
 class Comment(db.Model):
-    topic = db.ReferenceProperty(Topic)
-    reply_to = db.SelfReferenceProperty()
     author = db.UserProperty()
+    body = db.TextProperty()
+    topic = db.ReferenceProperty(Topic, required=True)
+    parent_comment = db.SelfReferenceProperty()
+    
+    rating = db.IntegerProperty(default=0)
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
-    body = db.TextProperty()
-    rating = db.IntegerProperty(default=0)
-    
+
+    tags = db.StringListProperty()
     has_replies = db.BooleanProperty(default=False)
     reply_cache = db.ListProperty(int)
     
@@ -64,21 +73,27 @@ class Comment(db.Model):
         return int(self.key().id())
     
     @classmethod
-    def create(cls, body, parent=None, topic=None):
-        if parent:
-            parent.reply_cache = []
-            parent.has_replies = True
-            parent.put()
-            topic = parent.topic
-        body = feedparser._sanitizeHTML(body, 'utf-8')
+    def create(cls, body, topic, parent_comment=None):
+        if parent_comment:
+            parent_comment.reply_cache = []
+            parent_comment.has_replies = True
+            parent_comment.put()
+        
         comment = cls(
             topic=topic,
-            reply_to=parent,
+            parent_comment=parent_comment,
             author=users.get_current_user(),
-            body=body
+            body=feedparser._sanitizeHTML(body, 'utf-8')
         )
         comment.put()
         return comment
+    
+    def add_reply(self, body):
+        return Comment.create(
+            topic=self.topic,
+            parent_comment=self,
+            body=body
+        )
     
     def get_reply_ids(self):
         if self.reply_cache:
@@ -87,7 +102,7 @@ class Comment(db.Model):
             return []
         
         query = Comment.all()
-        query.filter('reply_to =', self)
+        query.filter('parent_comment =', self)
         query.order('-updated')
         replies = query.fetch(1000)
         

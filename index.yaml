@@ -19,14 +19,14 @@ indexes:
 # Used 52 times in query history.
 - kind: Comment
   properties:
-  - name: reply_to
+  - name: parent_comment
   - name: rating
     direction: desc
 
 # Used 42 times in query history.
 - kind: Comment
   properties:
-  - name: reply_to
+  - name: parent_comment
   - name: updated
     direction: desc
 

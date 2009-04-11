@@ -8,7 +8,7 @@ from django import forms
 from django.utils import simplejson
 
 # Local imports
-import reddit
+#import reddit
 from models import Topic, Comment
 
 ### Helper functions ###
@@ -22,7 +22,7 @@ def expire_page(path):
 ### Forms ###
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
-    body = forms.CharField(max_length=500)
+    body = forms.CharField(widget=forms.Textarea)
 
 
 
@@ -61,12 +61,8 @@ def comments(request):
     if request.method == 'POST':
         parent_id = request.POST['parent_id']
         parent = Comment.get_by_id(int(parent_id))
-        comment = Comment.create(
-            parent=parent,
-            topic=parent.topic,
-            body=request.POST['body']
-        )
-        return HttpResponseRedirect('/topics/' + str(parent.topic.id))
+        comment = parent.add_reply(request.POST['body'])
+        return HttpResponseRedirect('/topics/' + str(comment.topic.id))
         
 
 def reddit_topics(request):
