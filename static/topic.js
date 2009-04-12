@@ -23,7 +23,6 @@ $.fn.initTopic = function(graph, options){
         while (row) {
             row = removeNodes(row);
             row = removeNodes(row); // for those hard to reach areas
-            showNavButtons(row);
             row = addNodes(row);
         }
     }
@@ -36,7 +35,7 @@ $.fn.initTopic = function(graph, options){
     }
     
     function initNode(node) {
-        node.kids = node.kids || graph[node.id] || []; // list of DOM ids
+        node.kids = graph[node.id] || []; // list of DOM ids
         node.start = node.start || 0; // pagination index
         node.priority = node.priority || 0;
         node.kidsLeft = node.offsetLeft;
@@ -110,30 +109,28 @@ $.fn.initTopic = function(graph, options){
             initNode(kid);
             kids.push(kid);
         }
-
+        
+        showNavButtons(node);
         drawConnections(node, kids);
         return kids;
     }
 
-    function showNavButtons(nodes) {
-        for (var i=0, node; node=nodes[i]; i++) {
-            var next = node.kids.length - node.start - node.nKids;
-            if (next > 0) {
-                $(node).find('a.next')
-                .css('visibility', 'visible')
-                .text('Next ' + next + ' »');
-                //$(node).find('a.expand').css('visibility', 'visible');
-            } else {
-                $(node).find('a.next, a.expand').css('visibility', 'hidden');
-            }
-            
-            if (node.start) {
-                $(node).find('a.prev')
-                .css('visibility', 'visible')
-                .text('« Prev ' + node.start);
-            } else {
-                $(node).find('a.prev').css('visibility', 'hidden');
-            }
+    function showNavButtons(node) {
+        var next = node.kids.length - node.start - node.nKids;
+        if (next > 0) {
+            $(node).find('a.next')
+            .css('visibility', 'visible')
+            .text('Next ' + next + ' »');
+        } else {
+            $(node).find('a.next').css('visibility', 'hidden');
+        }
+        
+        if (node.start) {
+            $(node).find('a.prev')
+            .css('visibility', 'visible')
+            .text('« Prev ' + node.start);
+        } else {
+            $(node).find('a.prev').css('visibility', 'hidden');
         }
     }
 
