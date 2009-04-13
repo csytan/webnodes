@@ -29,8 +29,8 @@ $.fn.initTopic = function(graph, options){
     
     function update() {
         $(document.body).css('min-height', $(document).height());
-        container.children('canvas').remove();
-        container.children('.comment_box').hide();
+        $('canvas').remove();
+        $('.comment_box').hide();
         layout();
     }
     
