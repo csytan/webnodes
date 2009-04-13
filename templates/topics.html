@@ -21,10 +21,9 @@
     <div id="sidebar">
         <a href="/topics/new">Start a topic</a>
         <h3>Tags</h3>
-        <a href="/tags/tag">tag</a>
-        <a href="/tags/tag">tag1</a>
-        <a href="/tags/tag">tag2</a>
-        <a href="/tags/tag">tag3</a>
+        {% for tag in tags %}
+            <a href="/topics?tag={{ tag.name }}">{{ tag.name }}</a>
+        {% endfor %}
     </div>
 
     {% for topic in topics %}

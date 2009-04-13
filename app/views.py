@@ -8,8 +8,8 @@ from django import forms
 from django.utils import simplejson
 
 # Local imports
-#import reddit
-from models import Topic, Comment
+import reddit
+from models import Topic, Comment, Tag
 
 ### Helper functions ###
 def expire_page(path):
@@ -23,25 +23,40 @@ def expire_page(path):
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
+    tags = forms.CharField()
 
 
 
 
 ### Request handlers ###
 def topics(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        if 'tag' in request.GET:
+            tag = request.GET['tag']
+            topics = Topic.topics_by_tag(tag)
+        else:
+            topics = Topic.hot_topics()
+            
+        return render_to_response('topics.html', {
+            'topics': topics,
+            'tags': Tag.top_tags()
+        })
+        
+    elif request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
             body = form.cleaned_data['body']
-            topic = Topic.create(title=title, body=body)
+            tags = form.cleaned_data['tags'].split(',')
+            tags = [tag.replace(' ', '') for tag in tags]
+            
+            topic = Topic.create(title=title, body=body, tags=tags)
+            
             redirect = '/topics/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
     
-    return render_to_response('topics.html', {
-        'topics': Topic.hot_topics()
-    })
+
     
 def topics_new(request):
     return render_to_response('topics_new.html', {
@@ -50,7 +65,7 @@ def topics_new(request):
     
 def topic(request, id):
     topic = Topic.get_by_id(int(id))
-    comments, graph = topic.get_comments()
+    comments, graph = topic.comment_graph()
     return render_to_response('topic.html', {
         'comments': comments,
         'graph': simplejson.dumps(graph),

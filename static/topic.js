@@ -35,7 +35,7 @@ $.fn.initTopic = function(graph, options){
     }
     
     function initNode(node) {
-        node.kids = graph[node.id] || []; // list of DOM ids
+        node.kids = node.kids || graph[node.id] || []; // list of DOM ids
         node.start = node.start || 0; // pagination index
         node.priority = node.priority || 0;
         node.kidsLeft = node.offsetLeft;
@@ -190,30 +190,30 @@ $.fn.initTopic = function(graph, options){
     });
     
     var tiny_mce = false;
-    var reply_node;
+    var reply_node = null;
     $('.comment a.reply').live('click', function(e){
         var node = $(this).closest('.comment_box')[0];
+        
         if (reply_node) {
             delete reply_node.kids;
             reply_node.start = reply_node.old_start;
         }
         reply_node = node;
         
-        node.kids = ['reply_container'];
+        node.kids = ['reply_box'];
         node.old_start = node.start;
         node.start = 0;
         
         update();
-        
         if (!tiny_mce) {
             tinyMCE.init({
                 mode : "exact",
+                elements: 'reply_textarea',
+                auto_focus: 'reply_textarea',
                 theme : 'advanced',
                 theme_advanced_buttons1 : "bold,italic,|,blockquote,code,|,link,unlink,image",
                 theme_advanced_buttons2 : "",
                 theme_advanced_buttons3 : "",
-                elements: 'reply_textarea',
-                auto_focus: 'reply_textarea',
                 content_css : "/static/webnodes.css"
             });
             tiny_mce = true;

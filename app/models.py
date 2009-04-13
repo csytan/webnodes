@@ -5,17 +5,89 @@ from google.appengine.api import users
 
 from lib import feedparser
 
+
+
+### Helper functions ###
+
+
+class Vote(db.Model):
+    direction = db.IntegerProperty() # 1 or -1
+    
+
+class VotableMixin(db.Model):
+    points = db.IntegerProperty(default=0)
+    score = db.FloatProperty(default=0.0)
+    
+    @staticmethod
+    def seconds_since_cutoff(date):
+        cutoff = datetime(2005, 12, 8, 7, 46, 43)
+        td = date - cutoff
+        seconds = td.days * 24 * 60 * 60
+        seconds += td.seconds
+        seconds += float(td.microseconds) / 1000000
+        return seconds
+    
+    @staticmethod
+    def score(points, submitted_date):
+        """
+        Reddit "hotness" algorithm from:
+        http://www.reddit.com/r/programming/comments/6ph35/reddits_collaborative_filtering_algorithm/c04is8d
+        """
+        order = log(max(abs(points), 1), 10)
+        sign = 1 if points > 0 else -1 if points < 0 else 0
+        age = seconds_since_cutoff(submitted_date)
+        return round(order + sign * age / 45000, 7)
+    
+    def vote_up(self):
+        user = Users.get_current_user()
+        email = user.email()
+        if email in self.votes_up:
+            self.votes_up.append(email)
+        self.put()
+    
+
 class Tag(db.Model):
-    num_topics = db.IntegerProperty(default=0)
+    num_tagged = db.IntegerProperty(default=1)
     
     @property
     def name(self):
         return self.key().name()
+        
+    @classmethod
+    def top_tags(cls):
+        query = cls.all().order('-num_tagged')
+        return query.fetch(1000)
+        
+    @classmethod
+    def create_tags(cls, names):
+        tags = cls.get_by_key_name(names)
+        
+        save_tags = []
+        for name, tag in zip(names, tags):
+            if not tag:
+                tag = Tag(key_name=name)
+                save_tags.append(tag)
+        db.put(save_tags)
 
-
-class Topic(db.Model):
-    title = db.StringProperty()
+class TaggableMixin(db.Model):
     tags = db.StringListProperty()
+    
+    def add_tag(self, name):
+        if name in self.tags: return
+        
+        tag = Tag.get_or_insert(name)
+        tag.num_tagged += 1
+        tag.put()
+        
+        self.tags.append(name)
+        self.put()
+    
+    def remove_tag(self, name):
+        self.tags = [tag for tag in self.tags if tag != name]
+        self.put()
+
+class Topic(TaggableMixin, VotableMixin):
+    title = db.StringProperty()
     root_id = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
@@ -25,8 +97,8 @@ class Topic(db.Model):
         return self.key().id()
     
     @classmethod
-    def create(cls, title, body):
-        topic = cls(title=title)
+    def create(cls, title, body, **kwargs):
+        topic = cls(title=title, **kwargs)
         topic.put()
         
         comment = Comment.create(topic=topic, body=body)
@@ -34,6 +106,8 @@ class Topic(db.Model):
         
         topic.root_id = int(comment.key().id())
         topic.put()
+        
+        Tag.create_tags(topic.tags)
         return topic
     
     @classmethod
@@ -41,7 +115,12 @@ class Topic(db.Model):
         query = cls.all().order('-created')
         return query.fetch(100)
         
-    def get_comments(self):
+    @classmethod
+    def topics_by_tag(cls, name):
+        query = cls.all().filter('tags =', name).order('-created')
+        return query.fetch(1000)
+        
+    def comment_graph(self):
         query = Comment.all().filter('topic =', self)
         comments = query.order('-created').fetch(1000)
         
@@ -61,11 +140,9 @@ class Comment(db.Model):
     topic = db.ReferenceProperty(Topic, required=True)
     parent_comment = db.SelfReferenceProperty()
     
-    rating = db.IntegerProperty(default=0)
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
 
-    tags = db.StringListProperty()
     has_replies = db.BooleanProperty(default=False)
     reply_cache = db.ListProperty(int)
     
@@ -74,7 +151,7 @@ class Comment(db.Model):
         return int(self.key().id())
     
     @classmethod
-    def create(cls, body, topic, parent_comment=None):
+    def create(cls, body, topic, parent_comment=None, **kwargs):
         if parent_comment:
             parent_comment.reply_cache = []
             parent_comment.has_replies = True
@@ -84,7 +161,8 @@ class Comment(db.Model):
             topic=topic,
             parent_comment=parent_comment,
             author=users.get_current_user(),
-            body=feedparser._sanitizeHTML(body, 'utf-8')
+            body=feedparser._sanitizeHTML(body, 'utf-8'),
+            **kwargs
         )
         comment.put()
         return comment
