@@ -26,7 +26,8 @@
         $('#{{ root }}').initTopic(graph);
         
         d = new Date();
-        //alert(d.getTime() - start);
+        //alert();
+        $(document.body).append(d.getTime() - start + ' ms');
     });
 </script>
 {% endblock %}

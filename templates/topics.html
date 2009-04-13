@@ -22,7 +22,7 @@
         <a href="/topics/new">Start a topic</a>
         <h3>Tags</h3>
         {% for tag in tags %}
-            <a href="/topics?tag={{ tag.name }}">{{ tag.name }}</a>
+            <a href="/topics?tags={{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
         {% endfor %}
     </div>
 
@@ -35,6 +35,11 @@
                 {{ topic.num_comments }} comments, 
                 by {{ topic.author }}
             </span>
+            <p>
+                {% for tag_name in topic.tags %}
+                    {{ tag_name }}
+                {% endfor %}
+            </p>
         </div>
     {% endfor %}
 {% endblock %}

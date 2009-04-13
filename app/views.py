@@ -31,9 +31,10 @@ class TopicForm(forms.Form):
 ### Request handlers ###
 def topics(request):
     if request.method == 'GET':
-        if 'tag' in request.GET:
-            tag = request.GET['tag']
-            topics = Topic.topics_by_tag(tag)
+        if 'tags' in request.GET:
+            tags = request.GET['tags']
+            tags = [tag.replace(' ', '') for tag in tags.split(',')]
+            topics = Topic.topics_by_tags(tags)
         else:
             topics = Topic.hot_topics()
             

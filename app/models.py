@@ -47,7 +47,7 @@ class VotableMixin(db.Model):
     
 
 class Tag(db.Model):
-    num_tagged = db.IntegerProperty(default=1)
+    count = db.IntegerProperty(default=0)
     
     @property
     def name(self):
@@ -55,18 +55,20 @@ class Tag(db.Model):
         
     @classmethod
     def top_tags(cls):
-        query = cls.all().order('-num_tagged')
+        query = cls.all().order('-count')
         return query.fetch(1000)
         
     @classmethod
-    def create_tags(cls, names):
-        tags = cls.get_by_key_name(names)
+    def increment_tags(cls, tag_names):
+        """Increments the tag count by one"""
+        tags = cls.get_by_key_name(tag_names)
         
         save_tags = []
-        for name, tag in zip(names, tags):
+        for name, tag in zip(tag_names, tags):
             if not tag:
                 tag = Tag(key_name=name)
-                save_tags.append(tag)
+            tag.count += 1
+            save_tags.append(tag)
         db.put(save_tags)
 
 class TaggableMixin(db.Model):
@@ -107,7 +109,7 @@ class Topic(TaggableMixin, VotableMixin):
         topic.root_id = int(comment.key().id())
         topic.put()
         
-        Tag.create_tags(topic.tags)
+        Tag.increment_tags(topic.tags)
         return topic
     
     @classmethod
@@ -116,8 +118,10 @@ class Topic(TaggableMixin, VotableMixin):
         return query.fetch(100)
         
     @classmethod
-    def topics_by_tag(cls, name):
-        query = cls.all().filter('tags =', name).order('-created')
+    def topics_by_tags(cls, names):
+        query = cls.all().order('-created')
+        for name in names:
+            query.filter('tags =', name)
         return query.fetch(1000)
         
     def comment_graph(self):
