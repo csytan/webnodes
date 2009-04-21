@@ -52,8 +52,8 @@ $.fn.initTopic = function(graph, options){
     }
 
     function expand(node, node2) {
-        if (node.needsSpace && (node.priority > node2.priority ||
-        (!node2.kids.length && node.kidsTop + 50 > node2.kidsTop))) {
+        if (node.needsSpace && !node2.kids.length && 
+                node.kidsTop + 50 > node2.kidsTop) {
             node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
             node.kidsWidth += node2.kidsWidth;
             node.kidsTop = Math.max(node.kidsTop, node2.kidsTop);

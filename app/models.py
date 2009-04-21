@@ -9,6 +9,17 @@ from lib import feedparser
 
 ### Helper functions ###
 
+def url_name_valid(name):
+    pass
+
+class Group(db.Model):
+    url_name = db.StringProperty(validator=url_name_valid)
+    
+    @property
+    def name(self):
+        return self.key().name()
+        
+
 
 class Vote(db.Model):
     direction = db.IntegerProperty() # 1 or -1
@@ -47,6 +58,7 @@ class VotableMixin(db.Model):
     
 
 class Tag(db.Model):
+    group = db.ReferenceProperty(Group)
     count = db.IntegerProperty(default=0)
     
     @property
@@ -89,6 +101,7 @@ class TaggableMixin(db.Model):
         self.put()
 
 class Topic(TaggableMixin, VotableMixin):
+    group = db.ReferenceProperty(Group)
     title = db.StringProperty()
     root_id = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -118,10 +131,9 @@ class Topic(TaggableMixin, VotableMixin):
         return query.fetch(100)
         
     @classmethod
-    def topics_by_tags(cls, names):
+    def topics_by_tag(cls, tag_name):
         query = cls.all().order('-created')
-        for name in names:
-            query.filter('tags =', name)
+        query.filter('tags =', tag_name)
         return query.fetch(1000)
         
     def comment_graph(self):

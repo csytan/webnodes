@@ -2,6 +2,8 @@
 
 DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 
+ADMINS = ()
+
 DATABASE_ENGINE = 'appengine'
 
 DJANGO_STYLE_MODEL_KIND = False
@@ -16,7 +18,7 @@ ROOT_URLCONF = 'app.urls'
 MIDDLEWARE_CLASSES = (
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.cache.FetchFromCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 TEMPLATE_LOADERS = (
@@ -26,6 +28,7 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = ()
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
+    '/base/python_lib/versions/1/google/appengine/ext/admin/templates'
 )
 TEMPLATE_DEBUG = DEBUG
 

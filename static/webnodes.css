@@ -56,9 +56,11 @@ canvas {
     -webkit-border-radius: 7px;
     -moz-border-radius: 7px;
     
+    /* looks awful in google chrome, but nice in safari
     box-shadow: -5px 5px 25px #3F321B;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
     -moz-box-shadow: -5px 5px 25px #3F321B;
+    */
 }
 
 .comment {
