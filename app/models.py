@@ -5,20 +5,22 @@ from google.appengine.api import users
 
 from lib import feedparser
 
-
+# TODO: move html sanitization into view
 
 ### Helper functions ###
-
-def url_name_valid(name):
-    pass
-
 class Group(db.Model):
-    url_name = db.StringProperty(validator=url_name_valid)
+    name = db.StringProperty()
+    description = db.TextProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
     
     @property
-    def name(self):
+    def url_name(self):
         return self.key().name()
         
+    @classmethod
+    def newest_groups(cls):
+        return cls.all().order('-created').fetch(20)
 
 
 class Vote(db.Model):
@@ -101,7 +103,7 @@ class TaggableMixin(db.Model):
         self.put()
 
 class Topic(TaggableMixin, VotableMixin):
-    group = db.ReferenceProperty(Group)
+    group = db.ReferenceProperty(Group, required=True)
     title = db.StringProperty()
     root_id = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -112,8 +114,9 @@ class Topic(TaggableMixin, VotableMixin):
         return self.key().id()
     
     @classmethod
-    def create(cls, title, body, **kwargs):
-        topic = cls(title=title, **kwargs)
+    def create(cls, group, title, body, tags=None):
+        group = Group.get_by_key_name(group)
+        topic = cls(group=group, title=title, tags=tags)
         topic.put()
         
         comment = Comment.create(topic=topic, body=body)
@@ -126,14 +129,18 @@ class Topic(TaggableMixin, VotableMixin):
         return topic
     
     @classmethod
-    def hot_topics(cls):
-        query = cls.all().order('-created')
+    def hot_topics(cls, group):
+        group = Group.get_by_key_name(group)
+        query = cls.all()
+        query.filter('group =', group).order('-created')
         return query.fetch(100)
         
     @classmethod
-    def topics_by_tag(cls, tag_name):
-        query = cls.all().order('-created')
-        query.filter('tags =', tag_name)
+    def topics_by_tag(cls, tag, group):
+        group = Group.get_by_key_name(group)
+        query = cls.all()
+        query.filter('group =', group).filter('tags=', tag)
+        query.order('-created')
         return query.fetch(1000)
         
     def comment_graph(self):
@@ -167,7 +174,7 @@ class Comment(db.Model):
         return int(self.key().id())
     
     @classmethod
-    def create(cls, body, topic, parent_comment=None, **kwargs):
+    def create(cls, body, topic, parent_comment=None):
         if parent_comment:
             parent_comment.reply_cache = []
             parent_comment.has_replies = True
@@ -177,8 +184,7 @@ class Comment(db.Model):
             topic=topic,
             parent_comment=parent_comment,
             author=users.get_current_user(),
-            body=feedparser._sanitizeHTML(body, 'utf-8'),
-            **kwargs
+            body=feedparser._sanitizeHTML(body, 'utf-8')
         )
         comment.put()
         return comment

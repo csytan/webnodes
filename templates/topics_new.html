@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block content %}
-    <form action="/topics" method="POST">
+    <form action="/{{ group_url }}/topics" method="POST">
         {{ form.as_p }}
         <input type="submit" value="Submit" />
     </form>
