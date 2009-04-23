@@ -27,7 +27,7 @@
         
         d = new Date();
         //alert();
-        $(document.body).append(d.getTime() - start + ' ms');
+        $(document.body).append(d.getTime() - start + 'ms');
     });
 </script>
 {% endblock %}
@@ -46,8 +46,9 @@
                 <div class="body">{{ comment.body|safe }}</div>
                 <div class="buttons">
                     <a class="expand" href="#">+</a>
-                    <a class="prev" href="#">prev</a>
-                    <a class="next" href="#">next</a>
+                    <a class="prev" href="#">«</a>
+                    <a class="page_num" href="#"></a>
+                    <a class="next" href="#">»</a>
                     <a class="reply" href="#">reply</a>
                 </div>
                 <div style="clear:left"></div>

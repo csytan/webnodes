@@ -118,19 +118,22 @@ $.fn.initTopic = function(graph, options){
     function showNavButtons(node) {
         var next = node.kids.length - node.start - node.nKids;
         if (next > 0) {
-            $(node).find('a.next')
-            .css('visibility', 'visible')
-            .text('Next ' + next + ' »');
+            $(node).find('a.next').css('visibility', 'visible');
         } else {
             $(node).find('a.next').css('visibility', 'hidden');
         }
         
         if (node.start) {
-            $(node).find('a.prev')
-            .css('visibility', 'visible')
-            .text('« Prev ' + node.start);
+            $(node).find('a.prev').css('visibility', 'visible');
         } else {
             $(node).find('a.prev').css('visibility', 'hidden');
+        }
+        
+        if (next > 0 || node.start) {
+            var curr_page = Math.ceil((node.start + node.nKids) / node.maxKids);
+            $(node).find('a.page_num')
+            .css('visibility', 'visible')
+            .text(curr_page + ' of ' + Math.ceil(node.kids.length/node.maxKids));
         }
     }
 
