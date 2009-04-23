@@ -131,8 +131,7 @@ $.fn.initTopic = function(graph, options){
         
         if (next > 0 || node.start) {
             var curr_page = Math.ceil((node.start + node.nKids) / node.maxKids);
-            $(node).find('a.page_num')
-            .css('visibility', 'visible')
+            $(node).find('span.page_num').css('visibility', 'visible')
             .text(curr_page + ' of ' + Math.ceil(node.kids.length/node.maxKids));
         }
     }
