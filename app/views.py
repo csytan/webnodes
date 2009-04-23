@@ -109,8 +109,10 @@ def comments(request):
         parent_id = request.POST['parent_id']
         parent = Comment.get_by_id(int(parent_id))
         comment = parent.add_reply(request.POST['body'])
-        return HttpResponseRedirect('/topics/' + str(comment.topic.id))
-        
+        topic = comment.topic
+        redirect = '/' + topic.group.url_name +'/topics/' + str(topic.id)
+        expire_page(redirect)
+        return HttpResponseRedirect(redirect)
 
 
 

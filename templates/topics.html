@@ -28,7 +28,7 @@
 
     {% for topic in topics %}
         <div class="topic">
-            <a href="/topics/{{ topic.id }}">{{ topic.title }}</a>
+            <a href="/{{ group_url }}/topics/{{ topic.id }}">{{ topic.title }}</a>
             <br>
             <span>
                 {{ topic.score }} points, 

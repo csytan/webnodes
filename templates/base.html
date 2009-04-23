@@ -19,7 +19,10 @@
 
 <body>
     <div id="header">
-        <a href="/">Home</a>
+        <a href="/">H</a>
+        {% if group_url %}
+            <a href="/{{group_url}}">{{group_url}}</a>
+        {% endif %}
     </div>
     <div id="content">
         {% block content %}{% endblock %}
