@@ -34,14 +34,17 @@ def topics(request):
         if 'tag' in request.GET:
             tag = request.GET['tag']
             topics = Topic.topics_by_tag(tag)
-        else:
-            topics = Topic.hot_topics()
             
         return render_to_response('topics.html', {
-            'topics': topics,
+            'topics': Topic.hot_topics(),
             'tags': Tag.top_tags()
         })
 
+def topics_by_tag(request, tag):
+    return render_to_response('topics.html', {
+        'topics': Topic.topics_by_tag(tag),
+        'tags': Tag.top_tags()
+    })
 
 def topics_new(request):
     if request.method == 'GET':
@@ -65,8 +68,6 @@ def topics_new(request):
             redirect = '/topics/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
-            
-
 
 def topic_by_url(request, url):
     topic = Topic.get_by_url(url)

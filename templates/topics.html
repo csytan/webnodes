@@ -22,7 +22,7 @@
         <a href="/topics/new">Start a topic</a>
         <h3>Tags</h3>
         {% for tag in tags %}
-            <a href="/topics?tag={{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
+            <a href="/{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
         {% endfor %}
     </div>
 

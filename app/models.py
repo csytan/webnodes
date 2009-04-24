@@ -124,12 +124,10 @@ class Topic(TaggableMixin, VotableMixin):
         return cls.all().order('-created').fetch(100)
         
     @classmethod
-    def topics_by_tag(cls, tag, group):
-        group = Group.get_by_key_name(group)
-        query = cls.all()
-        query.filter('group =', group).filter('tags=', tag)
+    def topics_by_tag(cls, tag):
+        query = cls.all().filter('tags =', tag)
         query.order('-created')
-        return query.fetch(1000)
+        return query.fetch(100)
         
     def comment_graph(self):
         query = Comment.all().filter('topic =', self)

@@ -23,10 +23,3 @@ indexes:
   - name: parent_comment
   - name: updated
     direction: desc
-
-# Used 2 times in query history.
-- kind: Comment
-  properties:
-  - name: topic
-  - name: created
-    direction: desc
