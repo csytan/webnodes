@@ -133,6 +133,8 @@ $.fn.initTopic = function(graph, options){
             var curr_page = Math.ceil((node.start + node.nKids) / node.maxKids);
             $(node).find('span.page_num').css('visibility', 'visible')
             .text(curr_page + ' of ' + Math.ceil(node.kids.length/node.maxKids));
+        } else {
+            $(node).find('span.page_num').css('visibility', 'hidden');
         }
     }
 
@@ -171,6 +173,7 @@ $.fn.initTopic = function(graph, options){
 
     // Events
     $('.comment a.next, .comment a.prev').live('click', function(e) {
+        if (e.button != 0) return;
         var node = $(this).closest('.comment_box')[0];
         if ($(this).hasClass('next')) {
             node.prev_starts = node.prev_starts || [];
@@ -183,17 +186,10 @@ $.fn.initTopic = function(graph, options){
         return false;
     });
     
-    var priority = 1;
-    $('.comment a.expand').live('click', function(e){
-        var node = $(this).closest('.comment_box')[0];
-        node.priority = priority++;
-        update();
-        return false;
-    });
-    
     var tiny_mce = false;
     var reply_node = null;
     $('.comment a.reply').live('click', function(e){
+        if (e.button != 0) return;
         var node = $(this).closest('.comment_box')[0];
         
         if (reply_node) {
@@ -226,6 +222,7 @@ $.fn.initTopic = function(graph, options){
     });
     
     $('#reply_cancel').click(function(e){
+        if (e.button != 0) return;
         reply_node.start = reply_node.old_start;
         delete reply_node.kids;
         update();

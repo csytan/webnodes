@@ -8,20 +8,6 @@ from lib import feedparser
 # TODO: move html sanitization into view
 
 ### Helper functions ###
-class Group(db.Model):
-    name = db.StringProperty()
-    description = db.TextProperty()
-    created = db.DateTimeProperty(auto_now_add=True)
-    updated = db.DateTimeProperty(auto_now=True)
-    
-    @property
-    def url_name(self):
-        return self.key().name()
-        
-    @classmethod
-    def newest_groups(cls):
-        return cls.all().order('-created').fetch(20)
-
 
 class Vote(db.Model):
     direction = db.IntegerProperty() # 1 or -1
@@ -60,8 +46,8 @@ class VotableMixin(db.Model):
     
 
 class Tag(db.Model):
-    group = db.ReferenceProperty(Group)
     count = db.IntegerProperty(default=0)
+    moderators = db.StringListProperty()
     
     @property
     def name(self):
@@ -102,8 +88,10 @@ class TaggableMixin(db.Model):
         self.tags = [tag for tag in self.tags if tag != name]
         self.put()
 
+
+
 class Topic(TaggableMixin, VotableMixin):
-    group = db.ReferenceProperty(Group, required=True)
+    url = db.StringListProperty()
     title = db.StringProperty()
     root_id = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -114,9 +102,12 @@ class Topic(TaggableMixin, VotableMixin):
         return self.key().id()
     
     @classmethod
-    def create(cls, group, title, body, tags=None):
-        group = Group.get_by_key_name(group)
-        topic = cls(group=group, title=title, tags=tags)
+    def get_by_url(cls, url):
+        return cls.all().filter('url =', url).get()
+    
+    @classmethod
+    def create(cls, url, title, body, tags=None):
+        topic = cls(url=[url], title=title, tags=tags)
         topic.put()
         
         comment = Comment.create(topic=topic, body=body)
@@ -129,11 +120,8 @@ class Topic(TaggableMixin, VotableMixin):
         return topic
     
     @classmethod
-    def hot_topics(cls, group):
-        group = Group.get_by_key_name(group)
-        query = cls.all()
-        query.filter('group =', group).order('-created')
-        return query.fetch(100)
+    def hot_topics(cls):
+        return cls.all().order('-created').fetch(100)
         
     @classmethod
     def topics_by_tag(cls, tag, group):

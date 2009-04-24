@@ -19,7 +19,7 @@
 
 {% block content %}
     <div id="sidebar">
-        <a href="/{{ group_url }}/topics/new">Start a topic</a>
+        <a href="/topics/new">Start a topic</a>
         <h3>Tags</h3>
         {% for tag in tags %}
             <a href="/topics?tag={{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
@@ -28,7 +28,7 @@
 
     {% for topic in topics %}
         <div class="topic">
-            <a href="/{{ group_url }}/topics/{{ topic.id }}">{{ topic.title }}</a>
+            <a href="/topics/{{ topic.id }}">{{ topic.title }}</a>
             <br>
             <span>
                 {{ topic.score }} points, 

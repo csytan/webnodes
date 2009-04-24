@@ -9,7 +9,7 @@ from django.utils import simplejson
 
 # Local imports
 import reddit
-from models import Topic, Comment, Tag, Group
+from models import Topic, Comment, Tag
 
 ### Helper functions ###
 def expire_page(path):
@@ -20,82 +20,64 @@ def expire_page(path):
 
 
 ### Forms ###
-class GroupForm(forms.Form):
-    name = forms.CharField(max_length=200)
-    url_name = forms.CharField(max_length=100)
-
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
+    url = forms.CharField(max_length=400)
     body = forms.CharField(widget=forms.Textarea)
     tags = forms.CharField()
 
 
 
 ### Request handlers ###
-def groups(request):
-    if request.method == 'GET':
-        return render_to_response('groups.html', {
-            'groups': Group.newest_groups()
-        })
-        
-    elif request.method == 'POST':
-        form = GroupForm(request.POST)
-        if form.is_valid():            
-            name = form.cleaned_data['name']
-            url_name = form.cleaned_data['url_name']            
-            topic = Group.get_or_insert(
-                key_name=url_name, 
-                name=name
-            )
-            expire_page('/groups')
-            return HttpResponseRedirect('/groups')
-    
-def groups_new(request):
-    return render_to_response('groups_new.html', {
-        'form': GroupForm()
-    })
-
-def topics(request, group):
+def topics(request):
     if request.method == 'GET':
         if 'tag' in request.GET:
             tag = request.GET['tag']
-            topics = Topic.topics_by_tag(tag, group)
+            topics = Topic.topics_by_tag(tag)
         else:
-            topics = Topic.hot_topics(group)
+            topics = Topic.hot_topics()
             
         return render_to_response('topics.html', {
             'topics': topics,
-            'group_url': group,
             'tags': Tag.top_tags()
+        })
+
+
+def topics_new(request):
+    if request.method == 'GET':
+        return render_to_response('topics_new.html', {
+            'form': TopicForm()
         })
         
     elif request.method == 'POST':
         form = TopicForm(request.POST)
-        if form.is_valid():            
-            title = form.cleaned_data['title']
-            body = form.cleaned_data['body']
+        if form.is_valid(): 
             tags = form.cleaned_data['tags'].split(',')
             tags = [tag.replace(' ', '') for tag in tags]
             
             topic = Topic.create(
-                group=group,
-                title=title,
-                body=body,
+                url=form.cleaned_data['url'],
+                title=form.cleaned_data['title'],
+                body=form.cleaned_data['body'],
                 tags=tags
             )
             
-            redirect = '/' + group +'/topics/' + str(topic.id)
+            redirect = '/topics/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
-    
+            
 
-def topics_new(request, group):
-    return render_to_response('topics_new.html', {
-        'form': TopicForm(),
-        'group_url': group
+
+def topic_by_url(request, url):
+    topic = Topic.get_by_url(url)
+    comments, graph = topic.comment_graph()
+    return render_to_response('topic.html', {
+        'comments': comments,
+        'graph': simplejson.dumps(graph),
+        'root': topic.root_id
     })
-    
-def topic(request, id):
+
+def topic_by_id(request, id):
     topic = Topic.get_by_id(int(id))
     comments, graph = topic.comment_graph()
     return render_to_response('topic.html', {
@@ -110,7 +92,7 @@ def comments(request):
         parent = Comment.get_by_id(int(parent_id))
         comment = parent.add_reply(request.POST['body'])
         topic = comment.topic
-        redirect = '/' + topic.group.url_name +'/topics/' + str(topic.id)
+        redirect = '/topics/' + str(topic.id)
         expire_page(redirect)
         return HttpResponseRedirect(redirect)
 

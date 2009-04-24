@@ -1,15 +1,12 @@
 ﻿from django.conf.urls.defaults import *
 
 urlpatterns = patterns('app.views',
-    (r'^$', 'groups'),
-    (r'^groups/new$', 'groups_new'),
-    (r'^groups$', 'groups'),
-    (r'^(.+)/topics/new$', 'topics_new'),
-    (r'^(.+)/topics$', 'topics'),
-    (r'^.+/topics/(\d+)$', 'topic'),
+    (r'^$', 'topics'),
+    (r'^topics$', 'topics'),
+    (r'^topics/new$', 'topics_new'),
+    (r'^topics/(\d+)$', 'topic_by_id'),
+    (r'^topics/(http:\/\/.+)$', 'topic_by_url'),
     (r'^comments$', 'comments'),
     (r'^reddit$', 'reddit_topics'),
-    (r'^reddit/(.+)$', 'reddit_topic'),
-
-    (r'^(.+)$', 'topics'),
+    (r'^reddit/(.+)$', 'reddit_topic')
 )
