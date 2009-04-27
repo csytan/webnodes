@@ -9,6 +9,16 @@ from lib import feedparser
 
 ### Helper functions ###
 
+
+class User(db.Model):
+    moderator = db.BooleanProperty(default=False)
+    
+    def nominate_moderator(self, username, tag):
+        pass
+        
+    def vote_for_moderator(self, username, tag):
+        pass
+
 class Vote(db.Model):
     direction = db.IntegerProperty() # 1 or -1
     
@@ -55,8 +65,7 @@ class Tag(db.Model):
         
     @classmethod
     def top_tags(cls):
-        query = cls.all().order('-count')
-        return query.fetch(1000)
+        return cls.all().order('-count').fetch(50)
         
     @classmethod
     def increment_tags(cls, tag_names):
@@ -91,7 +100,6 @@ class TaggableMixin(db.Model):
 
 
 class Topic(TaggableMixin, VotableMixin):
-    url = db.StringListProperty()
     title = db.StringProperty()
     root_id = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -102,12 +110,13 @@ class Topic(TaggableMixin, VotableMixin):
         return self.key().id()
     
     @classmethod
-    def get_by_url(cls, url):
-        return cls.all().filter('url =', url).get()
-    
-    @classmethod
-    def create(cls, url, title, body, tags=None):
-        topic = cls(url=[url], title=title, tags=tags)
+    def create(cls, title, body, tags=None):
+        if tags:
+            tags = [tag for tag in tags if tag]
+        else:
+            tags = []
+        
+        topic = cls(title=title, tags=tags)
         topic.put()
         
         comment = Comment.create(topic=topic, body=body)
@@ -121,13 +130,13 @@ class Topic(TaggableMixin, VotableMixin):
     
     @classmethod
     def hot_topics(cls):
-        return cls.all().order('-created').fetch(100)
+        return cls.all().order('-created').fetch(50)
         
     @classmethod
     def topics_by_tag(cls, tag):
         query = cls.all().filter('tags =', tag)
         query.order('-created')
-        return query.fetch(100)
+        return query.fetch(50)
         
     def comment_graph(self):
         query = Comment.all().filter('topic =', self)

@@ -44,8 +44,7 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="comment_box">
             <div class="comment">
-                <span class="date">{{ comment.created|timeago }}</span>
-                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                 <span class="score">({{ comment.score }})</span>
                 
                 <div class="body">{{ comment.body|safe }}</div>

@@ -11,6 +11,11 @@ from django.utils import simplejson
 import reddit
 from models import Topic, Comment, Tag
 
+
+
+
+
+
 ### Helper functions ###
 def expire_page(path):
     request = HttpRequest()
@@ -22,23 +27,16 @@ def expire_page(path):
 ### Forms ###
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
-    url = forms.CharField(max_length=400)
     body = forms.CharField(widget=forms.Textarea)
-    tags = forms.CharField()
-
+    tags = forms.CharField(required=False)
 
 
 ### Request handlers ###
 def topics(request):
-    if request.method == 'GET':
-        if 'tag' in request.GET:
-            tag = request.GET['tag']
-            topics = Topic.topics_by_tag(tag)
-            
-        return render_to_response('topics.html', {
-            'topics': Topic.hot_topics(),
-            'tags': Tag.top_tags()
-        })
+    return render_to_response('topics.html', {
+        'topics': Topic.hot_topics(),
+        'tags': Tag.top_tags()
+    })
 
 def topics_by_tag(request, tag):
     return render_to_response('topics.html', {
@@ -47,38 +45,26 @@ def topics_by_tag(request, tag):
     })
 
 def topics_new(request):
-    if request.method == 'GET':
-        return render_to_response('topics_new.html', {
-            'form': TopicForm()
-        })
-        
-    elif request.method == 'POST':
+    if request.method == 'POST':
         form = TopicForm(request.POST)
-        if form.is_valid(): 
-            tags = form.cleaned_data['tags'].split(',')
-            tags = [tag.replace(' ', '') for tag in tags]
-            
+        if form.is_valid():
             topic = Topic.create(
-                url=form.cleaned_data['url'],
                 title=form.cleaned_data['title'],
                 body=form.cleaned_data['body'],
-                tags=tags
+                tags=form.cleaned_data['tags'].replace(' ', '').split(',')
             )
             
             redirect = '/topics/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
-
-def topic_by_url(request, url):
-    topic = Topic.get_by_url(url)
-    comments, graph = topic.comment_graph()
-    return render_to_response('topic.html', {
-        'comments': comments,
-        'graph': simplejson.dumps(graph),
-        'root': topic.root_id
+    else:
+        form = TopicForm()
+    
+    return render_to_response('topics_new.html', {
+        'form': form
     })
 
-def topic_by_id(request, id):
+def topic(request, id):
     topic = Topic.get_by_id(int(id))
     comments, graph = topic.comment_graph()
     return render_to_response('topic.html', {
@@ -106,5 +92,5 @@ def reddit_topics(request):
 
 def reddit_topic(request, id):
     context = reddit.get_thread_data(id)
-    return render_to_response('topic.html', context)
+    return render_to_response('reddit_topic.html', context)
 

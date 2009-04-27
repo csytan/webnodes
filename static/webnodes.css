@@ -70,8 +70,13 @@ canvas {
     margin: auto;
 }
 
-.comment .score {
+.comment .score,
+.comment .date {
     color: grey;
+}
+
+.comment .date {
+    float: right;
 }
 
 .comment .body {
