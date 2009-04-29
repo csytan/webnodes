@@ -84,13 +84,6 @@ canvas {
     float: right;
 }
 
-.comment .body {
-    overflow: auto;
-    max-height: 800px;
-    /* IE6 and lower hack for max height */
-    _height: expression(this.scrollHeight > 799 ? "800px" : "auto");
-}
-
 .comment .body p {
     margin: 0px;
     padding: 0px;
@@ -115,7 +108,7 @@ body.mceContentBody p {
 .comment .buttons a, 
 .comment .buttons span {
     float: left;
-    width: 16%;
+    width: 20%;
     visibility: hidden;
 }
 

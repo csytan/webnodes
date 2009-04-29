@@ -191,20 +191,6 @@ $.fn.initTopic = function(graph, options){
         return false;
     });
     
-    $('.comment a.expand').live('click', function(e){
-        if (e.button != 0) return;
-        $(this).parent().siblings('.body').css('max-height', '10000px');
-        update();
-        return false;
-    });
-    
-    $('.comment a.shrink').live('click', function(e){
-        if (e.button !=0) return;
-        $(this).parent().siblings('.body').css('max-height', '400px');
-        update();
-        return false;
-    });
-    
     var tiny_mce = false;
     var reply_node = null;
     $('.comment a.reply').live('click', function(e){
