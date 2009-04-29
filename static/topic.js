@@ -5,9 +5,7 @@ $.fn.initTopic = function(graph, options){
         left: 0,
         width: this.parent().width()
     });
-    root.find('.body').css('max-height', 1000);
     var container = this.parent();
-    
     options = $.extend({
         minWidth: 400,
         linkColor: '#AFAFAF',
@@ -15,6 +13,7 @@ $.fn.initTopic = function(graph, options){
         vertSpace: 20
     }, options);
     
+    root.find('.body').css('max-height', 1000);
     layout();
     
     function layout() {
@@ -41,6 +40,7 @@ $.fn.initTopic = function(graph, options){
         node.kidsLeft = node.offsetLeft;
         node.kidsWidth = node.offsetWidth;
         node.kidsTop = node.offsetTop + node.offsetHeight;
+        
         updateNode(node);
         return node;
     }
@@ -57,6 +57,7 @@ $.fn.initTopic = function(graph, options){
             node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
             node.kidsWidth += node2.kidsWidth;
             node.kidsTop = Math.max(node.kidsTop, node2.kidsTop);
+            
             updateNode(node);
             return true;
         }
@@ -92,6 +93,7 @@ $.fn.initTopic = function(graph, options){
         var kids = layoutKids(lowest);
         var left = row.slice(0, index);
         var right = row.slice(index + 1);
+        
         return left.concat(kids, right);
     }
 
@@ -106,6 +108,7 @@ $.fn.initTopic = function(graph, options){
             kid.style.left = node.kidsLeft + (i * width) + 'px';
             kid.style.display = 'block';
             kid.style.width = width + 'px';
+            
             initNode(kid);
             kids.push(kid);
         }
@@ -137,7 +140,7 @@ $.fn.initTopic = function(graph, options){
             $(node).find('span.page_num').css('visibility', 'hidden');
         }
     }
-
+    
     function drawConnections(node, kids) {
         var x = node.offsetLeft + node.offsetWidth / 2 - node.kidsLeft;
         var y = node.offsetTop + node.offsetHeight - 5;
@@ -171,9 +174,10 @@ $.fn.initTopic = function(graph, options){
         }
     }
 
-    // Events
+    // Comment button events
     $('.comment a.next, .comment a.prev').live('click', function(e) {
         if (e.button != 0) return;
+        
         var node = $(this).closest('.comment_box')[0];
         if ($(this).hasClass('next')) {
             node.prev_starts = node.prev_starts || [];
@@ -183,6 +187,21 @@ $.fn.initTopic = function(graph, options){
             node.start = node.prev_starts.pop();
         }
         update();
+        
+        return false;
+    });
+    
+    $('.comment a.expand').live('click', function(e){
+        if (e.button != 0) return;
+        $(this).parent().siblings('.body').css('max-height', '10000px');
+        update();
+        return false;
+    });
+    
+    $('.comment a.shrink').live('click', function(e){
+        if (e.button !=0) return;
+        $(this).parent().siblings('.body').css('max-height', '400px');
+        update();
         return false;
     });
     
@@ -190,6 +209,7 @@ $.fn.initTopic = function(graph, options){
     var reply_node = null;
     $('.comment a.reply').live('click', function(e){
         if (e.button != 0) return;
+        
         var node = $(this).closest('.comment_box')[0];
         
         if (reply_node) {
@@ -203,6 +223,7 @@ $.fn.initTopic = function(graph, options){
         node.start = 0;
         
         update();
+        
         if (!tiny_mce) {
             tinyMCE.init({
                 mode : "exact",
