@@ -31,6 +31,9 @@ canvas {
     position: absolute;
 }
 
+
+
+/* base.html */
 #header {
     background-color: #4F3D1D;
     height: 30px;
@@ -43,6 +46,8 @@ canvas {
     width: 100%;
 }
 
+
+/* topic.html */
 .comment_box {
     position: absolute;
     display: none;
@@ -81,9 +86,9 @@ canvas {
 
 .comment .body {
     overflow: auto;
-    max-height: 400px;
+    max-height: 800px;
     /* IE6 and lower hack for max height */
-    _height: expression(this.scrollHeight > 399 ? "400px" : "auto");
+    _height: expression(this.scrollHeight > 799 ? "800px" : "auto");
 }
 
 .comment .body p {
@@ -110,7 +115,7 @@ body.mceContentBody p {
 .comment .buttons a, 
 .comment .buttons span {
     float: left;
-    width: 20%;
+    width: 16%;
     visibility: hidden;
 }
 
