@@ -5,17 +5,21 @@ DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 ADMINS = ()
 
 DATABASE_ENGINE = 'appengine'
+AUTH_USER_MODULE = 'ragendja.auth.models'
 
 DJANGO_STYLE_MODEL_KIND = False
 
 INSTALLED_APPS = (
     'appenginepatcher',
+    'django.contrib.auth',
     'app',
 )
 
 ROOT_URLCONF = 'app.urls'
 
 MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',

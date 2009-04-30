@@ -2,23 +2,11 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 from google.appengine.api import users
 
-
 from lib import feedparser
 
 # TODO: move html sanitization into view
 
 ### Helper functions ###
-
-
-class User(db.Model):
-    moderator = db.BooleanProperty(default=False)
-    
-    def nominate_moderator(self, username, tag):
-        pass
-        
-    def vote_for_moderator(self, username, tag):
-        pass
-
 class Vote(db.Model):
     direction = db.IntegerProperty() # 1 or -1
     

@@ -94,3 +94,11 @@ def reddit_topic(request, id):
     context = reddit.get_thread_data(id)
     return render_to_response('reddit_topic.html', context)
 
+
+
+# users
+from django.contrib.auth.models import User
+
+def users_new(request):
+    user = User.objects.create_user('john', 'lennon2@thebeatles.com', 'johnpassword')
+
