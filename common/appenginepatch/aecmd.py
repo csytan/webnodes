@@ -65,7 +65,7 @@ def setup_env(manage_py_env=False):
     if not manage_py_env:
         return
 
-    print 'Running on app-engine-patch 1.0'
+    print 'Running on app-engine-patch 1.1beta1'
 
 def setup_project():
     # Remove the standard version of Django

@@ -115,13 +115,11 @@ class BoundFormSet(StrAndUnicode):
                 current_row = []
         if len(current_row) != 0:
             raise Exception('Unbalanced render')
-        def last_first(tuple):
-            return tuple[-1:] + tuple[:-1]
         return mark_safe(u'%s<table%s><tr>%s</tr><tr>%s</tr></table>%s'%(
             table_sections[0],
             flatatt(attrs),
-            u''.join(last_first(heads)),
-            u'</tr><tr>'.join((u''.join(last_first(x)) for x in output)), 
+            u''.join(heads),
+            u'</tr><tr>'.join((u''.join(x) for x in output)),
             table_sections[2]))
 
 class CachedQuerySet(object):

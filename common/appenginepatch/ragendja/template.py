@@ -20,9 +20,6 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.template import RequestContext, add_to_builtins, loader, \
     TemplateDoesNotExist
-from django.utils.functional import Promise
-from django.utils.encoding import force_unicode
-from django.utils import simplejson
 from ragendja.apputils import get_app_dirs
 import os
 
@@ -60,15 +57,11 @@ def render_to_response(request, template_name, data=None, mimetype=None):
     return HttpResponse(render_to_string(request, template_name, data),
         content_type='%s; charset=%s' % (mimetype, settings.DEFAULT_CHARSET))
 
-class LazyEncoder(simplejson.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Promise):
-            return force_unicode(obj)
-        return obj
-
 def JSONResponse(pyobj):
-    return HttpResponse(simplejson.dumps(pyobj, cls=LazyEncoder),
-        content_type='application/json; charset=%s' % settings.DEFAULT_CHARSET)
+    from ragendja.json import JSONResponse as real_class
+    global JSONResponse
+    JSONResponse = real_class
+    return JSONResponse(pyobj)
 
 def TextResponse(string=''):
     return HttpResponse(string,

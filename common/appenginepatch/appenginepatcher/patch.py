@@ -73,11 +73,32 @@ def patch_app_engine():
     def pk(self):
         return self._get_pk_val()
     db.Model.id = db.Model.pk = property(pk)
+    def serializable_value(self, field_name):
+        """
+        Returns the value of the field name for this instance. If the field is
+        a foreign key, returns the id value, instead of the object. If there's
+        no Field object with this name on the model, the model attribute's
+        value is returned directly.
+
+        Used to serialize a field's value (in the serializer, or form output,
+        for example). Normally, you would just access the attribute directly
+        and not use this method.
+        """
+        from django.db.models.fields import FieldDoesNotExist
+        try:
+            field = self._meta.get_field(field_name)
+        except FieldDoesNotExist:
+            return getattr(self, field_name)
+        return getattr(self, field.attname)
+    db.Model.serializable_value = serializable_value
 
     # Make Property more Django-like (needed for serialization and ModelForm)
     db.Property.serialize = True
     db.Property.editable = True
     db.Property.help_text = ''
+    def blank(self):
+        return not self.required
+    db.Property.blank = property(blank)
     def _get_verbose_name(self):
         if not getattr(self, '_verbose_name', None):
             self._verbose_name = self.name.replace('_', ' ')
@@ -98,6 +119,7 @@ def patch_app_engine():
             self.multiple = True
             self.parent_link = False
             self.related_name = getattr(property, 'collection_name', None)
+            self.through = None
 
     class RelProperty(object):
         def __get__(self, property, cls):
@@ -268,10 +290,10 @@ def patch_app_engine():
             """
             Returns the requested field by name. Raises FieldDoesNotExist on error.
             """
-            from django.db.models.fields import FieldDoesNotExist
             for f in self.fields:
                 if f.name == name:
                     return f
+            from django.db.models.fields import FieldDoesNotExist
             raise FieldDoesNotExist, '%s has no field named %r' % (self.object_name, name)
 
         def get_all_related_objects(self, local_only=False):

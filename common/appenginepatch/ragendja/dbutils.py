@@ -446,21 +446,21 @@ class FakeModel(object):
     """
     # Important: If you want to change your fields at a later point you have
     # to write a converter which upgrades your datastore schema.
-    fields = ()
+    fields = ('value',)
 
     def __init__(self, **kwargs):
         if sorted(kwargs.keys()) != sorted(self.fields):
             raise ValueError('You have to pass the following values to '
                              'the constructor: %s' % ', '.join(self.fields))
 
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
     class _meta(object):
         installed = True
 
     def get_value_for_datastore(self):
-        return simplejson.dumps([getattr(self, field) for field in fields])
+        return simplejson.dumps([getattr(self, field) for field in self.fields])
 
     @property
     def pk(self):
@@ -480,14 +480,17 @@ class FakeModel(object):
 
     def __repr__(self):
         return '<%s: %s>' % (self.__class__.__name__,
-                             ' | '.join([getattr(self, field)
+                             ' | '.join([unicode(getattr(self, field))
                                          for field in self.fields]))
 
 class FakeModelProperty(db.Property):
     data_type = basestring
 
-    def __init__(self, model, *args, **kwargs):
+    def __init__(self, model, indexed=True, *args, **kwargs):
         self.model = model
+        self.indexed = indexed
+        if not self.indexed:
+            self.data_type = db.Text
         super(FakeModelProperty, self).__init__(*args, **kwargs)
 
     def validate(self, value):
@@ -502,10 +505,19 @@ class FakeModelProperty(db.Property):
 
     def get_value_for_datastore(self, model_instance):
         fake_model = getattr(model_instance, self.name)
+        if not fake_model:
+            return None
+        if not self.indexed:
+            return db.Text(fake_model.get_value_for_datastore())
         return fake_model.get_value_for_datastore()
 
     def make_value_from_datastore(self, value):
-        return self.model.make_value_from_datastore(value)
+        if not value:
+            return None
+        return self.model.make_value_from_datastore(unicode(value))
+
+    def get_value_for_form(self, instance):
+        return self.get_value_for_datastore(instance)
 
     def __set__(self, model_instance, value):
         if isinstance(value, basestring):
@@ -529,8 +541,11 @@ class FakeModelProperty(db.Property):
 class FakeModelListProperty(db.ListProperty):
     fake_item_type = basestring
 
-    def __init__(self, model, *args, **kwargs):
+    def __init__(self, model, indexed=True, *args, **kwargs):
         self.model = model
+        self.indexed = indexed
+        if not self.indexed:
+            self.fake_item_type = db.Text
         super(FakeModelListProperty, self).__init__(
             self.__class__.fake_item_type, *args, **kwargs)
 
@@ -549,11 +564,14 @@ class FakeModelListProperty(db.ListProperty):
 
     def get_value_for_datastore(self, model_instance):
         fake_models = getattr(model_instance, self.name)
+        if not self.indexed:
+            return [db.Text(fake_model.get_value_for_datastore())
+                    for fake_model in fake_models]
         return [fake_model.get_value_for_datastore()
                 for fake_model in fake_models]
 
     def make_value_from_datastore(self, value):
-        return [self.model.make_value_from_datastore(item)
+        return [self.model.make_value_from_datastore(unicode(item))
                 for item in value]
 
     def get_value_for_form(self, instance):

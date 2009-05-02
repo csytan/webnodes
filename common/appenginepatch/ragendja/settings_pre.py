@@ -11,6 +11,7 @@ ADMIN_MEDIA_PREFIX = '%sadmin_media/'
 ADMINS = ()
 
 DATABASE_ENGINE = 'appengine'
+DATABASE_SUPPORTS_TRANSACTIONS = False
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
