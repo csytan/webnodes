@@ -48,14 +48,13 @@
                 <span class="score">({{ comment.score }})</span>
                 
                 <div class="body">{{ comment.body|safe }}</div>
-                <div class="buttons">
-                    <a class="hide" href="#">[-]</a>
+                <a class="reply" href="#">reply</a>
+                <div class="nav">
                     <a class="prev" href="#">«</a>
                     <span class="page_num"></span>
                     <a class="next" href="#">»</a>
-                    <a class="reply" href="#">reply</a>
+                    <div style="clear:left"></div>
                 </div>
-                <div style="clear:left"></div>
             </div>
         </div>
     {% endfor %}

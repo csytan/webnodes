@@ -1,10 +1,30 @@
+# Django imports
+from django.template.defaultfilters import slugify
+
+# Google imports
 from google.appengine.ext import db
 from google.appengine.api import memcache
 from google.appengine.api import users
 
+# Local imports
 from lib import feedparser
 
+
+
 # TODO: move html sanitization into view
+
+class KeyReferenceProperty(db.Property):
+    def __init__(self, ref_class, **kwargs):
+        self.ref_class = ref_class
+        db.Property.__init__(self, **kwargs)
+    def get_value_for_datastore(self, model_instance):
+        model = db.Property.get_value_for_datastore(self, model_instance)
+        return str(model.key().name())
+    def make_value_from_datastore(self, value):
+        return self.ref_class.get_by_key_name(value)
+    data_type = basestring
+
+
 
 ### Helper functions ###
 class Vote(db.Model):
@@ -95,16 +115,23 @@ class Topic(TaggableMixin, VotableMixin):
     
     @property
     def id(self):
-        return self.key().id()
+        return self.key().name()
     
     @classmethod
     def create(cls, title, body, tags=None):
         if tags:
-            tags = [tag for tag in tags if tag]
+            tags = [slugify(tag) for tag in tags]
         else:
             tags = []
         
-        topic = cls(title=title, tags=tags)
+        key_name = slugify(title)
+        topic = cls.get_by_key_name(key_name)
+        assert not topic
+        topic = cls(
+            key_name=key_name,
+            title=title,
+            tags=tags
+        )
         topic.put()
         
         comment = Comment.create(topic=topic, body=body)

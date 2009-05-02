@@ -5,17 +5,17 @@ DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 ADMINS = ()
 
 DATABASE_ENGINE = 'appengine'
+DJANGO_STYLE_MODEL_KIND = False
 AUTH_USER_MODULE = 'ragendja.auth.models'
 
-DJANGO_STYLE_MODEL_KIND = False
+ROOT_URLCONF = 'app.urls'
 
 INSTALLED_APPS = (
     'appenginepatcher',
+    'django.contrib.sessions',
     'django.contrib.auth',
     'app',
 )
-
-ROOT_URLCONF = 'app.urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -31,8 +31,7 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = ()
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
-    '/base/python_lib/versions/1/google/appengine/ext/admin/templates'
+    os.path.join(os.path.dirname(__file__), 'templates')
 )
 TEMPLATE_DEBUG = DEBUG
 

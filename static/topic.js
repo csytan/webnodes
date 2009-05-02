@@ -13,7 +13,7 @@ $.fn.initTopic = function(graph, options){
         vertSpace: 20
     }, options);
     
-    root.find('.body').css('max-height', 1000);
+    root.find('.comment').css('width', 600);
     layout();
     
     function layout() {

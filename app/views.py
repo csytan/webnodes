@@ -48,10 +48,11 @@ def topics_new(request):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
+            tags = form.cleaned_data['tags'].replace(' ', '').split(',')
             topic = Topic.create(
                 title=form.cleaned_data['title'],
                 body=form.cleaned_data['body'],
-                tags=form.cleaned_data['tags'].replace(' ', '').split(',')
+                tags=[tag for tag in tags if tag]
             )
             
             redirect = '/topics/' + str(topic.id)
@@ -64,8 +65,8 @@ def topics_new(request):
         'form': form
     })
 
-def topic(request, id):
-    topic = Topic.get_by_id(int(id))
+def topic(request, key_name):
+    topic = Topic.get_by_key_name(key_name)
     comments, graph = topic.comment_graph()
     return render_to_response('topic.html', {
         'comments': comments,
@@ -98,7 +99,9 @@ def reddit_topic(request, id):
 
 # users
 from django.contrib.auth.models import User
-
+from django.contrib.auth import authenticate
 def users_new(request):
-    user = User.objects.create_user('john', 'lennon2@thebeatles.com', 'johnpassword')
+    user = User.objects.create_user('asdf', 'asdf@thebeatles.com', 'asdf')
+    user = authenticate(username='agsdf', password='asdf')
+    return HttpResponse(str(type(user)))
 

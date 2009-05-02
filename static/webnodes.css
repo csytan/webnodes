@@ -102,25 +102,40 @@ body.mceContentBody p {
 
 .comment img {
     max-width: 100%;
+    margin: 10px;
+    float: left;
 }
 
 .comment .body {
     overflow: auto;
 }
 
-.comment .buttons {
-    width: 100%;
-    text-align: center;
+.comment .nav {
+    width: 200px;
+    margin: auto;
 }
 
-.comment .buttons a, 
-.comment .buttons span {
+.comment .nav a, 
+.comment .nav span {
     float: left;
-    width: 20%;
+    text-align: center;
     visibility: hidden;
 }
 
-.comment:hover .buttons a.reply {
+.comment .nav a {
+    width: 60px;
+}
+
+.comment .nav span {
+    width: 80px
+}
+
+.comment a.reply {
+    visibility: hidden;
+    float: right;
+}
+
+.comment:hover a.reply {
     visibility: visible;
 }
 
