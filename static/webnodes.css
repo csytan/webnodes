@@ -36,7 +36,8 @@ canvas {
 /* base.html */
 #header {
     background-color: #4F3D1D;
-    height: 30px;
+    height: 35px;
+    width: 99%;
 }
 
 #content {
@@ -136,6 +137,14 @@ body.mceContentBody p {
 }
 
 .comment:hover a.reply {
+    visibility: visible;
+}
+
+.comment .date {
+    visibility: hidden;
+}
+
+.comment:hover .date {
     visibility: visible;
 }
 

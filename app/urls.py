@@ -7,6 +7,6 @@ urlpatterns = patterns('app.views',
     (r'^comments$', 'comments'),
     (r'^reddit$', 'reddit_topics'),
     (r'^reddit/(.+)$', 'reddit_topic'),
-    (r'^users/new$', 'users_new'),
+    (r'^users/login$', 'users_login'),
     (r'^(.+)$', 'topics_by_tag'),
 )

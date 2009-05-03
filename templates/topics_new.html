@@ -20,8 +20,8 @@
 {% endblock %}
 
 {% block content %}
-    <form action="" method="POST">
-        {{ form.as_p }}
-        <input type="submit" value="Submit" />
+    <form action="" method="post">
+        <table>{{ form.as_table }}</table>
+        <input type="submit" value="Submit">
     </form>
 {% endblock %}

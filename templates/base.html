@@ -19,10 +19,16 @@
 
 <body>
     <div id="header">
-        <a href="/">H</a>
-        {% if group_url %}
-            <a href="/{{group_url}}">{{group_url}}</a>
+        {% if user.is_authenticated %}
+            <span>{{ user.username }}</span>
+        {% else %}
+            <form action="/users/login" method="post" style="float:right">
+                <input type="text" name="username" alt="username">
+                <input type="password" name="password">
+                <input type="submit" value="login">
+            </form>
         {% endif %}
+        <a href="/">H</a>
     </div>
     <div id="content">
         {% block content %}{% endblock %}

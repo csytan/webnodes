@@ -45,9 +45,15 @@
         <div id="{{ comment.id }}" class="comment_box">
             <div class="comment">
                 <span class="date">{{ comment.created|timeago }}</span>
-                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
-                <span class="score">({{ comment.score }})</span>
+                {% if comment.author %}
+                    <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                {% else %}
+                    <a class="author">anonymous</a>
+                {% endif %}
                 
+                {% if comment.score %}
+                    <span class="score">({{ comment.score }})</span>
+                {% endif %}
                 <div class="body">{{ comment.body|safe }}</div>
                 <a class="reply" href="#">reply</a>
                 <div class="nav">

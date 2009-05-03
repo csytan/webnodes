@@ -11,9 +11,9 @@ AUTH_USER_MODULE = 'ragendja.auth.models'
 ROOT_URLCONF = 'app.urls'
 
 INSTALLED_APPS = (
-    'appenginepatcher',
     'django.contrib.sessions',
     'django.contrib.auth',
+    'appenginepatcher',
     'app',
 )
 
@@ -28,8 +28,12 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
 )
-
-TEMPLATE_CONTEXT_PROCESSORS = ()
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+    'django.core.context_processors.i18n',
+)
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates')
 )

@@ -4,7 +4,6 @@ from django.template.defaultfilters import slugify
 # Google imports
 from google.appengine.ext import db
 from google.appengine.api import memcache
-from google.appengine.api import users
 
 # Local imports
 from lib import feedparser
@@ -24,9 +23,22 @@ class KeyReferenceProperty(db.Property):
         return self.ref_class.get_by_key_name(value)
     data_type = basestring
 
-
-
+class IdReferenceProperty(db.Property):
+    def __init__(self, ref_class, **kwargs):
+        self.ref_class = ref_class
+        db.Property.__init__(self, **kwargs)
+    def get_value_for_datastore(self, model_instance):
+        model = db.Property.get_value_for_datastore(self, model_instance)
+        return int(model.key().id())
+    def make_value_from_datastore(self, value):
+        return self.ref_class.get_by_id(value)
+    data_type = int
+    
 ### Helper functions ###
+
+
+
+### Models ###
 class Vote(db.Model):
     direction = db.IntegerProperty() # 1 or -1
     
@@ -108,6 +120,7 @@ class TaggableMixin(db.Model):
 
 
 class Topic(TaggableMixin, VotableMixin):
+    author = db.StringProperty()
     title = db.StringProperty()
     root_id = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -118,7 +131,7 @@ class Topic(TaggableMixin, VotableMixin):
         return self.key().name()
     
     @classmethod
-    def create(cls, title, body, tags=None):
+    def create(cls, author, title, body, tags=None):
         if tags:
             tags = [slugify(tag) for tag in tags]
         else:
@@ -129,12 +142,13 @@ class Topic(TaggableMixin, VotableMixin):
         assert not topic
         topic = cls(
             key_name=key_name,
+            author=author,
             title=title,
             tags=tags
         )
         topic.put()
         
-        comment = Comment.create(topic=topic, body=body)
+        comment = Comment.create(author=author, topic=topic, body=body)
         comment.put()
         
         topic.root_id = int(comment.key().id())
@@ -168,7 +182,7 @@ class Topic(TaggableMixin, VotableMixin):
 
 
 class Comment(db.Model):
-    author = db.UserProperty()
+    author = db.StringProperty()
     body = db.TextProperty()
     topic = db.ReferenceProperty(Topic, required=True)
     parent_comment = db.SelfReferenceProperty()
@@ -184,23 +198,24 @@ class Comment(db.Model):
         return int(self.key().id())
     
     @classmethod
-    def create(cls, body, topic, parent_comment=None):
+    def create(cls, author, body, topic, parent_comment=None):
         if parent_comment:
             parent_comment.reply_cache = []
             parent_comment.has_replies = True
             parent_comment.put()
         
         comment = cls(
+            author=author,
+            body=feedparser._sanitizeHTML(body, 'utf-8'),
             topic=topic,
-            parent_comment=parent_comment,
-            author=users.get_current_user(),
-            body=feedparser._sanitizeHTML(body, 'utf-8')
+            parent_comment=parent_comment
         )
         comment.put()
         return comment
     
-    def add_reply(self, body):
+    def add_reply(self, author, body):
         return Comment.create(
+            author=author,
             topic=self.topic,
             parent_comment=self,
             body=body
