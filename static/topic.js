@@ -49,6 +49,11 @@ $.fn.initTopic = function(graph, options){
         node.maxKids = Math.floor(node.kidsWidth / options.minWidth);
         node.nKids = Math.min(node.maxKids, node.kids.length - node.start);
         node.needsSpace = node.kids.length - node.start > node.maxKids;
+        if (node.perPage) {
+            node.perPage = Math.max(node.perPage, node.maxKids);
+        } else {
+            node.perPage = node.maxKids;
+        }
     }
 
     function expand(node, node2) {
@@ -133,9 +138,9 @@ $.fn.initTopic = function(graph, options){
         }
         
         if (next > 0 || node.start) {
-            var curr_page = Math.ceil((node.start + node.nKids) / node.maxKids);
+            var curr_page = Math.ceil((node.start + node.nKids) / node.perPage);
             $(node).find('span.page_num').css('visibility', 'visible')
-            .text(curr_page + ' of ' + Math.ceil(node.kids.length/node.maxKids));
+            .text(curr_page + ' of ' + Math.ceil(node.kids.length / node.perPage));
         } else {
             $(node).find('span.page_num').css('visibility', 'hidden');
         }
