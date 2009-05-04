@@ -1,6 +1,7 @@
 body {
     font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
-    font-size: 17px;
+    font-size: 18px;
+    background-color: #457F9F;
     background: #826F4F url('/static/bg.png') repeat-x scroll 0 0;
     font-weight: 400;
     color: #333333;
@@ -35,8 +36,9 @@ canvas {
 
 /* base.html */
 #header {
-    background-color: #4F3D1D;
-    height: 35px;
+    padding-left: 5px;
+    font-size: 1.2em;
+    height: 40px;
     width: 99%;
 }
 
@@ -45,7 +47,6 @@ canvas {
 }
 
 #content {
-    margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -61,11 +62,10 @@ canvas {
 
 .comment, .topic {
     background-color: #EFE7E0;
-    
+    border: 2px solid #DFD8D1;
     border-radius: 7px;
     -webkit-border-radius: 7px;
     -moz-border-radius: 7px;
-    
     /* looks awful in google chrome, but nice in safari
     box-shadow: -5px 5px 25px #3F321B;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
@@ -107,8 +107,6 @@ body.mceContentBody p {
 
 .comment img {
     max-width: 100%;
-    margin: 10px;
-    float: left;
 }
 
 .comment .body {
@@ -128,7 +126,24 @@ body.mceContentBody p {
 }
 
 .comment .nav a {
-    width: 60px;
+    width: 56px;
+}
+
+.comment .nav a.prev,
+.comment .nav a.next {
+    border: 2px solid #CFC8C2;
+}
+
+.comment .nav a.prev:hover,
+.comment .nav a.next:hover {
+    background-color: #59A5D1;
+    border: 2px solid #408BB6;
+    color: white;
+}
+
+.comment .nav a.prev:active,
+.comment .nav a.next:active {
+    background-color: #77C4EF;
 }
 
 .comment .nav span {

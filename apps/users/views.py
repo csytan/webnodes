@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.template import RequestContext
 
 
 ### Forms ###
@@ -26,6 +27,11 @@ def users_register(request):
                 password=form.cleaned_data['password'],
                 email=form.cleaned_data['email']
             )
+            user = authenticate(
+                username=form.cleaned_data['username'], 
+                password=form.cleaned_data['password']
+            )
+            login(request, user)
             redirect = request.GET.get('next', '/')
             return HttpResponseRedirect(redirect)
     else:
@@ -33,7 +39,7 @@ def users_register(request):
     return render_to_response('users/login.html', {
         'registration_form': form,
         'login_form': LoginForm()
-    })
+    }, context_instance=RequestContext(request))
     
 def users_login(request):
     if request.method == 'POST':
@@ -57,7 +63,7 @@ def users_login(request):
     return render_to_response('users/login.html', {
         'login_form': form,
         'registration_form': RegistrationForm()
-    })
+    }, context_instance=RequestContext(request))
     
 def users_logout(request):
     logout(request)

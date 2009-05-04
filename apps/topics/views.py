@@ -95,6 +95,6 @@ def reddit_topics(request):
 
 def reddit_topic(request, id):
     return render_to_response('reddit_topic.html', 
-        context=reddit.get_thread_data(id),
+        reddit.get_thread_data(id),
         context_instance=RequestContext(request))
 
