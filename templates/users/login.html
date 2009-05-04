@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    <form action="/users/login" method="post">
+        <table>{{ login_form.as_table }}</table>
+        <input type="submit" value="Submit">
+    </form>
+    
+    <form action="/users/register" method="post">
+        <table>{{ registration_form.as_table }}</table>
+        <input type="submit" value="Submit">
+    </form>    
+{% endblock %}

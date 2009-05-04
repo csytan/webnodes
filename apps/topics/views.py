@@ -6,18 +6,12 @@ from django.template import RequestContext
 from django.core.cache import cache
 from django.utils.cache import get_cache_key
 from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
 
 from django.utils import simplejson
 
 # Local imports
 import reddit
 from models import Topic, Comment, Tag
-
-
-
-
 
 
 ### Helper functions ###
@@ -29,11 +23,6 @@ def expire_page(path):
 
 
 ### Forms ###
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=30)
-    email = forms.EmailField(required=False)
-    password = forms.CharField(widget=forms.PasswordInput)
-
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
@@ -41,51 +30,17 @@ class TopicForm(forms.Form):
 
 
 ### Request handlers ###
-def users_login(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = 'anon@anon.com'
-            
-            try:
-                # create user if it doesn't exist
-                User.objects.create_user(username, email, password)
-            except:
-                pass
-            
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect(request.META.get('HTTP_REFERRER', '/asdf'))
-                else:
-                    return HttpResponse('disabled acct')
-            else:
-                return HttpResponse('invalid acct')
-    else:
-        form = LoginForm()
-    return HttpResponse(str(user))
-    return render_to_response('topics_new.html', {
-        'form': form
-    })
-    
-
-
 def topics(request):
     return render_to_response('topics.html', {
-            'topics': Topic.hot_topics(),
-            'tags': Tag.top_tags()
-        },
-        context_instance=RequestContext(request)
-    )
+        'topics': Topic.hot_topics(),
+        'tags': Tag.top_tags()
+    }, context_instance=RequestContext(request))
 
 def topics_by_tag(request, tag):
     return render_to_response('topics.html', {
         'topics': Topic.topics_by_tag(tag),
         'tags': Tag.top_tags()
-    })
+    }, context_instance=RequestContext(request))
 
 def topics_new(request):
     if request.method == 'POST':
@@ -107,7 +62,7 @@ def topics_new(request):
     
     return render_to_response('topics_new.html', {
         'form': form
-    })
+    }, context_instance=RequestContext(request))
 
 def topic(request, key_name):
     topic = Topic.get_by_key_name(key_name)
@@ -116,8 +71,8 @@ def topic(request, key_name):
         'comments': comments,
         'graph': simplejson.dumps(graph),
         'root': topic.root_id
-    })
-
+    }, context_instance=RequestContext(request))
+    
 def comments(request):
     if request.method == 'POST':
         parent_id = request.POST['parent_id']
@@ -136,19 +91,10 @@ def comments(request):
 def reddit_topics(request):
     return render_to_response('reddit_topics.html', {
         'topics': reddit.hot_topics()
-    })
+    }, context_instance=RequestContext(request))
 
 def reddit_topic(request, id):
-    context = reddit.get_thread_data(id)
-    return render_to_response('reddit_topic.html', context)
-
-
-
-# users
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-def users_new(request):
-    user = User.objects.create_user('asdf', 'asdf@thebeatles.com', 'asdf')
-    user = authenticate(username='agsdf', password='asdf')
-    return HttpResponse(str(type(user)))
+    return render_to_response('reddit_topic.html', 
+        context=reddit.get_thread_data(id),
+        context_instance=RequestContext(request))
 

@@ -40,6 +40,10 @@ canvas {
     width: 99%;
 }
 
+#header_profile {
+    float: right;
+}
+
 #content {
     margin-top: 20px;
     margin-left: auto;
@@ -136,14 +140,11 @@ body.mceContentBody p {
     float: right;
 }
 
-.comment:hover a.reply {
-    visibility: visible;
-}
-
 .comment .date {
     visibility: hidden;
 }
 
+.comment:hover .reply,
 .comment:hover .date {
     visibility: visible;
 }

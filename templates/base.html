@@ -19,15 +19,15 @@
 
 <body>
     <div id="header">
-        {% if user.is_authenticated %}
+        <div id="header_profile">
             <span>{{ user.username }}</span>
-        {% else %}
-            <form action="/users/login" method="post" style="float:right">
-                <input type="text" name="username" alt="username">
-                <input type="password" name="password">
-                <input type="submit" value="login">
-            </form>
-        {% endif %}
+            <span>|</span>
+            {% if user.is_authenticated %}
+                <a href="/users/logout">sign out</a>
+            {% else %}
+                <a href="/users/login">sign in</a>
+            {% endif %}
+        </div>
         <a href="/">H</a>
     </div>
     <div id="content">

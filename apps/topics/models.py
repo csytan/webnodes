@@ -182,7 +182,7 @@ class Topic(TaggableMixin, VotableMixin):
 
 
 class Comment(db.Model):
-    author = db.StringProperty()
+    author = db.StringProperty(default='anonymous')
     body = db.TextProperty()
     topic = db.ReferenceProperty(Topic, required=True)
     parent_comment = db.SelfReferenceProperty()
