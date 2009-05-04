@@ -133,7 +133,7 @@ class Topic(TaggableMixin, VotableMixin):
     @classmethod
     def create(cls, author, title, body, tags=None):
         if tags:
-            tags = [slugify(tag) for tag in tags]
+            tags = [str(slugify(tag)) for tag in tags]
         else:
             tags = []
         

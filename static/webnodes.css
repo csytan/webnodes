@@ -1,7 +1,6 @@
 body {
     font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
     font-size: 18px;
-    background-color: #457F9F;
     background: #826F4F url('/static/bg.png') repeat-x scroll 0 0;
     font-weight: 400;
     color: #333333;

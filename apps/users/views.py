@@ -13,9 +13,7 @@ class LoginForm(forms.Form):
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(max_length=30)
-    email = forms.EmailField(required=False)
-    password = forms.CharField(widget=forms.PasswordInput)
-
+    password = forms.CharField()
 
 ### Views ###
 def users_register(request):
@@ -25,7 +23,7 @@ def users_register(request):
             User.objects.create_user(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password'],
-                email=form.cleaned_data['email']
+                email=None
             )
             user = authenticate(
                 username=form.cleaned_data['username'], 
@@ -36,6 +34,7 @@ def users_register(request):
             return HttpResponseRedirect(redirect)
     else:
         form = RegistrationForm()
+        
     return render_to_response('users/login.html', {
         'registration_form': form,
         'login_form': LoginForm()
@@ -60,6 +59,7 @@ def users_login(request):
                 return HttpResponse(str(user))
     else:
         form = LoginForm()
+        
     return render_to_response('users/login.html', {
         'login_form': form,
         'registration_form': RegistrationForm()
