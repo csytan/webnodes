@@ -10,7 +10,7 @@ $.fn.initTopic = function(graph, options){
         minWidth: 400,
         linkColor: '#8F8F8F',
         linkWidth: 6,
-        vertSpace: 20
+        vertSpace: 5
     }, options);
     
     root.find('.comment').css('width', 600);
@@ -148,8 +148,8 @@ $.fn.initTopic = function(graph, options){
     
     function drawConnections(node, kids) {
         var x = node.offsetLeft + node.offsetWidth / 2 - node.kidsLeft;
-        var y = node.offsetTop + node.offsetHeight - 5;
-        var height = node.kidsTop - node.offsetTop - node.offsetHeight + 10;
+        var y = node.offsetTop + node.offsetHeight - 35;
+        var height = node.kidsTop - node.offsetTop - node.offsetHeight + 40;
         var canvas = document.createElement('canvas');
 
         canvas.width = node.kidsWidth;
@@ -180,7 +180,7 @@ $.fn.initTopic = function(graph, options){
     }
 
     // Comment button events
-    $('.comment a.next, .comment a.prev').live('click', function(e) {
+    $('a.next, a.prev').live('click', function(e) {
         if (e.button != 0) return;
         
         var node = $(this).closest('.comment_box')[0];
@@ -198,7 +198,7 @@ $.fn.initTopic = function(graph, options){
     
     var tiny_mce = false;
     var reply_node = null;
-    $('.comment a.reply').live('click', function(e){
+    $('a.reply').live('click', function(e){
         if (e.button != 0) return;
         
         var node = $(this).closest('.comment_box')[0];

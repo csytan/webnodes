@@ -123,6 +123,7 @@ class Topic(TaggableMixin, VotableMixin):
     author = db.StringProperty()
     title = db.StringProperty()
     root_id = db.IntegerProperty()
+    num_comments = db.IntegerProperty(default=0)
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     
@@ -171,6 +172,11 @@ class Topic(TaggableMixin, VotableMixin):
         query = Comment.all().filter('topic =', self)
         comments = query.order('-created').fetch(1000)
         
+        # update number of comments
+        if len(comments) != self.num_comments:
+            self.num_comments = len(comments)
+            self.put()
+        
         graph = {}
         for comment in comments:
             graph[comment.id] = comment.get_reply_ids()
@@ -181,7 +187,7 @@ class Topic(TaggableMixin, VotableMixin):
         return comments, graph
 
 
-class Comment(db.Model):
+class Comment(VotableMixin):
     author = db.StringProperty(default='anonymous')
     body = db.TextProperty()
     topic = db.ReferenceProperty(Topic, required=True)

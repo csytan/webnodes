@@ -43,21 +43,21 @@
 
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="comment_box">
-            
             <div class="comment">
                 <div class="comment_inner">
-                    <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
-                    <span class="score">({{ comment.score }})</span>
-
+                    <a class="points">{{ comment.points }}</a>
                     <div class="body">{{ comment.body|safe }}</div>
-                    <a class="reply" href="#">reply</a>
-                    <div class="nav">
-                        <a class="prev" href="#">«</a>
-                        <span class="page_num"></span>
-                        <a class="next" href="#">»</a>
-                        <div style="clear:left"></div>
-                    </div>
+                    <span style="float: right">
+                        <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
+                        some time ago
+                    </span>
+                    <a class="reply" style="text-align:center" href="#">reply</a>
                 </div>
+            </div>
+            <div class="comment_nav">
+                <a class="prev" href="#">«</a>
+                <span class="page_num"></span>
+                <a class="next" href="#">»</a>
             </div>
         </div>
     {% endfor %}

@@ -43,18 +43,19 @@
         <div id="{{ comment.id }}" class="comment_box">
             <div class="comment">
                 <div class="comment_inner">
-                    <span class="date">{{ comment.created|timeago }}</span>
-                    <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
-                    <span class="points">({{ comment.points }})</span>
+                    <a class="points">{{ comment.points }}</a>
                     <div class="body">{{ comment.body|safe }}</div>
-                    <a class="reply" href="#">reply</a>
-                    <div class="nav">
-                        <a class="prev" href="#">«</a>
-                        <span class="page_num"></span>
-                        <a class="next" href="#">»</a>
-                        <div style="clear:left"></div>
-                    </div>
+                    <span style="float: right">
+                        <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>,
+                        {{ comment.created|timeago }}
+                    </span>
+                    <a class="reply" style="text-align:center" href="#">reply</a>
                 </div>
+            </div>
+            <div class="comment_nav">
+                <a class="prev" href="#">«</a>
+                <span class="page_num"></span>
+                <a class="next" href="#">»</a>
             </div>
         </div>
     {% endfor %}

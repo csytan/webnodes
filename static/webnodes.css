@@ -93,9 +93,10 @@ canvas {
     z-index: 1;
 }
 
-.comment, .topic {
+.comment, .comment_inner, .topic {
     background-color: #FFFFFF;
     border:5px solid #EBF2EE;
+    -moz-border-radius:5px;
     /* looks awful in google chrome, but nice in safari
     box-shadow: -5px 5px 25px #3F321B;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
@@ -109,8 +110,18 @@ canvas {
 }
 
 .comment .score,
+.comment .info,
+.comment .points,
 .comment .date {
     color: grey;
+}
+
+.comment .points {
+    float:right;
+    visibility:hidden;
+}
+.comment:hover .points {
+    visibility:visible;
 }
 
 .comment .date {
@@ -142,46 +153,49 @@ body.mceContentBody p {
     overflow: auto;
 }
 
-.comment .nav {
+.comment_nav {
     width: 200px;
     margin: auto;
 }
 
-.comment .nav a, 
-.comment .nav span {
+.comment_nav a, 
+.comment_nav span {
     float: left;
+    background-color: #59A5D1;
+    border: 2px solid #59A5D1;
+    color: white;
     text-align: center;
     visibility: hidden;
 }
 
-.comment .nav a {
-    width: 56px;
+.comment_nav a {
+    width: 54px;
 }
 
-.comment .nav a.prev,
-.comment .nav a.next {
-    border: 2px solid #CFC8C2;
+.comment_nav a.prev,
+.comment_nav a.next {
+    border: 2px solid #59A5D1;
 }
 
-.comment .nav a.prev:hover,
-.comment .nav a.next:hover {
+.comment_nav a.prev:hover,
+.comment_nav a.next:hover {
     background-color: #59A5D1;
     border: 2px solid #408BB6;
     color: white;
 }
 
-.comment .nav a.prev:active,
-.comment .nav a.next:active {
+.comment_nav a.prev:active,
+.comment_nav a.next:active {
     background-color: #77C4EF;
 }
 
-.comment .nav span {
+.comment_nav span {
     width: 80px
 }
 
 .comment a.reply {
     visibility: hidden;
-    float: right;
+    text-align: center;
 }
 
 .comment .date {

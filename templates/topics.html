@@ -30,16 +30,14 @@
     {% for topic in topics %}
         <div class="topic">
             <h2><a href="/topics/{{ topic.id }}">{{ topic.title }}</a></h2>
-            <span>
-                {{ topic.score }} points, 
-                {{ topic.num_comments }} comments, 
-                by {{ topic.author }}
-                {{ topic.updated|timeago }}
-            </span>
+            {% for tag_name in topic.tags %}
+                <a href="/{{ tag_name }}">{{ tag_name }}</a>
+            {% endfor %}
             <p>
-                {% for tag_name in topic.tags %}
-                    {{ tag_name }}
-                {% endfor %}
+                {{ topic.points }} points, 
+                {{ topic.num_comments }} comments, 
+                by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>
+                {{ topic.updated|timeago }}
             </p>
         </div>
     {% endfor %}
