@@ -144,7 +144,7 @@ canvas {
 }
 
 .comment_nav {
-    width: 200px;
+    width: 260px;
     margin: auto;
 }
 
@@ -152,26 +152,18 @@ canvas {
 .comment_nav span {
     float: left;
     background-color: #59A5D1;
-    border: 2px solid #59A5D1;
     color: white;
     text-align: center;
     visibility: hidden;
 }
 
 .comment_nav a {
-    width: 54px;
-}
-
-.comment_nav a.prev,
-.comment_nav a.next {
-    border: 2px solid #59A5D1;
+    width: 80px;
 }
 
 .comment_nav a.prev:hover,
 .comment_nav a.next:hover {
-    background-color: #59A5D1;
-    border: 2px solid #408BB6;
-    color: white;
+    background-color: #408BB6;
 }
 
 .comment_nav a.prev:active,
@@ -180,7 +172,7 @@ canvas {
 }
 
 .comment_nav span {
-    width: 80px
+    width: 100px;
 }
 
 .comment a.reply {
