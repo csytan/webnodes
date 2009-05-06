@@ -28,8 +28,7 @@
             $('#{{ root }}').initTopic(graph);
         
             d = new Date();
-            //alert();
-            $(document.body).append(d.getTime() - start + 'ms');
+            //$(document.body).append(d.getTime() - start + 'ms');
         });
     </script>
 {% endblock %}
@@ -60,15 +59,17 @@
             </div>
         </div>
     {% endfor %}
-    
+
     <div id="reply_box" class="comment_box">
         <div class="comment">
-            <form id="reply_form" action="/comments" method="post">
-                <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="body" style="height:200px; width:90%"></textarea>
-                <a id="reply_cancel" href="#">Cancel</a>
-                <input type="submit" value="Reply">
-            </form>
+            <div class="comment_inner">
+                <form id="reply_form" action="/comments" method="post">
+                    <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
+                    <textarea id="reply_textarea" name="body" style="height:200px; width:95%"></textarea>
+                    <input type="submit" style="float:right" value="reply">
+                    <a id="reply_cancel" href="#">cancel</a>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

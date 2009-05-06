@@ -213,7 +213,7 @@ $.fn.initTopic = function(graph, options){
         node.start = 0;
         
         update();
-        
+        $('#reply_box textarea').focus();
         $('#parent_id').val(node.id);
         return false;
     });

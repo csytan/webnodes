@@ -87,6 +87,11 @@ canvas {
 
 
 /* topic.html */
+
+.title {
+    font-size:1.3em;
+}
+
 .comment_box {
     position: absolute;
     display: none;
@@ -135,7 +140,7 @@ canvas {
 
 .comment_inner,
 .comment textarea {
-    padding: 15px;
+    padding: 10px;
     padding-bottom: 5px;
     border:1px solid #D1DFD6;
 }
@@ -195,12 +200,14 @@ canvas {
 }
 
 .topic {
-    width: 450px;
-    padding: 5px;
+    width: 500px;
+    padding: 10px;
     margin: auto;
     margin-bottom: 15px;
 }
 
-
+.topic p {
+    margin-bottom: 0px;
+}
 
 

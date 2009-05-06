@@ -4,7 +4,7 @@
 {% block style %}
 <style>
     #content {
-        width: 800px;
+        width: 1000px;
     }
 </style>
 {% endblock %}
@@ -12,13 +12,12 @@
 {% block content %}
     {% for topic in topics %}
         <div class="topic">
-            <a href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
-            <br>
-            <span>
+            <a  class="title" href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
+            <p>
                 {{ topic.score }} points, 
                 {{ topic.num_comments }} comments, 
                 by {{ topic.author }}
-            </span>
+            </p>
         </div>
     {% endfor %}
 {% endblock %}
