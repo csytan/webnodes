@@ -128,12 +128,8 @@ canvas {
     float: right;
 }
 
-.comment .body p {
-    margin: 0px;
-    padding: 0px;
-}
-
-.comment_inner {
+.comment_inner,
+.comment textarea {
     padding: 15px;
     padding-bottom: 5px;
     border:1px solid #D1DFD6;

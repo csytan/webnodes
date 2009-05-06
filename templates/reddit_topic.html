@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% load tag_extras %}
-
+{% load markup %}
 
 {% block style %}
 <style>
@@ -46,7 +46,7 @@
             <div class="comment">
                 <div class="comment_inner">
                     <a class="points">{{ comment.points }}</a>
-                    <div class="body">{{ comment.body|safe }}</div>
+                    <div class="body">{{ comment.body|urlify_markdown|markdown }}</div>
                     <span style="float: right">
                         <a class="author" href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                         some time ago

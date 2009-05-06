@@ -45,7 +45,7 @@
             <div class="comment">
                 <div class="comment_inner">
                     <a class="points">{{ comment.points }}</a>
-                    <div class="body">{{ comment.body|markdown }}</div>
+                    <div class="body">{{ comment.body|urlify_markdown|markdown }}</div>
                     <span style="float: right">
                         <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>,
                         {{ comment.created|timeago }}
@@ -65,7 +65,7 @@
         <div class="comment">
             <form id="reply_form" action="/comments" method="post">
                 <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="body" style="height:200px; width:100%"></textarea>
+                <textarea id="reply_textarea" name="body" style="height:200px; width:90%"></textarea>
                 <a id="reply_cancel" href="#">Cancel</a>
                 <input type="submit" value="Reply">
             </form>
