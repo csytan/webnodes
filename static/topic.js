@@ -196,7 +196,6 @@ $.fn.initTopic = function(graph, options){
         return false;
     });
     
-    var tiny_mce = false;
     var reply_node = null;
     $('a.reply').live('click', function(e){
         if (e.button != 0) return;
@@ -214,20 +213,6 @@ $.fn.initTopic = function(graph, options){
         node.start = 0;
         
         update();
-        
-        if (!tiny_mce) {
-            tinyMCE.init({
-                mode : "exact",
-                elements: 'reply_textarea',
-                auto_focus: 'reply_textarea',
-                theme : 'advanced',
-                theme_advanced_buttons1 : "bold,italic,|,blockquote,code,|,link,unlink,image",
-                theme_advanced_buttons2 : "",
-                theme_advanced_buttons3 : "",
-                content_css : "/static/webnodes.css"
-            });
-            tiny_mce = true;
-        }
         
         $('#parent_id').val(node.id);
         return false;

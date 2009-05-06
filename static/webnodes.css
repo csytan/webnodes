@@ -139,12 +139,6 @@ canvas {
     border:1px solid #D1DFD6;
 }
 
-/* TinyMCE reply box */
-body.mceContentBody p {
-    margin: 0px;
-    padding: 0px;
-}
-
 .comment img {
     max-width: 100%;
 }

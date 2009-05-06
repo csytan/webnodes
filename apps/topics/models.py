@@ -5,10 +5,6 @@ from django.template.defaultfilters import slugify
 from google.appengine.ext import db
 from google.appengine.api import memcache
 
-# Local imports
-from lib import feedparser
-
-
 
 # TODO: move html sanitization into view
 
@@ -149,7 +145,7 @@ class Topic(TaggableMixin, VotableMixin):
         )
         topic.put()
         
-        comment = Comment.create(author=author, topic=topic, body=body)
+        comment = Comment(author=author, topic=topic, body=body)
         comment.put()
         
         topic.root_id = int(comment.key().id())
@@ -203,29 +199,19 @@ class Comment(VotableMixin):
     def id(self):
         return int(self.key().id())
     
-    @classmethod
-    def create(cls, author, body, topic, parent_comment=None):
-        if parent_comment:
-            parent_comment.reply_cache = []
-            parent_comment.has_replies = True
-            parent_comment.put()
-        
-        comment = cls(
-            author=author,
-            body=feedparser._sanitizeHTML(body, 'utf-8'),
-            topic=topic,
-            parent_comment=parent_comment
-        )
-        comment.put()
-        return comment
-    
     def add_reply(self, author, body):
-        return Comment.create(
+        self.reply_cache = []
+        self.has_replies = True
+        self.put()
+        
+        comment = Comment(
             author=author,
             topic=self.topic,
             parent_comment=self,
             body=body
         )
+        comment.put()
+        return comment
     
     def get_reply_ids(self):
         if self.reply_cache:

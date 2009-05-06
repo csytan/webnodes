@@ -1,5 +1,9 @@
 ﻿import os
 
+# library imports
+import lib
+import markdown
+
 DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 
 ADMINS = ()
@@ -13,6 +17,7 @@ ROOT_URLCONF = 'urls'
 INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.auth',
+    'django.contrib.markup',
     'apps.topics',
     'apps.users',
     'appenginepatcher',
