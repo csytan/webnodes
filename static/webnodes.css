@@ -1,30 +1,64 @@
+/* RESET */
+
+html, body, div, span, object, iframe, 
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, 
+a, abbr, acronym, address, big, cite, code, del, dfn, em, 
+img, ins, kbd, q, samp, small, strike, strong, sub, sup, 
+tt, var, dl, dt, dd, ol, ul, li, 
+fieldset, form, label, legend, 
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+table                   { border-spacing: 0; border-collapse: collapse; }
+caption, th, td         { text-align: left; font-weight: normal; }
+blockquote, q           { quotes: none; }
+:focus                  { outline: 0; }
+
+/* BASE */
+
 body {
     font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
-    font-size: 18px;
-    background: #826F4F url('/static/bg.png') repeat-x scroll 0 0;
+    font-size: 16px;
     font-weight: 400;
-    color: #333333;
-    line-height: 24px;
-    margin: 0px;
+    line-height: 1.4;
+    font-family: Arial, sans-serif;
+    color: #2B332E;
+    background: #BFBFBF;
+    width: 100%;
+    height: 100%;
 }
 
-a {
-    font-weight:normal;
-    text-decoration:none;
-}
+strong                  { font-weight: bold; }
+em                      { font-style: italic; }
+input, button, textarea { font-family: Arial, sans-serif; }
+                        
+/* TYPE */
+p, ul, ol, dl, pre      { font-size: 1em; margin: 0 0 0.6em; }
+ul, ol                  { margin-left: 1.2em; }
+ul ul                   { margin-bottom: 0; }
+h2, h3, h4, h5          { margin: 1em 0 0.2em; font-weight: bold; }
 
-a:link {
-    color:#CC0000;
-}
-
+h1                      { margin: 0.25em 0 0; font-size: 1.5em; letter-spacing: -0.025em; font-weight: bold; }
+h2                      { font-size: 1.125em; margin-top: 0.25em; margin-bottom: 0.5em; line-height: 1.2em; }
+h3                      { font-size: 1em; margin-bottom: 0.25em; }
+h4                      { font-size: 0.875em; }
+                        
+/* LINKS */             
+a                       { color: #2D7BB2; text-decoration: none; outline: none; }
+a:hover                 { color: #2B332E; }
 a:visited {
     color:#666666;
 }
 
-a:hover, a:active {
-    color: #333333;
+pre, code {
+    font-size: 0.8em;
 }
-
 
 canvas {
     z-index: 0;
@@ -60,11 +94,8 @@ canvas {
 }
 
 .comment, .topic {
-    background-color: #EFE7E0;
-    border: 2px solid #DFD8D1;
-    border-radius: 7px;
-    -webkit-border-radius: 7px;
-    -moz-border-radius: 7px;
+    background-color: #FFFFFF;
+    border:5px solid #EBF2EE;
     /* looks awful in google chrome, but nice in safari
     box-shadow: -5px 5px 25px #3F321B;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
@@ -74,8 +105,6 @@ canvas {
 
 .comment {
     width: 360px;
-    padding: 10px;
-    padding-bottom: 5px;
     margin: auto;
 }
 
@@ -93,12 +122,13 @@ canvas {
     padding: 0px;
 }
 
-/* TinyMCE reply box */
-body.mceContentBody {
-    background: none;
-    background-color: #EFE7E0;
+.comment_inner {
+    padding: 15px;
+    padding-bottom: 5px;
+    border:1px solid #D1DFD6;
 }
 
+/* TinyMCE reply box */
 body.mceContentBody p {
     margin: 0px;
     padding: 0px;

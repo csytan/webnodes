@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 
+{% load tag_extras %}
 
 {% block style %}
-<style>
-    #content {
-        width: 800px;
-    }
+    <style>
+        #content {
+            width: 800px;
+        }
     
-    #sidebar {
-        float: right;
-    }
+        #sidebar {
+            float: right;
+        }
     
-    #sidebar a {
-        display: block;
-    }
-</style>
+        #sidebar a {
+            display: block;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -28,12 +29,12 @@
 
     {% for topic in topics %}
         <div class="topic">
-            <a href="/topics/{{ topic.id }}">{{ topic.title }}</a>
-            <br>
+            <h2><a href="/topics/{{ topic.id }}">{{ topic.title }}</a></h2>
             <span>
                 {{ topic.score }} points, 
                 {{ topic.num_comments }} comments, 
                 by {{ topic.author }}
+                {{ topic.updated|timeago }}
             </span>
             <p>
                 {% for tag_name in topic.tags %}

@@ -2,36 +2,35 @@
 
 {% load tag_extras %}
 
-
 {% block style %}
-<style>
-    #content {
-        width: 95%;
-        margin: auto;
-        position: relative;
-    }
-</style>
+    <style>
+        #content {
+            width: 95%;
+            margin: auto;
+            position: relative;
+        }
+    </style>
 {% endblock %}
 
 
 {% block script %}
-<!--[if IE]>
-    <script type="text/javascript" src="/static/excanvas.js"></script>
-<![endif]-->
-<script type="text/javascript" src="/static/topic.js"></script>
-<script type="text/javascript">
-    $(document).ready(function(){
-        var d = new Date();
-        var start = d.getTime();
+    <!--[if IE]>
+        <script type="text/javascript" src="/static/excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="/static/topic.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var d = new Date();
+            var start = d.getTime();
         
-        var graph = {{ graph|safe }};
-        $('#{{ root }}').initTopic(graph);
+            var graph = {{ graph|safe }};
+            $('#{{ root }}').initTopic(graph);
         
-        d = new Date();
-        //alert();
-        $(document.body).append(d.getTime() - start + 'ms');
-    });
-</script>
+            d = new Date();
+            //alert();
+            $(document.body).append(d.getTime() - start + 'ms');
+        });
+    </script>
 {% endblock %}
 
 
@@ -43,16 +42,18 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="comment_box">
             <div class="comment">
-                <span class="date">{{ comment.created|timeago }}</span>
-                <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
-                <span class="points">({{ comment.points }})</span>
-                <div class="body">{{ comment.body|safe }}</div>
-                <a class="reply" href="#">reply</a>
-                <div class="nav">
-                    <a class="prev" href="#">«</a>
-                    <span class="page_num"></span>
-                    <a class="next" href="#">»</a>
-                    <div style="clear:left"></div>
+                <div class="comment_inner">
+                    <span class="date">{{ comment.created|timeago }}</span>
+                    <a class="author" href="/users/{{ comment.author }}">{{ comment.author }}</a>
+                    <span class="points">({{ comment.points }})</span>
+                    <div class="body">{{ comment.body|safe }}</div>
+                    <a class="reply" href="#">reply</a>
+                    <div class="nav">
+                        <a class="prev" href="#">«</a>
+                        <span class="page_num"></span>
+                        <a class="next" href="#">»</a>
+                        <div style="clear:left"></div>
+                    </div>
                 </div>
             </div>
         </div>

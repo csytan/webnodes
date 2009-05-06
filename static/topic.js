@@ -8,7 +8,7 @@ $.fn.initTopic = function(graph, options){
     var container = this.parent();
     options = $.extend({
         minWidth: 400,
-        linkColor: '#AFAFAF',
+        linkColor: '#8F8F8F',
         linkWidth: 6,
         vertSpace: 20
     }, options);
