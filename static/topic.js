@@ -10,7 +10,7 @@ $.fn.initTopic = function(graph, options){
         minWidth: 400,
         linkColor: '#8F8F8F',
         linkWidth: 6,
-        vertSpace: 5
+        vertSpace: 10
     }, options);
     
     root.find('.comment').css('width', 600);

@@ -4,14 +4,13 @@
 {% load markup %}
 
 {% block style %}
-<style>
-    #content {
-        width: 95%;
-        margin: auto;
-        position: relative;
-        padding-top: 30px;
-    }
-</style>
+    <style>
+        #content {
+            width: 95%;
+            margin: auto;
+            position: relative;
+        }
+    </style>
 {% endblock %}
 
 
@@ -66,12 +65,10 @@
         <div class="comment">
             <form id="reply_form" action="/comments" method="post">
                 <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="body" style="height:200px; width:100%"></textarea>
+                <textarea id="reply_textarea" name="body" style="height:200px; width:90%"></textarea>
                 <a id="reply_cancel" href="#">Cancel</a>
                 <input type="submit" value="Reply">
             </form>
         </div>
     </div>
-    
-    <script type="text/javascript" src="/static/tiny_mce/tiny_mce.js"></script>
 {% endblock %}

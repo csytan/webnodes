@@ -93,15 +93,20 @@ canvas {
     z-index: 1;
 }
 
-.comment, .comment_inner, .topic {
-    background-color: #FFFFFF;
-    border:5px solid #EBF2EE;
-    -moz-border-radius:5px;
-    /* looks awful in google chrome, but nice in safari
+/* looks awful in google chrome, but nice in safari
+.comment {
     box-shadow: -5px 5px 25px #3F321B;
     -webkit-box-shadow: -5px 5px 25px #3F321B;
     -moz-box-shadow: -5px 5px 25px #3F321B;
-    */
+}
+*/
+
+.comment, .comment_inner, .topic {
+    background-color: #FFFFFF;
+    border:5px solid #EBF2EE;
+    border-radius: 5px;
+    -moz-border-radius:5px;
+    -webkit-border-radius: 5px;
 }
 
 .comment {
