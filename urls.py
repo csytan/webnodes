@@ -3,7 +3,7 @@
 urlpatterns = patterns('apps',
     (r'^$', 'topics.views.topics'),
     (r'^topics/new$', 'topics.views.topics_new'),
-    (r'^topics/(.+)$', 'topics.views.topic'),
+    (r'^topics/(\d+)$', 'topics.views.topic'),
     (r'^comments$', 'topics.views.comments'),
     (r'^reddit$', 'topics.views.reddit_topics'),
     (r'^reddit/(.+)$', 'topics.views.reddit_topic'),

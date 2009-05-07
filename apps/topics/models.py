@@ -125,7 +125,7 @@ class Topic(TaggableMixin, VotableMixin):
     
     @property
     def id(self):
-        return self.key().name()
+        return int(self.key().id())
     
     @classmethod
     def create(cls, author, title, body, tags=None):
@@ -133,12 +133,8 @@ class Topic(TaggableMixin, VotableMixin):
             tags = [str(slugify(tag)) for tag in tags]
         else:
             tags = []
-        
-        key_name = slugify(title)
-        topic = cls.get_by_key_name(key_name)
-        assert not topic
+            
         topic = cls(
-            key_name=key_name,
             author=author,
             title=title,
             tags=tags
@@ -148,7 +144,7 @@ class Topic(TaggableMixin, VotableMixin):
         comment = Comment(author=author, topic=topic, body=body)
         comment.put()
         
-        topic.root_id = int(comment.key().id())
+        topic.root_id = comment.id
         topic.put()
         
         Tag.increment_tags(topic.tags)

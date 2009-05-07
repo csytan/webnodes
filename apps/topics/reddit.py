@@ -1,5 +1,6 @@
 from django.utils import simplejson
 import urllib
+from datetime import datetime
 
 
 def hot_topics():
@@ -28,7 +29,8 @@ def get_thread_data(id):
             data['body'] = data['title'] + '<br><a href="'+ data['url'] + '">Link</a>'
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
-            data['score'] = ups - downs
+            data['points'] = ups - downs
+            data['created'] = datetime.fromtimestamp(float(data['created']))
             
             root.append(data['name'])
         elif kind == 't1':
@@ -37,7 +39,8 @@ def get_thread_data(id):
             data['id'] = data['name']
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
-            data['score'] = ups - downs
+            data['points'] = ups - downs
+            data['created'] = datetime.fromtimestamp(float(data['created']))
             
             p_children = graph.setdefault(data['parent_id'], [])
             p_children.append(data['name'])

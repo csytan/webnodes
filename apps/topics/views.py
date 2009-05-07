@@ -64,8 +64,8 @@ def topics_new(request):
         'form': form
     }, context_instance=RequestContext(request))
 
-def topic(request, key_name):
-    topic = Topic.get_by_key_name(key_name)
+def topic(request, id):
+    topic = Topic.get_by_id(int(id))
     comments, graph = topic.comment_graph()
     return render_to_response('topic.html', {
         'comments': comments,
@@ -89,12 +89,14 @@ def comments(request):
 
 
 def reddit_topics(request):
-    return render_to_response('reddit_topics.html', {
-        'topics': reddit.hot_topics()
+    return render_to_response('topics.html', {
+        'topics': reddit.hot_topics(),
+        'reddit': True
     }, context_instance=RequestContext(request))
 
 def reddit_topic(request, id):
-    return render_to_response('reddit_topic.html', 
-        reddit.get_thread_data(id),
+    data = reddit.get_thread_data(id)
+    data['reddit'] = True
+    return render_to_response('topic.html', data,
         context_instance=RequestContext(request))
 
