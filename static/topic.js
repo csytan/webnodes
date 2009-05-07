@@ -8,7 +8,7 @@ $.fn.initTopic = function(graph, options){
     var container = this.parent();
     options = $.extend({
         minWidth: 400,
-        linkColor: '#8F8F8F',
+        linkColor: '#6F6F6F',
         linkWidth: 6,
         vertSpace: 10
     }, options);
@@ -29,7 +29,7 @@ $.fn.initTopic = function(graph, options){
     function update() {
         $(document.body).css('min-height', $(document).height());
         $('canvas').remove();
-        $('.comment_box').hide();
+        $('.comment_container').hide();
         layout();
     }
     
@@ -183,7 +183,7 @@ $.fn.initTopic = function(graph, options){
     $('a.next, a.prev').live('click', function(e) {
         if (e.button != 0) return;
         
-        var node = $(this).closest('.comment_box')[0];
+        var node = $(this).closest('.comment_container')[0];
         if ($(this).hasClass('next')) {
             node.prev_starts = node.prev_starts || [];
             node.prev_starts.push(node.start);
@@ -200,7 +200,7 @@ $.fn.initTopic = function(graph, options){
     $('a.reply').live('click', function(e){
         if (e.button != 0) return;
         
-        var node = $(this).closest('.comment_box')[0];
+        var node = $(this).closest('.comment_container')[0];
         
         if (reply_node) {
             delete reply_node.kids;

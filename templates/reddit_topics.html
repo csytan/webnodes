@@ -11,12 +11,12 @@
 
 {% block content %}
     {% for topic in topics %}
-        <div class="topic">
-            <a  class="title" href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
-            <p>
+        <div class="topic box">
+            <a class="title" href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
+            <p style="text-align:right">
                 {{ topic.score }} points, 
                 {{ topic.num_comments }} comments, 
-                by {{ topic.author }}
+                by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
             </p>
         </div>
     {% endfor %}

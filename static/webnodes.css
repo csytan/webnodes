@@ -85,129 +85,18 @@ canvas {
     width: 100%;
 }
 
-
-/* topic.html */
+/* generic styles */
+.box {
+    background-color: #FFFFFF;
+    padding: 10px;
+    border: 6px solid #A7B6BF;
+    /* looks awful in google chrome, but nice in safari
+    box-shadow: -5px 5px 25px #3F321B;
+    -webkit-box-shadow: -5px 5px 25px #3F321B;
+    -moz-box-shadow: -5px 5px 25px #3F321B;
+    */
+}
 
 .title {
     font-size:1.3em;
 }
-
-.comment_box {
-    position: absolute;
-    display: none;
-    z-index: 1;
-}
-
-/* looks awful in google chrome, but nice in safari
-.comment {
-    box-shadow: -5px 5px 25px #3F321B;
-    -webkit-box-shadow: -5px 5px 25px #3F321B;
-    -moz-box-shadow: -5px 5px 25px #3F321B;
-}
-*/
-
-.comment, .comment_inner, .topic {
-    background-color: #FFFFFF;
-    border:5px solid #EBF2EE;
-    border-radius: 5px;
-    -moz-border-radius:5px;
-    -webkit-border-radius: 5px;
-}
-
-.comment {
-    width: 360px;
-    margin: auto;
-}
-
-.comment .score,
-.comment .info,
-.comment .points,
-.comment .date {
-    color: grey;
-}
-
-.comment .points {
-    float:right;
-    visibility:hidden;
-}
-.comment:hover .points {
-    visibility:visible;
-}
-
-.comment .date {
-    float: right;
-}
-
-.comment_inner,
-.comment textarea {
-    padding: 10px;
-    padding-bottom: 5px;
-    border:1px solid #D1DFD6;
-}
-
-.comment img {
-    max-width: 100%;
-}
-
-.comment .body {
-    overflow: auto;
-}
-
-.comment_nav {
-    width: 260px;
-    margin: auto;
-}
-
-.comment_nav a, 
-.comment_nav span {
-    float: left;
-    background-color: #59A5D1;
-    color: white;
-    text-align: center;
-    visibility: hidden;
-}
-
-.comment_nav a {
-    width: 80px;
-}
-
-.comment_nav a.prev:hover,
-.comment_nav a.next:hover {
-    background-color: #408BB6;
-}
-
-.comment_nav a.prev:active,
-.comment_nav a.next:active {
-    background-color: #77C4EF;
-}
-
-.comment_nav span {
-    width: 100px;
-}
-
-.comment a.reply {
-    visibility: hidden;
-    text-align: center;
-}
-
-.comment .date {
-    visibility: hidden;
-}
-
-.comment:hover .reply,
-.comment:hover .date {
-    visibility: visible;
-}
-
-.topic {
-    width: 500px;
-    padding: 10px;
-    margin: auto;
-    margin-bottom: 15px;
-}
-
-.topic p {
-    margin-bottom: 0px;
-}
-
-

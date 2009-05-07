@@ -15,6 +15,17 @@
         #sidebar a {
             display: block;
         }
+        
+        .topic {
+            width: 500px;
+            padding: 10px;
+            margin: auto;
+            margin-bottom: 15px;
+        }
+
+        .topic p {
+            margin-bottom: 0px;
+        }
     </style>
 {% endblock %}
 
@@ -65,17 +76,25 @@
     </div>
 
     {% for topic in topics %}
-        <div class="topic">
-            <a class="title" href="/topics/{{ topic.id }}">{{ topic.title }}</a>
+        <div class="topic box">
+            {% if reddit %}
+                <a class="title" href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
+            {% else %}
+                <a class="title" href="/topics/{{ topic.id }}">{{ topic.title }}</a>
+            {% endif %}
             <p>
             {% for tag_name in topic.tags %}
                 <a class="tag" href="/{{ tag_name }}">{{ tag_name }}</a>
             {% endfor %}
             </p>
-            <p>
+            <p style="text-align:right">
                 {{ topic.points }} points, 
-                {{ topic.num_comments }} comments, 
-                by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>
+                {{ topic.num_comments }} comments,
+                {% if reddit %}
+                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
+                {% else %}
+                    by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
+                {% endif %}
                 {{ topic.updated|timeago }}
             </p>
         </div>
