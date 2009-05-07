@@ -6,7 +6,14 @@ from datetime import datetime
 def hot_topics():
     response = urllib.urlopen('http://www.reddit.com/r/programming/.json').read()
     data = simplejson.loads(response)
-    return [topic['data'] for topic in data['data']['children']]
+    topics = [topic['data'] for topic in data['data']['children']]
+    
+    for topic in topics:
+        topic['updated'] = datetime.fromtimestamp(float(topic['created']))
+        ups = topic['ups'] if topic['ups'] else 0
+        downs = topic['downs'] if topic['downs'] else 0
+        topic['points'] = ups - downs
+    return topics
 
 def get_thread_data(id):
     response = urllib.urlopen('http://reddit.com/comments/' + \
@@ -30,7 +37,7 @@ def get_thread_data(id):
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
             data['points'] = ups - downs
-            data['created'] = datetime.fromtimestamp(float(data['created']))
+            data['updated'] = datetime.fromtimestamp(float(data['created']))
             
             root.append(data['name'])
         elif kind == 't1':
@@ -40,7 +47,7 @@ def get_thread_data(id):
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
             data['points'] = ups - downs
-            data['created'] = datetime.fromtimestamp(float(data['created']))
+            data['updated'] = datetime.fromtimestamp(float(data['created']))
             
             p_children = graph.setdefault(data['parent_id'], [])
             p_children.append(data['name'])

@@ -91,7 +91,7 @@
                 {{ topic.points }} points, 
                 {{ topic.num_comments }} comments,
                 {% if reddit %}
-                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
+                    by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
                     by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                 {% endif %}
