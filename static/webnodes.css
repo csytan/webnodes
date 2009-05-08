@@ -30,6 +30,9 @@ body {
     font-family: Arial, sans-serif;
     color: #2B332E;
     background: #BFBFBF;
+    background:#15052A url(http://strawpoll.s3.amazonaws.com/c/nightsky.jpg) no-repeat scroll center top;
+    background:#004976 url(http://bradcolbow.com/images_1008/background.jpg) repeat-x scroll center 0;
+
     width: 100%;
     height: 100%;
 }

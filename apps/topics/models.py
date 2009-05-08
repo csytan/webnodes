@@ -1,6 +1,3 @@
-# Django imports
-from django.template.defaultfilters import slugify
-
 # Google imports
 from google.appengine.ext import db
 from google.appengine.api import memcache
