@@ -39,7 +39,7 @@ def get_thread_data(id):
             data['points'] = ups - downs
             data['updated'] = datetime.fromtimestamp(float(data['created']))
             
-            root.append(data['name'])
+            root.append(data)
         elif kind == 't1':
             # normal comment
             comments.append(data)
@@ -62,7 +62,7 @@ def get_thread_data(id):
     return {
         'graph': simplejson.dumps(graph),
         'comments': comments,
-        'root': root[0]
+        'topic': root[0]
     }
 
 

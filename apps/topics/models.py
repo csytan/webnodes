@@ -3,38 +3,35 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 
 
-# TODO: move html sanitization into view
-
-class KeyReferenceProperty(db.Property):
-    def __init__(self, ref_class, **kwargs):
-        self.ref_class = ref_class
-        db.Property.__init__(self, **kwargs)
-    def get_value_for_datastore(self, model_instance):
-        model = db.Property.get_value_for_datastore(self, model_instance)
-        return str(model.key().name())
-    def make_value_from_datastore(self, value):
-        return self.ref_class.get_by_key_name(value)
-    data_type = basestring
-
-class IdReferenceProperty(db.Property):
-    def __init__(self, ref_class, **kwargs):
-        self.ref_class = ref_class
-        db.Property.__init__(self, **kwargs)
-    def get_value_for_datastore(self, model_instance):
-        model = db.Property.get_value_for_datastore(self, model_instance)
-        return int(model.key().id())
-    def make_value_from_datastore(self, value):
-        return self.ref_class.get_by_id(value)
-    data_type = int
-    
-### Helper functions ###
-
-
-
 ### Models ###
 class Vote(db.Model):
     direction = db.IntegerProperty() # 1 or -1
     
+
+class Tag(db.Model):
+    count = db.IntegerProperty(default=0)
+    moderators = db.StringListProperty()
+    
+    @property
+    def name(self):
+        return self.key().name()
+        
+    @classmethod
+    def top_tags(cls):
+        return cls.all().order('-count').fetch(50)
+        
+    @classmethod
+    def increment_tags(cls, tag_names):
+        """Increments the tag count by one"""
+        tags = cls.get_by_key_name(tag_names)
+
+        save_tags = []
+        for name, tag in zip(tag_names, tags):
+            if not tag:
+                tag = Tag(key_name=name)
+            tag.count += 1
+            save_tags.append(tag)
+        db.put(save_tags)
 
 class VotableMixin(db.Model):
     points = db.IntegerProperty(default=0)
@@ -68,34 +65,79 @@ class VotableMixin(db.Model):
         self.put()
     
 
-class Tag(db.Model):
-    count = db.IntegerProperty(default=0)
-    moderators = db.StringListProperty()
+
+
+class Comment(VotableMixin):
+    author = db.StringProperty(default='anonymous')
+    body = db.TextProperty()
+    topic_id = db.IntegerProperty()
+    parent_id = db.IntegerProperty()
+    has_replies = db.BooleanProperty(default=False, indexed=False)
+    reply_cache = db.ListProperty(int, indexed=False)
+    
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
     
     @property
-    def name(self):
-        return self.key().name()
-        
-    @classmethod
-    def top_tags(cls):
-        return cls.all().order('-count').fetch(50)
-        
-    @classmethod
-    def increment_tags(cls, tag_names):
-        """Increments the tag count by one"""
-        tags = cls.get_by_key_name(tag_names)
-        
-        save_tags = []
-        for name, tag in zip(tag_names, tags):
-            if not tag:
-                tag = Tag(key_name=name)
-            tag.count += 1
-            save_tags.append(tag)
-        db.put(save_tags)
+    def id(self):
+        return int(self.key().id())
 
-class TaggableMixin(db.Model):
+    def add_reply(self, author, body):
+        self.reply_cache = []
+        self.has_replies = True
+        self.put()
+        
+        comment = Comment(
+            author=author,
+            topic_id=self.id if isinstance(self, Topic) else self.topic_id,
+            parent_id=self.id,
+            body=body
+        )
+        comment.put()
+        return comment
+
+    def get_reply_ids(self):
+        if self.reply_cache:
+            return self.reply_cache
+        if not self.has_replies:
+            return []
+
+        query = Comment.all()
+        query.filter('parent_id =', self.id)
+        query.order('-updated')
+        replies = query.fetch(1000)
+
+        self.reply_cache = [reply.id for reply in replies]
+        self.put()
+        return self.reply_cache
+
+
+class Topic(Comment):
+    title = db.StringProperty()
+    num_comments = db.IntegerProperty(default=0)
     tags = db.StringListProperty()
     
+    @classmethod
+    def create(cls, author, title, body, tags=None):
+        topic = cls(
+            author=author,
+            title=title,
+            body=body,
+            tags=[str(slugify(tag)) for tag in tags] if tags else []
+        )
+        topic.put()
+        return topic
+    
+    @classmethod
+    def hot_topics(cls):
+        return cls.all().order('-created').fetch(50)
+        
+    @classmethod
+    def topics_by_tag(cls, tag):
+        query = cls.all().filter('tags =', tag)
+        query.order('-created')
+        return query.fetch(50)
+        
     def add_tag(self, name):
         if name in self.tags: return
         
@@ -109,115 +151,25 @@ class TaggableMixin(db.Model):
     def remove_tag(self, name):
         self.tags = [tag for tag in self.tags if tag != name]
         self.put()
-
-
-
-class Topic(TaggableMixin, VotableMixin):
-    author = db.StringProperty()
-    title = db.StringProperty()
-    root_id = db.IntegerProperty()
-    num_comments = db.IntegerProperty(default=0)
-    created = db.DateTimeProperty(auto_now_add=True)
-    updated = db.DateTimeProperty(auto_now=True)
+        
+        
+    _comments = None
+    @property
+    def comments(self):
+        if not self._comments:
+            query = Comment.all().filter('topic_id =', self.id)
+            self._comments = query.order('-created').fetch(1000)
+        return self._comments
     
     @property
-    def id(self):
-        return int(self.key().id())
-    
-    @classmethod
-    def create(cls, author, title, body, tags=None):
-        if tags:
-            tags = [str(slugify(tag)) for tag in tags]
-        else:
-            tags = []
-            
-        topic = cls(
-            author=author,
-            title=title,
-            tags=tags
-        )
-        topic.put()
-        
-        comment = Comment(author=author, topic=topic, body=body)
-        comment.put()
-        
-        topic.root_id = comment.id
-        topic.put()
-        
-        Tag.increment_tags(topic.tags)
-        return topic
-    
-    @classmethod
-    def hot_topics(cls):
-        return cls.all().order('-created').fetch(50)
-        
-    @classmethod
-    def topics_by_tag(cls, tag):
-        query = cls.all().filter('tags =', tag)
-        query.order('-created')
-        return query.fetch(50)
-        
     def comment_graph(self):
-        query = Comment.all().filter('topic =', self)
-        comments = query.order('-created').fetch(1000)
-        
-        # update number of comments
-        if len(comments) != self.num_comments:
-            self.num_comments = len(comments)
+        if len(self.comments) != self.num_comments:
+            self.num_comments = len(self.comments)
             self.put()
         
-        graph = {}
-        for comment in comments:
+        graph = {self.id: self.get_reply_ids()}
+        for comment in self.comments:
             graph[comment.id] = comment.get_reply_ids()
-            
-        if not self.root_id in graph:
-            root = Comment.get_by_id(self.root_id)
-            graph[self.root_id] = root.get_reply_ids()
-        return comments, graph
+        return graph
 
 
-class Comment(VotableMixin):
-    author = db.StringProperty(default='anonymous')
-    body = db.TextProperty()
-    topic = db.ReferenceProperty(Topic, required=True)
-    parent_comment = db.SelfReferenceProperty()
-    
-    created = db.DateTimeProperty(auto_now_add=True)
-    updated = db.DateTimeProperty(auto_now=True)
-
-    has_replies = db.BooleanProperty(default=False)
-    reply_cache = db.ListProperty(int)
-    
-    @property
-    def id(self):
-        return int(self.key().id())
-    
-    def add_reply(self, author, body):
-        self.reply_cache = []
-        self.has_replies = True
-        self.put()
-        
-        comment = Comment(
-            author=author,
-            topic=self.topic,
-            parent_comment=self,
-            body=body
-        )
-        comment.put()
-        return comment
-    
-    def get_reply_ids(self):
-        if self.reply_cache:
-            return self.reply_cache
-        elif not self.has_replies:
-            return []
-        
-        query = Comment.all()
-        query.filter('parent_comment =', self)
-        query.order('-updated')
-        replies = query.fetch(1000)
-        
-        self.reply_cache = [reply.id for reply in replies]
-        self.put()
-        return self.reply_cache
-    

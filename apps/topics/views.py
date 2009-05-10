@@ -66,26 +66,25 @@ def topics_new(request):
 
 def topic(request, id):
     topic = Topic.get_by_id(int(id))
-    comments, graph = topic.comment_graph()
-    return render_to_response('topic.html', {
-        'comments': comments,
-        'graph': simplejson.dumps(graph),
-        'root': topic.root_id
-    }, context_instance=RequestContext(request))
-    
-def comments(request):
     if request.method == 'POST':
         parent_id = request.POST['parent_id']
-        parent = Comment.get_by_id(int(parent_id))
-        comment = parent.add_reply(
-            author=request.user.username, 
-            body=request.POST['body']
-        )
-        topic = comment.topic
-        redirect = '/topics/' + str(topic.id)
-        expire_page(redirect)
-        return HttpResponseRedirect(redirect)
-
+        if parent_id == id:
+            topic.add_reply(
+                author=request.user.username, 
+                body=request.POST['body']
+            )
+        else:
+            parent = Comment.get_by_id(int(parent_id))
+            comment = parent.add_reply(
+                author=request.user.username, 
+                body=request.POST['body']
+            )
+        expire_page('/topics/' + str(topic.id))
+    return render_to_response('topic.html', {
+        'topic': topic,
+        'comments': topic.comments,
+        'graph': simplejson.dumps(topic.comment_graph),
+    }, context_instance=RequestContext(request))
 
 
 def reddit_topics(request):

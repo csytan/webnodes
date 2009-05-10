@@ -6,12 +6,17 @@
 {% block style %}
     <style>
         #content {
-            width: 95%;
+            width: 100%;
             margin: auto;
             position: relative;
         }
         
-        .comment_container {
+        canvas {
+            z-index: 0;
+            position: absolute;
+        }
+        
+        .container {
             position: absolute;
             display: none;
             z-index: 1;
@@ -19,6 +24,11 @@
         
         .comment {
             width: 360px;
+            margin: auto;
+        }
+        
+        .topic {
+            width: 600px;
             margin: auto;
         }
         
@@ -113,9 +123,8 @@
         $(document).ready(function(){
             var d = new Date();
             var start = d.getTime();
-        
-            var graph = {{ graph|safe }};
-            $('#{{ root }}').initTopic(graph);
+
+            $('#{{topic.id}}').initTopic({{ graph|safe }});
         
             d = new Date();
             //$(document.body).append(d.getTime() - start + 'ms');
@@ -130,8 +139,29 @@
         <p style="text-align: center">Sorry, this site requires javascript</p>
     </noscript>
 
+    <div id="{{ topic.id }}" class="container">
+        <div class="comment topic box">
+            <div class="body">{{ topic.body|urlify_markdown|markdown }}</div>
+            <span style="float: right">
+                {{ topic.points }} points,
+                {% if reddit %}
+                    by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
+                {% else %}
+                    by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
+                {% endif %}
+                {{ topic.updated|timeago }}
+            </span>
+            <a class="reply" style="text-align:center" href="#">reply</a>
+        </div>
+        <div class="comment_nav">
+            <a class="prev" href="#">«</a>
+            <span class="page_num"></span>
+            <a class="next" href="#">»</a>
+        </div>
+    </div>
+
     {% for comment in comments %}
-        <div id="{{ comment.id }}" class="comment_container">
+        <div id="{{ comment.id }}" class="container">
             <div class="comment box">
                 <div class="body">{{ comment.body|urlify_markdown|markdown }}</div>
                 <span style="float: right">
@@ -153,9 +183,9 @@
         </div>
     {% endfor %}
 
-    <div id="reply_box" class="comment_container">
+    <div id="reply_box" class="container">
         <div class="comment box">
-            <form id="reply_form" action="/comments" method="post">
+            <form id="reply_form" action="" method="post">
                 <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
                 <textarea id="reply_textarea" name="body" style="height:200px; width:100%"></textarea>
                 <input type="submit" style="float:right" value="reply">
