@@ -7,14 +7,18 @@
 {% block style %}
     <style>
         #content {
-            width: 800px;
+            width: 600px;
+        }
+        
+        textarea, input[type=text] {
+            width: 100%;
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <form action="" method="post">
-        <table>{{ form.as_table }}</table>
+        {{ form.as_p }}
         <input type="submit" value="Submit">
     </form>
 {% endblock %}

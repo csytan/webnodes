@@ -23,11 +23,9 @@ blockquote, q           { quotes: none; }
 /* BASE */
 
 body {
-    font-family: 'Gill Sans',Helvetica,Arial,sans-serif;
+    font-family: Helvetica,Arial,sans-serif;
     font-size: 16px;
-    font-weight: 400;
-    line-height: 1.4;
-    font-family: Arial, sans-serif;
+    line-height: 1.5em;
     color: #2B332E;
     background:#15052A url(http://strawpoll.s3.amazonaws.com/c/nightsky.jpg) no-repeat scroll center top;
     background:#004976 url(http://bradcolbow.com/images_1008/background.jpg) repeat-x scroll center 0;
@@ -41,17 +39,16 @@ em                      { font-style: italic; }
 input, button, textarea { font-family: Arial, sans-serif; }
                         
 /* TYPE */
-p, ul, ol, dl, pre      { font-size: 1em; margin: 0 0 0.6em; }
-ul, ol                  { margin-left: 1.2em; }
+p, ul, ol, dl, pre      { font-size: 1em; margin-bottom: 0.8em; }
+ul, ol                  { margin-left: 2em; }
 ul ul                   { margin-bottom: 0; }
-h2, h3, h4, h5          { margin: 1em 0 0.2em; font-weight: bold; }
+h1, h2, h3, h4, h5      { margin-top: 0em; margin-bottom: 0.5em; }
 
-h1                      { margin: 0.25em 0 0; font-size: 1.5em; letter-spacing: -0.025em; font-weight: bold; }
-h2                      { font-size: 1.125em; margin-top: 0.25em; margin-bottom: 0.5em; line-height: 1.2em; }
-h3                      { font-size: 1em; margin-bottom: 0.25em; }
+h1                      { font-size: 1.3em; }
+h2                      { font-size: 1.125em; }
+h3                      { font-size: 1em;  }
 h4                      { font-size: 0.875em; }
                         
-/* LINKS */             
 a                       { color: #2D7BB2; text-decoration: none; outline: none; }
 a:hover                 { color: #2B332E; }
 a:visited {
@@ -62,6 +59,15 @@ pre, code {
     font-size: 0.8em;
 }
 
+label {
+    display: block;
+}
+
+input, textarea {
+    padding: 5px;
+    font-size: 1em;
+    margin-bottom: 5px;
+}
 
 /* base.html */
 #header {
@@ -84,8 +90,8 @@ pre, code {
 /* generic styles */
 .box {
     background-color: #FFFFFF;
-    padding: 10px;
-    border: 6px solid #A7B6BF;
+    padding: 0.8em;
+    border: 8px solid #A7B6BF;
     /* looks awful in google chrome, but nice in safari
     box-shadow: -5px 5px 25px #3F321B;
     -webkit-box-shadow: -5px 5px 25px #3F321B;

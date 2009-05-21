@@ -5,10 +5,10 @@ var ROOT = this.css({
     width: this.parent().width() - 20
 });
 var CONTAINER = this.parent();
-var NODE_WIDTH = 360;
+var NODE_WIDTH = 350;
 var LINK_COLOR = '#6F6F6F';
-var LINK_WIDTH = 6;
-var VERT_SPACE = 10; // unit of vertical spacing between comments
+var LINK_WIDTH = 8;
+var VERT_SPACE = 10; // unit of vertical spacing between nodes
 
 
 layout();
@@ -33,11 +33,9 @@ function update() {
 function initNode(node) {
     node.kids = node.kids || graph[node.id] || []; // list of DOM ids
     node.start = node.start || 0; // pagination index
-    node.priority = node.priority || 0;
     node.kidsLeft = node.offsetLeft;
     node.kidsWidth = node.offsetWidth;
     node.kidsTop = node.offsetTop + node.offsetHeight;
-    
     updateNode(node);
     return node;
 }
@@ -46,20 +44,15 @@ function updateNode(node) {
     node.maxKids = Math.floor(node.kidsWidth / NODE_WIDTH);
     node.nKids = Math.min(node.maxKids, node.kids.length - node.start);
     node.needsSpace = node.kids.length - node.start > node.maxKids;
-    if (node.perPage) {
-        node.perPage = Math.max(node.perPage, node.maxKids);
-    } else {
-        node.perPage = node.maxKids;
-    }
+    node.perPage = Math.max(node.perPage, node.maxKids) || node.maxKids;
 }
 
 function expand(node, node2) {
-    if (node.needsSpace && !node2.kids.length && 
+    if (node.needsSpace && !node2.nKids &&
             node.kidsTop + 100 > node2.kidsTop) {
         node.kidsLeft = Math.min(node.kidsLeft, node2.kidsLeft);
         node.kidsWidth += node2.kidsWidth;
         node.kidsTop = Math.max(node.kidsTop, node2.kidsTop);
-        
         updateNode(node);
         return true;
     }
@@ -110,7 +103,6 @@ function layoutKids(node) {
         kid.style.left = node.kidsLeft + (i * width) + 'px';
         kid.style.display = 'block';
         kid.style.width = width + 'px';
-        
         initNode(kid);
         kids.push(kid);
     }
@@ -145,8 +137,8 @@ function showNavButtons(node) {
 
 function drawConnections(node, kids) {
     var x = node.offsetLeft + node.offsetWidth / 2 - node.kidsLeft;
-    var y = node.offsetTop + node.offsetHeight - 35;
-    var height = node.kidsTop - node.offsetTop - node.offsetHeight + 40;
+    var y = node.offsetTop + node.offsetHeight - 30;
+    var height = node.kidsTop - node.offsetTop - node.offsetHeight + 30;
     var canvas = document.createElement('canvas');
 
     canvas.width = node.kidsWidth;
@@ -212,7 +204,14 @@ $('a.reply').live('click', function(e){
     update();
     
     $('#reply_box textarea').focus();
-    $('#parent_id').val(node.id);
+    
+    if ($(node).find('.topic').length) {
+        // no parent_id if replying to the topic
+        $('#parent_id').val('');
+    } else {
+        $('#parent_id').val(node.id);
+    }
+    
     return false;
 });
 

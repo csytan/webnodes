@@ -26,7 +26,7 @@ def expire_page(path):
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
-    tags = forms.CharField(required=False)
+    tag = forms.CharField(required=False)
 
 
 ### Request handlers ###
@@ -46,14 +46,12 @@ def topics_new(request):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
-            tags = form.cleaned_data['tags'].replace(' ', '').split(',')
             topic = Topic.create(
                 author=request.user.username,
                 title=form.cleaned_data['title'],
                 body=form.cleaned_data['body'],
-                tags=[tag for tag in tags if tag]
+                tag=form.cleaned_data['tag']
             )
-            
             redirect = '/topics/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
@@ -68,17 +66,11 @@ def topic(request, id):
     topic = Topic.get_by_id(int(id))
     if request.method == 'POST':
         parent_id = request.POST['parent_id']
-        if parent_id == id:
-            topic.add_reply(
-                author=request.user.username, 
-                body=request.POST['body']
-            )
-        else:
-            parent = Comment.get_by_id(int(parent_id))
-            comment = parent.add_reply(
-                author=request.user.username, 
-                body=request.POST['body']
-            )
+        parent = Comment.get_by_id(int(parent_id)) if parent_id else topic
+        parent.add_reply(
+            author=request.user.username, 
+            body=request.POST['body']
+        )
         expire_page('/topics/' + str(topic.id))
     return render_to_response('topic.html', {
         'topic': topic,

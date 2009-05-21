@@ -16,7 +16,7 @@ class RegistrationForm(forms.Form):
     password = forms.CharField()
 
 ### Views ###
-def users_register(request):
+def users_new(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -51,7 +51,7 @@ def users_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    redirect = request.GET.get('next', '/')
+                    redirect = request.POST.get('next', '/')
                     return HttpResponseRedirect(redirect)
                 else:
                     return HttpResponse('disabled acct')

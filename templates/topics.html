@@ -11,9 +11,16 @@
         #sidebar {
             float: right;
         }
-    
-        #sidebar a {
-            display: block;
+        
+        a.tag {
+            padding: 2px;
+            font-size: 1.1em;
+            background-color: #9BB2BF;
+            line-height: 1.8em;
+        }
+        
+        a.tag:hover {
+            background-color: #A7CBDF;
         }
         
         .topic {
@@ -29,49 +36,26 @@
     </style>
 {% endblock %}
 
-{% block script %}
-    <script>
-        function hsv_to_rgb(h, s, v) {
-            // http://nofunc.org/Color_Conversion_Library/
-            var R, G, A, B, C, S=s/255, V=v/255, H=h/255;
-            if(S>0) { 
-                if(H>=1) H=0;
-                H=6*H; F=H-Math.floor(H);
-                A=Math.round(255*V*(1-S));
-                B=Math.round(255*V*(1-(S*F)));
-                C=Math.round(255*V*(1-(S*(1-F))));
-                V=Math.round(255*V); 
-                switch(Math.floor(H)) {
-                    case 0: R=V; G=C; B=A; break;
-                    case 1: R=B; G=V; B=A; break;
-                    case 2: R=A; G=V; B=C; break;
-                    case 3: R=A; G=B; B=V; break;
-                    case 4: R=C; G=A; B=V; break;
-                    case 5: R=V; G=A; B=B; break;
-                }
-                return({r:R?R:0, g:G?G:0, b:B?B:0, a:1});
-            }
-            else return({r:(V=Math.round(V*255)), g:V, b:V, a:1});
-        };
-        rgb = hsv_to_rgb(202,48,191);
-        $(function(){
-            $('a.tag').each(function(){
-                var h = Math.min($(this).text().length * 25, 255);
-                var rgb = hsv_to_rgb(h,48,191);
-                $(this).css('background-color', 
-                'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b+ ')');
-            });
-        });
-    </script>
-{% endblock %}
-
 
 {% block content %}
     <div id="sidebar">
         <a href="/topics/new">Start a topic</a>
+        {% if user.is_anonymous %}
+            <form action="/users/login" method="post">
+                <input id="id_username" type="text" name="username" value="username" maxlength="30">
+                <br>
+                <input type="password" name="password" value="password" id="id_password">
+                <br>
+                <input type="submit" value="Register">
+                <input type="submit" value="Sign in">
+            </form>
+        {% endif %}
+        
         <h3>Tags</h3>
         {% for tag in tags %}
-            <a class="tag" href="/{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
+            <div>
+                <a class="tag" href="/{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
+            </div>
         {% endfor %}
     </div>
 
@@ -82,11 +66,12 @@
             {% else %}
                 <a class="title" href="/topics/{{ topic.id }}">{{ topic.title }}</a>
             {% endif %}
-            <p>
-            {% for tag_name in topic.tags %}
-                <a class="tag" href="/{{ tag_name }}">{{ tag_name }}</a>
-            {% endfor %}
-            </p>
+
+            {% if topic.tag %}
+                <a class="tag" href="/{{ topic.tag }}">{{ topic.tag }}</a>
+                <br>
+            {% endif %}
+
             <p style="text-align:right">
                 {{ topic.points }} points, 
                 {{ topic.num_comments }} comments,

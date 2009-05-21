@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 
 {% load tag_extras %}
-{% load markup %}
+
+{% block title %}
+    <title>webnodes | {{ topic.title }}</title>
+{% endblock %}
 
 {% block style %}
     <style>
         #content {
             width: 100%;
-            margin: auto;
-            position: relative;
+            max-width: 1500px;
         }
         
         canvas {
@@ -23,7 +25,7 @@
         }
         
         .comment {
-            width: 360px;
+            width: 350px;
             margin: auto;
         }
         
@@ -33,20 +35,18 @@
         }
         
         /* stuff within a comment */
+        .comment img {
+            max-width: 100%;
+        }
+
+        .comment .body {
+            overflow: auto;
+        }
+
         .score, .info, .points, .date {
             color: grey;
-        }
-        
-        .points {
             float: right;
             visibility: hidden;
-        }
-        .comment:hover .points {
-            visibility: visible;
-        }
-        
-        .date {
-            float: right;
         }
         
         a.reply {
@@ -54,21 +54,10 @@
             text-align: center;
         }
         
-        .date {
-            visibility: hidden;
-        }
-        
-        .comment:hover .reply,
-        .comment:hover .date {
+        .comment:hover .date,
+        .comment:hover .points, 
+        .comment:hover a.reply {
             visibility: visible;
-        }
-        
-        .comment img {
-            max-width: 100%;
-        }
-
-        .comment .body {
-            overflow: auto;
         }
 
         .comment_nav {
@@ -79,6 +68,8 @@
         .comment_nav a, 
         .comment_nav span {
             float: left;
+            font-size: 1.2em;
+            font-weight: normal;
             background-color: #59A5D1;
             color: white;
             text-align: center;
@@ -87,6 +78,10 @@
         
         .comment_nav a {
             width: 80px;
+        }
+        
+        .comment_nav span {
+            width: 100px;
         }
         
         a.prev {
@@ -105,10 +100,6 @@
         a.prev:active,
         a.next:active {
             background-color: #77C4EF;
-        }
-        
-        .comment_nav span {
-            width: 100px;
         }
     </style>
 {% endblock %}
@@ -141,7 +132,10 @@
 
     <div id="{{ topic.id }}" class="container">
         <div class="comment topic box">
-            <div class="body">{{ topic.body|urlify_markdown|markdown }}</div>
+            <div class="body">
+                <h1>{{ topic.title }}</h1>
+                {{ topic.body|markdownify }}
+            </div>
             <span style="float: right">
                 {{ topic.points }} points,
                 {% if reddit %}
@@ -163,7 +157,7 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="container">
             <div class="comment box">
-                <div class="body">{{ comment.body|urlify_markdown|markdown }}</div>
+                <div class="body">{{ comment.body|markdownify }}</div>
                 <span style="float: right">
                     {{ comment.points }} points,
                     {% if reddit %}
@@ -176,9 +170,9 @@
                 <a class="reply" style="text-align:center" href="#">reply</a>
             </div>
             <div class="comment_nav">
-                <a class="prev" href="#">«</a>
+                <a class="prev">«</a>
                 <span class="page_num"></span>
-                <a class="next" href="#">»</a>
+                <a class="next">»</a>
             </div>
         </div>
     {% endfor %}
@@ -187,7 +181,7 @@
         <div class="comment box">
             <form id="reply_form" action="" method="post">
                 <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="body" style="height:200px; width:100%"></textarea>
+                <textarea id="reply_textarea" name="body" style="height:200px; width:97%"></textarea>
                 <input type="submit" style="float:right" value="reply">
                 <a id="reply_cancel" href="#">cancel</a>
             </form>

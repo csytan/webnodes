@@ -4,16 +4,16 @@ from django.template.defaultfilters import slugify
 # Google imports
 from google.appengine.ext import db
 
+# Appengine patch imports
 from ragendja.auth.models import AnonymousUser, User, UserManager
 
 
-class AnonymousUser(AnonymousUser):
-    username = 'anonymous'
-    
+RESERVED_USERNAMES = ['anonymous', 'login', 'logout', 'admin']
+
 class UserManager(UserManager):
     def create_user(self, username, email, password=None):
         "Creates and saves a User with the given username, e-mail and password."
-        assert username != 'anonymous'
+        assert username not in RESERVED_USERNAMES
         assert username == slugify(username)
         if not email:
             user = super(UserManager, self).create_user(username, 'email@email.com', password)
@@ -24,3 +24,6 @@ class UserManager(UserManager):
 
 class User(User):
     objects = UserManager()
+    badges = db.StringListProperty()
+    
+    
