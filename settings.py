@@ -1,8 +1,15 @@
 ﻿import os
+import sys
 
-# library imports
 import lib
-import markdown
+
+# add lib directory to sys.path for global import
+sys.path.append(os.path.dirname(lib.__file__))
+
+# import global libs so they are cached:
+# appengine resets sys.path between requests
+import feedparser
+import markdown2
 
 DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 
@@ -17,7 +24,6 @@ ROOT_URLCONF = 'urls'
 INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.auth',
-    'django.contrib.markup',
     'apps.topics',
     'apps.users',
     'appenginepatcher',
