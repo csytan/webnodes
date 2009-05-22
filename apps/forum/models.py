@@ -1,6 +1,3 @@
-# Django imports
-from django.template.defaultfilters import slugify
-
 # Google imports
 from google.appengine.ext import db
 from google.appengine.api import memcache
@@ -28,13 +25,8 @@ def score(points, submitted_date):
 
 
 ### Models ###
-class Vote(db.Model):
-    direction = db.IntegerProperty() # 1 or -1
-    
-
 class Tag(db.Model):
     count = db.IntegerProperty(default=0)
-    moderators = db.StringListProperty()
     
     @property
     def name(self):
@@ -57,6 +49,14 @@ class Tag(db.Model):
             save_tags.append(tag)
         db.put(save_tags)
 
+
+class Group(db.Model):
+    title = db.StringProperty()
+    moderators = db.StringListProperty()
+
+    @property
+    def name(self):
+        return self.key().name()
 
 class Comment(db.Model):
     author = db.StringProperty()
@@ -108,23 +108,16 @@ class Comment(db.Model):
 
 class Topic(Comment):
     title = db.StringProperty()
+    group = db.StringProperty()
+    tags = db.StringListProperty()
     num_comments = db.IntegerProperty(default=0)
-    tag = db.StringProperty()
     
     @classmethod
-    def create(cls, author, title, body, tag):
-        topic = cls(
-            author=author,
-            title=title,
-            body=body,
-            tag=str(slugify(tag))
-        )
-        topic.put()
-        return topic
-    
-    @classmethod
-    def hot_topics(cls):
-        return cls.all().order('-created').fetch(50)
+    def recent_topics(cls, group):
+        query = cls.all()
+        query.filter('group =', group)
+        query.order('-created')
+        return query.fetch(50)
         
     @classmethod
     def topics_by_tag(cls, tag):

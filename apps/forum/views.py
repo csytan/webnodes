@@ -7,11 +7,12 @@ from django.core.cache import cache
 from django.utils.cache import get_cache_key
 from django import forms
 
+from django.template.defaultfilters import slugify
 from django.utils import simplejson
 
 # Local imports
 import reddit
-from models import Topic, Comment, Tag
+from models import Group, Topic, Comment, Tag
 
 
 ### Helper functions ###
@@ -26,33 +27,72 @@ def expire_page(path):
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
-    tag = forms.CharField(required=False)
+    tags = forms.CharField(required=False)
+    
+    def clean_tags(self):
+        tags = self.cleaned_data.get('tags', '')
+        tags = tags.split(',')
+        return [str(slugify(tag)) for tag in tags]
+        
 
-
+class GroupForm(forms.Form):
+    title = forms.CharField(max_length=200)
+    name = forms.CharField(max_length=100)
+    
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if not name:
+            raise forms.ValidationError('Enter a name for your group')
+        if name != slugify(name):
+            raise forms.ValidationError('Names may only contain letters, numbers, dashes and underscores.')
+        return name
+        
 ### Request handlers ###
-def topics(request):
+def groups(request):
+    pass
+    
+def groups_new(request):
+    if request.method == 'POST':
+        form = GroupForm(request.POST)
+        if form.is_valid():
+            group = Group.get_or_insert(
+                key_name=form.cleaned_data['name'],
+                title=form.cleaned_data['title']
+            )
+            redirect = '/'+ group
+            return HttpResponseRedirect(redirect)
+    else:
+        form = GroupForm()
+    
+    return render_to_response('form_page.html', {
+        'form': form
+    }, context_instance=RequestContext(request))
+    
+
+
+
+def topics(request, group):
     return render_to_response('topics.html', {
-        'topics': Topic.hot_topics(),
+        'group': group,
+        'topics': Topic.recent_topics(group),
         'tags': Tag.top_tags()
     }, context_instance=RequestContext(request))
 
-def topics_by_tag(request, tag):
-    return render_to_response('topics.html', {
-        'topics': Topic.topics_by_tag(tag),
-        'tags': Tag.top_tags()
-    }, context_instance=RequestContext(request))
-
-def topics_new(request):
+def topics_new(request, group):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
-            topic = Topic.create(
+            # check group name
+            
+            topic = Topic(
                 author=request.user.username,
+                group=group,
                 title=form.cleaned_data['title'],
                 body=form.cleaned_data['body'],
-                tag=form.cleaned_data['tag']
+                tags=form.cleaned_data['tags']
             )
-            redirect = '/topics/' + str(topic.id)
+            topic.put()
+            redirect = '/'+ group + '/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
     else:
@@ -62,7 +102,7 @@ def topics_new(request):
         'form': form
     }, context_instance=RequestContext(request))
 
-def topic(request, id):
+def topic(request, group, id):
     topic = Topic.get_by_id(int(id))
     if request.method == 'POST':
         parent_id = request.POST['parent_id']
@@ -74,6 +114,7 @@ def topic(request, id):
         expire_page('/topics/' + str(topic.id))
     return render_to_response('topic.html', {
         'topic': topic,
+        'group': group,
         'comments': topic.comments,
         'graph': simplejson.dumps(topic.comment_graph),
     }, context_instance=RequestContext(request))
@@ -82,12 +123,12 @@ def topic(request, id):
 def reddit_topics(request):
     return render_to_response('topics.html', {
         'topics': reddit.hot_topics(),
-        'reddit': True
+        'group': 'reddit'
     }, context_instance=RequestContext(request))
 
 def reddit_topic(request, id):
     data = reddit.get_thread_data(id)
-    data['reddit'] = True
+    data['group'] = 'reddit'
     return render_to_response('topic.html', data,
         context_instance=RequestContext(request))
 

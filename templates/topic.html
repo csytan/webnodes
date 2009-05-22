@@ -138,11 +138,11 @@
             </div>
             <span style="float: right">
                 {{ topic.points }} points,
-                {% if reddit %}
+                {% ifequal group 'reddit' %}
                     by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
                 {% else %}
                     by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
-                {% endif %}
+                {% endifequal %}
                 {{ topic.updated|timeago }}
             </span>
             <a class="reply" style="text-align:center" href="#">reply</a>
@@ -160,11 +160,11 @@
                 <div class="body">{{ comment.body|markdownify }}</div>
                 <span style="float: right">
                     {{ comment.points }} points,
-                    {% if reddit %}
+                    {% ifequal group 'reddit' %}
                         by <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
                     {% else %}
                         by <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
-                    {% endif %}
+                    {% endifequal %}
                     {{ comment.updated|timeago }}
                 </span>
                 <a class="reply" style="text-align:center" href="#">reply</a>

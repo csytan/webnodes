@@ -39,7 +39,7 @@
 
 {% block content %}
     <div id="sidebar">
-        <a href="/topics/new">Start a topic</a>
+        <a href="/{{ group }}/new_topic">Start a topic</a>
         {% if user.is_anonymous %}
             <form action="/users/login" method="post">
                 <input id="id_username" type="text" name="username" value="username" maxlength="30">
@@ -61,11 +61,7 @@
 
     {% for topic in topics %}
         <div class="topic box">
-            {% if reddit %}
-                <a class="title" href="/reddit/{{ topic.id }}">{{ topic.title }}</a>
-            {% else %}
-                <a class="title" href="/topics/{{ topic.id }}">{{ topic.title }}</a>
-            {% endif %}
+            <a class="title" href="/{{ group }}/{{ topic.id }}">{{ topic.title }}</a>
 
             {% if topic.tag %}
                 <a class="tag" href="/{{ topic.tag }}">{{ topic.tag }}</a>
@@ -75,11 +71,11 @@
             <p style="text-align:right">
                 {{ topic.points }} points, 
                 {{ topic.num_comments }} comments,
-                {% if reddit %}
+                {% ifequal group 'reddit' %}
                     by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
                     by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
-                {% endif %}
+                {% endifequal %}
                 {{ topic.updated|timeago }}
             </p>
         </div>

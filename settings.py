@@ -24,7 +24,7 @@ ROOT_URLCONF = 'urls'
 INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.auth',
-    'apps.topics',
+    'apps.forum',
     'apps.users',
     'appenginepatcher',
 )
