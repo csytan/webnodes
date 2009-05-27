@@ -2,12 +2,10 @@
 from django.shortcuts import render_to_response
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
-
+from django.template.defaultfilters import slugify
 from django.core.cache import cache
 from django.utils.cache import get_cache_key
 from django import forms
-
-from django.template.defaultfilters import slugify
 from django.utils import simplejson
 
 # Local imports
@@ -47,10 +45,11 @@ class GroupForm(forms.Form):
             raise forms.ValidationError('Names may only contain letters, numbers, dashes and underscores.')
         return name
         
+        
 ### Request handlers ###
-def groups(request):
+def index(request):
     pass
-    
+
 def groups_new(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -59,17 +58,13 @@ def groups_new(request):
                 key_name=form.cleaned_data['name'],
                 title=form.cleaned_data['title']
             )
-            redirect = '/'+ group
-            return HttpResponseRedirect(redirect)
+            return HttpResponseRedirect('/' + group.name)
     else:
         form = GroupForm()
     
-    return render_to_response('form_page.html', {
+    return render_to_response('basic_form.html', {
         'form': form
     }, context_instance=RequestContext(request))
-    
-
-
 
 def topics(request, group):
     return render_to_response('topics.html', {
@@ -82,11 +77,10 @@ def topics_new(request, group):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
-            # check group name
-            
+            group = Group.get_by_key_name(group)
             topic = Topic(
                 author=request.user.username,
-                group=group,
+                group=group.name,
                 title=form.cleaned_data['title'],
                 body=form.cleaned_data['body'],
                 tags=form.cleaned_data['tags']
@@ -98,7 +92,7 @@ def topics_new(request, group):
     else:
         form = TopicForm()
     
-    return render_to_response('topics_new.html', {
+    return render_to_response('basic_form.html', {
         'form': form
     }, context_instance=RequestContext(request))
 
@@ -117,6 +111,23 @@ def topic(request, group, id):
         'group': group,
         'comments': topic.comments,
         'graph': simplejson.dumps(topic.comment_graph),
+    }, context_instance=RequestContext(request))
+
+
+def topic_edit(request, group, id):
+    topic = Topic.get_by_id(int(id))
+    if request.method == 'POST':
+        form = TopicForm(request.POST)
+        if form.is_valid():
+            topic.edit()
+            redirect = '/'+ group + '/' + str(topic.id)
+            expire_page(redirect)
+            return HttpResponseRedirect(redirect)
+    else:
+        form = TopicForm()
+    
+    return render_to_response('basic_form.html', {
+        'form': form
     }, context_instance=RequestContext(request))
 
 

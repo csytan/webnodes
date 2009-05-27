@@ -2,6 +2,11 @@
 
 {% load tag_extras %}
 
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+
+
 {% block style %}
     <style>
         #content {
@@ -9,6 +14,7 @@
         }
     
         #sidebar {
+            width: 200px;
             float: right;
         }
         
@@ -40,18 +46,8 @@
 {% block content %}
     <div id="sidebar">
         <a href="/{{ group }}/new_topic">Start a topic</a>
-        {% if user.is_anonymous %}
-            <form action="/users/login" method="post">
-                <input id="id_username" type="text" name="username" value="username" maxlength="30">
-                <br>
-                <input type="password" name="password" value="password" id="id_password">
-                <br>
-                <input type="submit" value="Register">
-                <input type="submit" value="Sign in">
-            </form>
-        {% endif %}
-        
-        <h3>Tags</h3>
+
+        <h2>Tags</h2>
         {% for tag in tags %}
             <div>
                 <a class="tag" href="/{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
@@ -61,7 +57,7 @@
 
     {% for topic in topics %}
         <div class="topic box">
-            <a class="title" href="/{{ group }}/{{ topic.id }}">{{ topic.title }}</a>
+            <h1><a href="/{{ group }}/{{ topic.id }}">{{ topic.title }}</a></h1>
 
             {% if topic.tag %}
                 <a class="tag" href="/{{ topic.tag }}">{{ topic.tag }}</a>

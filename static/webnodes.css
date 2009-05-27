@@ -92,13 +92,5 @@ input, textarea {
     background-color: #FFFFFF;
     padding: 0.8em;
     border: 8px solid #A7B6BF;
-    /* looks awful in google chrome, but nice in safari
-    box-shadow: -5px 5px 25px #3F321B;
-    -webkit-box-shadow: -5px 5px 25px #3F321B;
-    -moz-box-shadow: -5px 5px 25px #3F321B;
-    */
 }
 
-.title {
-    font-size:1.3em;
-}

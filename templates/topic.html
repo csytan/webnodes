@@ -3,7 +3,7 @@
 {% load tag_extras %}
 
 {% block title %}
-    <title>webnodes | {{ topic.title }}</title>
+    <title>{{ group }} | {{ topic.title }}</title>
 {% endblock %}
 
 {% block style %}
@@ -133,13 +133,13 @@
     <div id="{{ topic.id }}" class="container">
         <div class="comment topic box">
             <div class="body">
-                <h1>{{ topic.title }}</h1>
+                <h1><a href="/{{ group }}/{{ topic.id }}">{{ topic.title }}</a></h1>
                 {{ topic.body|markdownify }}
             </div>
             <span style="float: right">
                 {{ topic.points }} points,
                 {% ifequal group 'reddit' %}
-                    by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
+                    by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
                     by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                 {% endifequal %}
@@ -161,7 +161,7 @@
                 <span style="float: right">
                     {{ comment.points }} points,
                     {% ifequal group 'reddit' %}
-                        by <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>
+                        by <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>,
                     {% else %}
                         by <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
                     {% endifequal %}
