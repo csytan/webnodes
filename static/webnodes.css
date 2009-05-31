@@ -89,6 +89,7 @@ input, textarea {
 
 /* generic styles */
 .box {
+    position: relative;
     background-color: #FFFFFF;
     padding: 0.8em;
     border: 8px solid #A7B6BF;
