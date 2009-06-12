@@ -1,5 +1,6 @@
 # Google imports
 from google.appengine.ext import db
+from google.appengine.ext.db import polymodel
 from google.appengine.api import memcache
 
 
@@ -23,70 +24,22 @@ def score(points, submitted_date):
     return round(order + sign * age / 45000, 7)
 
 
-### Custom Properties ###
-from google.appengine.ext import db
-from google.appengine.api import datastore_types
-from django.utils import simplejson
-class JSONProperty(db.Property):
-    def get_value_for_datastore(self, model_instance):
-        value = super(JSONProperty, self).get_value_for_datastore(model_instance)
-        return db.Text(self._deflate(value))
-    def validate(self, value):
-        return self._inflate(value)
-    def make_value_from_datastore(self, value):
-        return self._inflate(value)
-    def _inflate(self, value):
-        if value is None:
-            return {}
-        if isinstance(value, unicode) or isinstance(value, str):
-            return simplejson.loads(value)
-        return value
-    def _deflate(self, value):
-        return simplejson.dumps(value)
-    data_type = datastore_types.Text
-
-
 ### Models ###
-class Tag(db.Model):
-    count = db.IntegerProperty(default=0)
+class Group(db.Model):
+    title = db.StringProperty()
+    moderators = db.StringListProperty()
     
     @property
     def name(self):
         return self.key().name()
-        
-    @classmethod
-    def top_tags(cls):
-        return cls.all().order('-count').fetch(50)
-        
-    @classmethod
-    def increment(cls, tag_names):
-        """Increments the tag count by one"""
-        tags = cls.get_by_key_name(tag_names)
 
-        save_tags = []
-        for name, tag in zip(tag_names, tags):
-            if not tag:
-                tag = Tag(key_name=name)
-            tag.count += 1
-            save_tags.append(tag)
-        db.put(save_tags)
-
-
-class Group(db.Model):
-    title = db.StringProperty()
-    moderators = db.StringListProperty()
-
-    @property
-    def name(self):
-        return self.key().name()
-
-class Comment(db.Model):
+class Comment(polymodel.PolyModel):
     author = db.StringProperty()
     body = db.TextProperty()
     topic_id = db.IntegerProperty()
     parent_id = db.IntegerProperty()
     
-    points = db.IntegerProperty(default=0)
+    likes = db.StringListProperty()
     
     has_replies = db.BooleanProperty(default=False, indexed=False)
     reply_cache = db.ListProperty(int, indexed=False)
@@ -97,6 +50,10 @@ class Comment(db.Model):
     @property
     def id(self):
         return int(self.key().id())
+
+    @property
+    def points(self):
+        return len(self.likes)
 
     def add_reply(self, author, body):
         self.reply_cache = []
@@ -118,9 +75,10 @@ class Comment(db.Model):
         if not self.has_replies:
             return []
 
-        query = Comment.all(keys_only=True)
-        query.filter('parent_id =', self.id)
-        query.order('-updated')
+        query = db.GqlQuery('SELECT __key__ FROM Comment ' +
+                            'WHERE parent_id = :1 ' +
+                            'ORDER BY updated DESC',
+                            self.id)
         reply_keys = query.fetch(1000)
 
         self.reply_cache = [int(key.id()) for key in reply_keys]
@@ -131,9 +89,7 @@ class Comment(db.Model):
 class Topic(Comment):
     title = db.StringProperty()
     group = db.StringProperty()
-    tags = db.StringListProperty()
     num_comments = db.IntegerProperty(default=0)
-    history = JSONProperty()
     
     @classmethod
     def recent_topics(cls, group):

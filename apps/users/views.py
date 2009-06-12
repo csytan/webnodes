@@ -10,10 +10,12 @@ from django.template import RequestContext
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput)
+    next = forms.CharField(widget=forms.HiddenInput)
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField()
+    next = forms.CharField(widget=forms.HiddenInput)
 
 ### Views ###
 def users_new(request):
@@ -30,10 +32,12 @@ def users_new(request):
                 password=form.cleaned_data['password']
             )
             login(request, user)
-            redirect = request.GET.get('next', '/')
+            redirect = form.cleaned_data['next']
             return HttpResponseRedirect(redirect)
     else:
-        form = RegistrationForm()
+        form = RegistrationForm(
+            initial={'next': request.GET.get('next', '/')}
+        )
         
     return render_to_response('users/login.html', {
         'registration_form': form,
@@ -51,14 +55,14 @@ def users_login(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    redirect = request.POST.get('next', '/')
+                    redirect = form.cleaned_data['next']
                     return HttpResponseRedirect(redirect)
                 else:
                     return HttpResponse('disabled acct')
-            else:
-                return HttpResponse(str(user))
     else:
-        form = LoginForm()
+        form = LoginForm(
+            initial={'next': request.GET.get('next', '/')}
+        )
         
     return render_to_response('users/login.html', {
         'login_form': form,

@@ -7,10 +7,11 @@ from django.core.cache import cache
 from django.utils.cache import get_cache_key
 from django import forms
 from django.utils import simplejson
+from django.contrib.auth.decorators import login_required
 
 # Local imports
 import reddit
-from models import Group, Topic, Comment, Tag
+from models import Group, Topic, Comment
 
 
 ### Helper functions ###
@@ -25,13 +26,6 @@ def expire_page(path):
 class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
-    tags = forms.CharField(required=False)
-    
-    def clean_tags(self):
-        tags = self.cleaned_data.get('tags', '')
-        tags = tags.split(',')
-        return [str(slugify(tag)) for tag in tags]
-        
 
 class GroupForm(forms.Form):
     title = forms.CharField(max_length=200)
@@ -48,7 +42,7 @@ class GroupForm(forms.Form):
         
 ### Request handlers ###
 def index(request):
-    pass
+    return topics(request, 'webnodes')
 
 def groups_new(request):
     if request.method == 'POST':
@@ -69,21 +63,20 @@ def groups_new(request):
 def topics(request, group):
     return render_to_response('topics.html', {
         'group': group,
-        'topics': Topic.recent_topics(group),
-        'tags': Tag.top_tags()
+        'topics': Topic.recent_topics(group)
     }, context_instance=RequestContext(request))
 
+@login_required
 def topics_new(request, group):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
-            group = Group.get_by_key_name(group)
+            #assert Group.get_by_key_name(group)
             topic = Topic(
                 author=request.user.username,
-                group=group.name,
+                group=group,
                 title=form.cleaned_data['title'],
-                body=form.cleaned_data['body'],
-                tags=form.cleaned_data['tags']
+                body=form.cleaned_data['body']
             )
             topic.put()
             redirect = '/'+ group + '/' + str(topic.id)
@@ -97,15 +90,17 @@ def topics_new(request, group):
     }, context_instance=RequestContext(request))
 
 def topic(request, group, id):
-    topic = Topic.get_by_id(int(id))
     if request.method == 'POST':
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect('/users/login?next=' + request.path)
         parent_id = request.POST['parent_id']
-        parent = Comment.get_by_id(int(parent_id)) if parent_id else topic
+        parent = Comment.get_by_id(int(parent_id))
         parent.add_reply(
             author=request.user.username, 
             body=request.POST['body']
         )
-        expire_page('/topics/' + str(topic.id))
+        expire_page('/topics/' + id)
+    topic = Topic.get_by_id(int(id))
     return render_to_response('topic.html', {
         'topic': topic,
         'group': group,

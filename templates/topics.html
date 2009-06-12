@@ -46,13 +46,6 @@
 {% block content %}
     <div id="sidebar">
         <a href="/{{ group }}/new_topic">Start a topic</a>
-
-        <h2>Tags</h2>
-        {% for tag in tags %}
-            <div>
-                <a class="tag" href="/{{ tag.name }}">{{ tag.name }} ({{ tag.count }})</a>
-            </div>
-        {% endfor %}
     </div>
 
     {% for topic in topics %}

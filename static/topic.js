@@ -203,14 +203,8 @@ $('a.reply').live('click', function(e){
     
     update();
     
+    $('#parent_id').val(node.id);
     $('#reply_box textarea').focus();
-    
-    if ($(node).find('.topic').length) {
-        // no parent_id if replying to the topic
-        $('#parent_id').val('');
-    } else {
-        $('#parent_id').val(node.id);
-    }
     
     return false;
 });

@@ -133,7 +133,7 @@
     <div id="{{ topic.id }}" class="container">
         <div class="comment topic box">
             <div class="body">
-                <h1><a href="/{{ group }}/{{ topic.id }}">{{ topic.title }}</a></h1>
+                <h1>{{ topic.title }}</h1>
                 {{ topic.body|markdownify }}
             </div>
             <span style="float: right">
@@ -157,8 +157,8 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="container">
             <div class="comment box">
-                <div style="position:absolute;top:10px;right:40px;visibility:hidden">
-                    up / down
+                <div class="voting" style="position:absolute;top:10px;right:40px;visibility:hidden">
+                    <a class="up" href="#">up</a>
                 </div>
                 <div class="body">
                     {{ comment.body|markdownify }}

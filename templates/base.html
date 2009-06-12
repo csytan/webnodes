@@ -20,9 +20,8 @@
 <body>
     <div id="header">
         <div id="header_profile">
-            <span>{{ user.username }}</span>
-            <span>|</span>
             {% if user.is_authenticated %}
+                <span>{{ user.username }} | </span>
                 <a href="/users/logout">sign out</a>
             {% else %}
                 <a href="/users/login">sign in</a>

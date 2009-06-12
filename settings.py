@@ -8,7 +8,7 @@ ADMINS = ()
 DATABASE_ENGINE = 'appengine'
 DJANGO_STYLE_MODEL_KIND = False
 AUTH_USER_MODULE = 'apps.users.models'
-
+LOGIN_URL = '/users/login'
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (

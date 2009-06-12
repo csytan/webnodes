@@ -18,7 +18,7 @@ class UserManager(UserManager):
         if not email:
             user = super(UserManager, self).create_user(username, 'email@email.com', password)
             user.email = None
-            user.save()
+            user.put()
             return user
         return super(UserManager, self).create_user(username, email, password)
 
