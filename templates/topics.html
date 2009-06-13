@@ -45,7 +45,8 @@
 
 {% block content %}
     <div id="sidebar">
-        <a href="/{{ group }}/new_topic">Start a topic</a>
+        <h2><a href="/{{ group }}/new_topic">Start a topic</a></h2>
+        {{ sidebar|markdownify }}
     </div>
 
     {% for topic in topics %}

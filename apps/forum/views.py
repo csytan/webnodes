@@ -36,7 +36,7 @@ class GroupForm(forms.Form):
         if not name:
             raise forms.ValidationError('Enter a name for your group')
         if name != slugify(name):
-            raise forms.ValidationError('Names may only contain letters, numbers, dashes and underscores.')
+            raise forms.ValidationError('Group names may only contain letters, numbers, dashes and underscores.')
         return name
         
         
@@ -61,8 +61,17 @@ def groups_new(request):
     }, context_instance=RequestContext(request))
 
 def topics(request, group):
+    #grp = Group.get_by_key_name('webnodes')
     return render_to_response('topics.html', {
         'group': group,
+        'sidebar': """
+Links
+------------
+[reddit](/reddit)
+![Alt text here](http://static.reddit.com/reddit.com.header.png "Image title here")
+
+
+        """,
         'topics': Topic.recent_topics(group)
     }, context_instance=RequestContext(request))
 
@@ -71,7 +80,7 @@ def topics_new(request, group):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
-            #assert Group.get_by_key_name(group)
+            assert Group.get_by_key_name(group)
             topic = Topic(
                 author=request.user.username,
                 group=group,

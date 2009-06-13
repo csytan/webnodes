@@ -10,12 +10,12 @@ from django.template import RequestContext
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput)
-    next = forms.CharField(widget=forms.HiddenInput)
+    next = forms.CharField(widget=forms.HiddenInput, required=False)
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField()
-    next = forms.CharField(widget=forms.HiddenInput)
+    next = forms.CharField(widget=forms.HiddenInput, required=False)
 
 ### Views ###
 def users_new(request):

@@ -14,6 +14,5 @@ urlpatterns = patterns('apps',
     (r'^reddit/(.+)$', 'forum.views.reddit_topic'),
     (r'^(.+)/(\d+)$', 'forum.views.topic'),
     (r'^(.+)/(\d+)/edit$', 'forum.views.topic_edit'),
-    (r'^(.+)/\d+/(\d+)/edit$', 'forum.views.comment_edit'),
     (r'^(.+)$', 'forum.views.topics'),
 )

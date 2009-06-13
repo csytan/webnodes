@@ -1,8 +1,6 @@
 # Google imports
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
-from google.appengine.api import memcache
-
 
 ### Helper functions ###
 def score(points, submitted_date):
@@ -28,10 +26,12 @@ def score(points, submitted_date):
 class Group(db.Model):
     title = db.StringProperty()
     moderators = db.StringListProperty()
-    
+    sidebar = db.TextProperty()
+
     @property
     def name(self):
         return self.key().name()
+
 
 class Comment(polymodel.PolyModel):
     author = db.StringProperty()
