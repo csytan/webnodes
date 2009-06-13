@@ -1,7 +1,7 @@
 from django import forms
 from django.shortcuts import render_to_response
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.contrib.auth.models import User
+from models import User
 from django.contrib.auth import authenticate, login, logout
 from django.template import RequestContext
 
@@ -22,10 +22,9 @@ def users_new(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            User.objects.create_user(
+            User.create(
                 username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
-                email=None
+                password=form.cleaned_data['password']
             )
             user = authenticate(
                 username=form.cleaned_data['username'], 

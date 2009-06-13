@@ -44,6 +44,7 @@ class GroupForm(forms.Form):
 def index(request):
     return topics(request, 'webnodes')
 
+@login_required
 def groups_new(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -61,7 +62,7 @@ def groups_new(request):
     }, context_instance=RequestContext(request))
 
 def topics(request, group):
-    #grp = Group.get_by_key_name('webnodes')
+    grp = Group.get_by_key_name('webnodes')
     return render_to_response('topics.html', {
         'group': group,
         'sidebar': """
