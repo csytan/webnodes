@@ -16,4 +16,4 @@ handlers:
   static_dir: static
 
 - url: /.*
-  script: main.py
+  script: common/appenginepatch/main.py

@@ -6,15 +6,15 @@ DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 ADMINS = ()
 
 DATABASE_ENGINE = 'appengine'
-AUTHENTICATION_BACKENDS = ('apps.users.models.ModelBackend',)
+DJANGO_STYLE_MODEL_KIND = False
+AUTH_USER_MODULE = 'apps.users.models'
 LOGIN_URL = '/users/login'
 ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
-### Remember to disable InstallAuthentication() in appengine_django/__init__.py
-    'appengine_django',
     'django.contrib.sessions',
     'django.contrib.auth',
+    'appenginepatcher',
     'apps.forums',
     'apps.users',
 )
