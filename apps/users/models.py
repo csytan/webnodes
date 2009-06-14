@@ -1,9 +1,10 @@
-# Django imports
-from django.template.defaultfilters import slugify
-
 # Google imports
 from google.appengine.ext import db
+
+# Django imports
+from django.template.defaultfilters import slugify
 from django.contrib.auth import models
+
 
 RESERVED_USERNAMES = ['anonymous', 'login', 'logout', 'admin']
 

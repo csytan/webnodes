@@ -59,14 +59,13 @@
             {% endif %}
 
             <p style="text-align:right">
-                {{ topic.points }} points, 
                 {{ topic.num_comments }} comments,
+                {{ topic.updated|timeago }}, by
                 {% ifequal group 'reddit' %}
-                    by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
+                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
-                    by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
+                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                 {% endifequal %}
-                {{ topic.updated|timeago }}
             </p>
         </div>
     {% endfor %}
