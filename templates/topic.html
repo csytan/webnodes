@@ -3,7 +3,7 @@
 {% load tag_extras %}
 
 {% block title %}
-    <title>{{ group }} | {{ topic.title }}</title>
+    <title>{{ forum }} | {{ topic.title }}</title>
 {% endblock %}
 
 {% block style %}
@@ -74,6 +74,7 @@
             color: white;
             text-align: center;
             visibility: hidden;
+            padding: 0px;
         }
         
         .comment_nav a {
@@ -138,7 +139,7 @@
             </div>
             <span style="float: right">
                 {{ topic.points }} points,
-                {% ifequal group 'reddit' %}
+                {% ifequal forum 'reddit' %}
                     by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
                     by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
@@ -165,7 +166,7 @@
                 </div>
                 <span style="float: right">
                     {{ comment.points }} points,
-                    {% ifequal group 'reddit' %}
+                    {% ifequal forum 'reddit' %}
                         by <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>,
                     {% else %}
                         by <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,

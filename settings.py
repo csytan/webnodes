@@ -15,7 +15,7 @@ INSTALLED_APPS = (
     'appengine_django',
     'django.contrib.sessions',
     'django.contrib.auth',
-    'apps.forum',
+    'apps.forums',
     'apps.users',
 )
 
@@ -37,7 +37,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
 )
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates')
+    os.path.join(os.path.dirname(__file__), 'templates'),
 )
 TEMPLATE_DEBUG = DEBUG
 

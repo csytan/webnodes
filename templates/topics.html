@@ -3,7 +3,7 @@
 {% load tag_extras %}
 
 {% block title %}
-    <title>{{ title }}</title>
+    <title>{{ forum }}</title>
 {% endblock %}
 
 
@@ -12,21 +12,18 @@
         #content {
             width: 1000px;
         }
-    
+        
         #sidebar {
             width: 200px;
             float: right;
         }
         
-        a.tag {
-            padding: 2px;
-            font-size: 1.1em;
-            background-color: #9BB2BF;
-            line-height: 1.8em;
+        #sidebar ul {
+            margin: 0px;
         }
         
-        a.tag:hover {
-            background-color: #A7CBDF;
+        #sidebar li {
+            list-style-type: none;
         }
         
         .topic {
@@ -45,26 +42,24 @@
 
 {% block content %}
     <div id="sidebar">
-        <h2><a href="/{{ group }}/new_topic">Start a topic</a></h2>
+        <h2>
+            <a href="/{{ forum }}/new_topic">Start a topic</a>
+        </h2>
         {{ sidebar|markdownify }}
     </div>
 
     {% for topic in topics %}
         <div class="topic box">
-            <h1><a href="/{{ group }}/{{ topic.id }}">{{ topic.title }}</a></h1>
-
-            {% if topic.tag %}
-                <a class="tag" href="/{{ topic.tag }}">{{ topic.tag }}</a>
-                <br>
-            {% endif %}
-
+            <h1>
+                <a href="/{{ forum }}/{{ topic.id }}">{{ topic.title }}</a>
+            </h1>
             <p style="text-align:right">
                 {{ topic.num_comments }} comments,
                 {{ topic.updated|timeago }}, by
-                {% ifequal group 'reddit' %}
-                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
+                {% ifequal forum 'reddit' %}
+                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
                 {% else %}
-                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
+                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>
                 {% endifequal %}
             </p>
         </div>

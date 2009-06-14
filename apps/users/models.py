@@ -60,7 +60,10 @@ class User(db.Model):
 
 class ModelBackend(object):
     def authenticate(self, username=None, password=None):
-        return User.get_by_key_name(username)
+        user = User.get_by_key_name(username)
+        if user.check_password(password):
+            return user
+        return None
 
     def get_user(self, user_id):
         return User.get_by_key_name(user_id)

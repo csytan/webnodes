@@ -2,7 +2,7 @@ indexes:
   - kind: Comment
     properties:
     - name: class
-    - name: group
+    - name: forum
     - name: created
       direction: desc
 

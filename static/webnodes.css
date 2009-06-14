@@ -26,7 +26,7 @@ body {
     font-family: Helvetica,Arial,sans-serif;
     font-size: 16px;
     line-height: 1.5em;
-    color: #2B332E;
+    color: black;
     background:#15052A url(http://strawpoll.s3.amazonaws.com/c/nightsky.jpg) no-repeat scroll center top;
     background:#004976 url(http://bradcolbow.com/images_1008/background.jpg) repeat-x scroll center 0;
     background: #BFBFBF;
@@ -49,15 +49,11 @@ h2                      { font-size: 1.125em; }
 h3                      { font-size: 1em;  }
 h4                      { font-size: 0.875em; }
                         
-a                       { color: #2D7BB2; text-decoration: none; outline: none; }
-a:hover                 { color: white; background-color: #2D7BB2; }
-a:visited {
-    color:#666666;
-}
+a                       { color: #2D7BB2; text-decoration: none; outline: none; padding: 3px 0px;}
+a:hover                 { color: #FFFFFF; background-color: #2D7BB2; }
+a:visited               { color: #67767F; }
 
-pre, code {
-    font-size: 0.8em;
-}
+pre, code               { font-size: 0.8em; }
 
 label {
     display: block;
@@ -71,6 +67,7 @@ input, textarea {
 
 /* base.html */
 #header {
+    margin-top: 5px;
     padding-left: 5px;
     font-size: 1.2em;
     height: 40px;

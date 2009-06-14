@@ -21,16 +21,17 @@
     <div id="header">
         <div id="header_profile">
             {% if user.is_authenticated %}
-                <span>{{ user.username }} | </span>
+                <a href="/users/{{user.username}}">{{ user.username }}</a>
+                |
                 <a href="/users/logout">sign out</a>
             {% else %}
                 <a href="/users/login">sign in</a>
             {% endif %}
         </div>
         <a href="/">home</a>
-        {% if group %}
+        {% if forum %}
             <span>‣</span>
-            <a href="/{{ group }}">{{ group }}</a>
+            <a href="/{{ forum }}">{{ forum }}</a>
         {% endif %}
     </div>
     <div id="content">

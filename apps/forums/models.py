@@ -23,7 +23,7 @@ def score(points, submitted_date):
 
 
 ### Models ###
-class Group(db.Model):
+class Forum(db.Model):
     title = db.StringProperty()
     moderators = db.StringListProperty()
     sidebar = db.TextProperty()
@@ -46,6 +46,13 @@ class Comment(polymodel.PolyModel):
     
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
+    
+    @classmethod
+    def get_by_username(cls, username):
+        query = cls.all()
+        query.filter('author =', username)
+        query.order('-created')
+        return query.fetch(50)
     
     @property
     def id(self):
@@ -88,13 +95,13 @@ class Comment(polymodel.PolyModel):
 
 class Topic(Comment):
     title = db.StringProperty()
-    group = db.StringProperty()
+    forum = db.StringProperty()
     num_comments = db.IntegerProperty(default=0)
     
     @classmethod
-    def recent_topics(cls, group):
+    def recent_topics(cls, forum):
         query = cls.all()
-        query.filter('group =', group)
+        query.filter('forum =', forum)
         query.order('-created')
         return query.fetch(50)
         

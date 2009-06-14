@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 # Local imports
 import reddit
-from models import Group, Topic, Comment
+from models import Forum, Topic, Comment
 
 
 ### Helper functions ###
@@ -27,16 +27,16 @@ class TopicForm(forms.Form):
     title = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
 
-class GroupForm(forms.Form):
+class ForumForm(forms.Form):
     title = forms.CharField(max_length=200)
     name = forms.CharField(max_length=100)
     
     def clean_name(self):
         name = self.cleaned_data['name']
         if not name:
-            raise forms.ValidationError('Enter a name for your group')
+            raise forms.ValidationError('Enter a name for your forum')
         if name != slugify(name):
-            raise forms.ValidationError('Group names may only contain letters, numbers, dashes and underscores.')
+            raise forms.ValidationError('Forum names may only contain letters, numbers, dashes and underscores.')
         return name
         
         
@@ -45,51 +45,50 @@ def index(request):
     return topics(request, 'webnodes')
 
 @login_required
-def groups_new(request):
+def new_forum(request):
     if request.method == 'POST':
-        form = GroupForm(request.POST)
+        form = ForumForm(request.POST)
         if form.is_valid():
-            group = Group.get_or_insert(
+            forum = Forum.get_or_insert(
                 key_name=form.cleaned_data['name'],
                 title=form.cleaned_data['title']
             )
-            return HttpResponseRedirect('/' + group.name)
+            return HttpResponseRedirect('/' + forum.name)
     else:
-        form = GroupForm()
+        form = ForumForm()
     
     return render_to_response('basic_form.html', {
         'form': form
     }, context_instance=RequestContext(request))
 
-def topics(request, group):
-    grp = Group.get_by_key_name('webnodes')
+def topics(request, forum):
+    #forum = Forum.get_by_key_name('webnodes')
     return render_to_response('topics.html', {
-        'group': group,
+        'forum': forum,
         'sidebar': """
 Links
 ------------
-[reddit](/reddit)
-![Alt text here](http://static.reddit.com/reddit.com.header.png "Image title here")
-
+- [Start a forum](/new_forum)
+- [Browse proggit](/reddit)
 
         """,
-        'topics': Topic.recent_topics(group)
+        'topics': Topic.recent_topics(forum)
     }, context_instance=RequestContext(request))
 
 @login_required
-def topics_new(request, group):
+def topics_new(request, forum):
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
-            assert Group.get_by_key_name(group)
+            assert Forum.get_by_key_name(forum)
             topic = Topic(
                 author=request.user.username,
-                group=group,
+                forum=forum,
                 title=form.cleaned_data['title'],
                 body=form.cleaned_data['body']
             )
             topic.put()
-            redirect = '/'+ group + '/' + str(topic.id)
+            redirect = '/'+ forum + '/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
     else:
@@ -99,7 +98,7 @@ def topics_new(request, group):
         'form': form
     }, context_instance=RequestContext(request))
 
-def topic(request, group, id):
+def topic(request, forum, id):
     if request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponseRedirect('/users/login?next=' + request.path)
@@ -113,19 +112,19 @@ def topic(request, group, id):
     topic = Topic.get_by_id(int(id))
     return render_to_response('topic.html', {
         'topic': topic,
-        'group': group,
+        'forum': forum,
         'comments': topic.comments,
         'graph': simplejson.dumps(topic.comment_graph),
     }, context_instance=RequestContext(request))
 
 
-def topic_edit(request, group, id):
+def topic_edit(request, forum, id):
     topic = Topic.get_by_id(int(id))
     if request.method == 'POST':
         form = TopicForm(request.POST)
         if form.is_valid():
             topic.edit()
-            redirect = '/'+ group + '/' + str(topic.id)
+            redirect = '/'+ forum + '/' + str(topic.id)
             expire_page(redirect)
             return HttpResponseRedirect(redirect)
     else:
@@ -139,12 +138,16 @@ def topic_edit(request, group, id):
 def reddit_topics(request):
     return render_to_response('topics.html', {
         'topics': reddit.hot_topics(),
-        'group': 'reddit'
+        'forum': 'reddit'
     }, context_instance=RequestContext(request))
 
 def reddit_topic(request, id):
     data = reddit.get_thread_data(id)
-    data['group'] = 'reddit'
+    data['forum'] = 'reddit'
     return render_to_response('topic.html', data,
         context_instance=RequestContext(request))
 
+def user(request, username):
+    return render_to_response('user.html', {
+        'comments': Comment.get_by_username(username),
+    }, context_instance=RequestContext(request))
