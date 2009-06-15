@@ -28,8 +28,8 @@ class TopicForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea)
 
 class ForumForm(forms.Form):
-    title = forms.CharField(max_length=200)
-    name = forms.CharField(max_length=100)
+    title = forms.CharField(max_length=100)
+    name = forms.CharField(max_length=50, label='Name, shown in URL')
     
     def clean_name(self):
         name = self.cleaned_data['name']
@@ -58,7 +58,8 @@ def new_forum(request):
         form = ForumForm()
     
     return render_to_response('basic_form.html', {
-        'form': form
+        'form': form,
+        'title': 'Start a forum | webnodes'
     }, context_instance=RequestContext(request))
 
 def topics(request, forum):
@@ -95,7 +96,8 @@ def topics_new(request, forum):
         form = TopicForm()
     
     return render_to_response('basic_form.html', {
-        'form': form
+        'form': form,
+        'title': 'Start a topic | ' + forum
     }, context_instance=RequestContext(request))
 
 def topic(request, forum, id):

@@ -36,18 +36,17 @@ body {
 
 strong                  { font-weight: bold; }
 em                      { font-style: italic; }
-input, button, textarea { font-family: Arial, sans-serif; }
                         
 /* TYPE */
 p, ul, ol, dl, pre      { font-size: 1em; margin-bottom: 0.8em; }
 ul, ol                  { margin-left: 2em; }
 ul ul                   { margin-bottom: 0; }
-h1, h2, h3, h4, h5      { margin-top: 0em; margin-bottom: 0.5em; }
+h1, h2, h3, h4, h5      { color: #47697F; margin-top: 0em; margin-bottom: 0.5em; }
 
-h1                      { font-size: 1.3em; }
-h2                      { font-size: 1.125em; }
-h3                      { font-size: 1em;  }
-h4                      { font-size: 0.875em; }
+h1                      { font-size: 1.5em; }
+h2                      { font-size: 1.3em; }
+h3                      { font-size: 1.1em;  }
+h4                      { font-size: 1em; }
                         
 a                       { color: #2D7BB2; text-decoration: none; outline: none; padding: 3px 0px;}
 a:hover                 { color: #FFFFFF; background-color: #2D7BB2; }
@@ -59,11 +58,24 @@ label {
     display: block;
 }
 
-input, textarea {
+input, textarea, .button {
+    background: #FFFFFF;
+    font-family: Arial, sans-serif;
     padding: 5px;
     font-size: 1em;
     margin-bottom: 5px;
+    border: 3px solid #A7B6BF;
 }
+
+input:focus, textarea:focus {
+    border-color: #2D7BB2;
+}
+
+.button:hover, input[type=submit]:hover {
+    color: #FFFFFF;
+    background: #2D7BB2;
+}
+
 
 /* base.html */
 #header {
@@ -92,3 +104,6 @@ input, textarea {
     border: 8px solid #A7B6BF;
 }
 
+.box img {
+    max-width: 100%;
+}

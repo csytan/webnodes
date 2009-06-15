@@ -31,14 +31,11 @@
         
         .topic {
             width: 600px;
+            padding: 1em;
             margin: auto;
         }
         
         /* stuff within a comment */
-        .comment img {
-            max-width: 100%;
-        }
-
         .comment .body {
             overflow: auto;
         }
@@ -103,6 +100,13 @@
             background-color: #77C4EF;
         }
     </style>
+    <!--[if lt IE 7]>
+        <style>
+            a.reply {
+                visibility: visible;
+            }
+        </style>
+    <![endif]-->
 {% endblock %}
 
 
@@ -184,12 +188,13 @@
     {% endfor %}
 
     <div id="reply_box" class="container">
-        <div class="comment box">
+        <div class="comment box" style="padding:0.5em;padding-bottom:0px">
             <form id="reply_form" action="" method="post">
                 <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
-                <textarea id="reply_textarea" name="body" style="height:200px; width:97%"></textarea>
+                <textarea id="reply_textarea" name="body" style="height:200px; width:95%"></textarea>
                 <input type="submit" style="float:right" value="reply">
-                <a id="reply_cancel" href="#">cancel</a>
+                <span id="reply_cancel" class="button" style="float:left" href="#">cancel</span>
+                <div style="clear:left"></div>
             </form>
         </div>
     </div>
