@@ -11,8 +11,8 @@ from django.contrib.auth.decorators import login_required
 
 # Local imports
 import reddit
+import yahoosearch
 from models import Forum, Topic, Comment
-
 
 ### Helper functions ###
 def expire_page(path):
@@ -146,6 +146,13 @@ def reddit_topic(request, id):
     data['forum'] = 'reddit'
     return render_to_response('topic.html', data,
         context_instance=RequestContext(request))
+
+def search(request, forum):
+    data = yahoosearch.search(request.GET['query'], 
+        site='http://webnodes.org/' + forum)
+    return render_to_response('search.html', {
+        'data': data,
+    }, context_instance=RequestContext(request))
 
 def user(request, username):
     return render_to_response('user.html', {

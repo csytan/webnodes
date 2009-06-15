@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>{{ forum }}</title>
+{% endblock %}
+
+
+{% block style %}
+    <style>
+        .result {
+            width: 500px;
+            padding: 10px;
+            margin: auto;
+            margin-bottom: 15px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    {% for result in data.resultset_web %}
+        <div class="result box">
+            <h2>
+                <a href="{{result.url}}">{{result.title|safe}}</a>
+            </h2>
+            {{result.abstract|safe}}
+            <br>
+            <cite>{{result.dispurl|safe}}</cite>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+

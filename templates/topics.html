@@ -39,12 +39,26 @@
     </style>
 {% endblock %}
 
+{% block script %}
+    <script>
+        $(document).ready(function(){
+            $('#search').one('focus', function(){
+                this.value = '';
+            })
+        });
+    </script>
+{% endblock %}
+
 
 {% block content %}
     <div id="sidebar">
         <h2>
             <a href="/{{ forum }}/new_topic">Start a topic</a>
         </h2>
+        <form action="/{{forum}}/search" method="get">
+            <input id="search" type="text" name="query" value="Search forum" style="width:60%">
+            <input type="submit" value="go">
+        </form>
         {{ sidebar|markdownify }}
     </div>
 
