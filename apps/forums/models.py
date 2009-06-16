@@ -99,7 +99,7 @@ class Topic(Comment):
     num_comments = db.IntegerProperty(default=0)
     
     @classmethod
-    def recent_topics(cls, forum, next=None, limit=5):
+    def recent_topics(cls, forum, next=None, limit=20):
         query = cls.all()
         query.filter('forum =', forum)
         if next is not None:
