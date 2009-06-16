@@ -64,6 +64,8 @@ def new_forum(request):
 
 def topics(request, forum):
     #forum = Forum.get_by_key_name('webnodes')
+    next = request.GET.get('next')
+    topics, next = Topic.recent_topics(forum, next)
     return render_to_response('topics.html', {
         'forum': forum,
         'sidebar': """
@@ -73,7 +75,8 @@ Links
 - [Browse proggit](/reddit)
 
         """,
-        'topics': Topic.recent_topics(forum)
+        'topics': topics,
+        'next': next
     }, context_instance=RequestContext(request))
 
 @login_required

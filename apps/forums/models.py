@@ -99,17 +99,20 @@ class Topic(Comment):
     num_comments = db.IntegerProperty(default=0)
     
     @classmethod
-    def recent_topics(cls, forum):
+    def recent_topics(cls, forum, next=None, limit=5):
         query = cls.all()
         query.filter('forum =', forum)
+        if next is not None:
+            next_topic = cls.get_by_id(int(next))
+            query.filter('created <', next_topic.created)
         query.order('-created')
-        return query.fetch(50)
+        topics = query.fetch(limit)
         
-    @classmethod
-    def topics_by_tag(cls, tag):
-        query = cls.all().filter('tag =', tag)
-        query.order('-created')
-        return query.fetch(50)
+        if len(topics) == limit:
+            next = topics[-1].id
+        else:
+            next = None
+        return topics, next
     
     @property
     def topic_id(self):

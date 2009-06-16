@@ -10,11 +10,11 @@
 {% block style %}
     <style>
         #content {
-            width: 1000px;
+            width: 800px;
         }
         
         #sidebar {
-            width: 200px;
+            width: 190px;
             float: right;
         }
         
@@ -26,10 +26,13 @@
             list-style-type: none;
         }
         
-        .topic {
+        #topics {
             width: 500px;
-            padding: 10px;
             margin: auto;
+            margin-right: 200px;
+        }
+        
+        .topic {
             margin-bottom: 15px;
         }
 
@@ -63,22 +66,28 @@
         {{ sidebar|markdownify }}
     </div>
 
-    {% for topic in topics %}
-        <div class="topic box">
-            <h1>
-                <a href="/{{ forum }}/{{ topic.id }}">{{ topic.title }}</a>
-            </h1>
-            <p style="text-align:right">
-                {{ topic.num_comments }} comments,
-                {{ topic.updated|timeago }}, by
-                {% ifequal forum 'reddit' %}
-                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
-                {% else %}
-                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>
-                {% endifequal %}
-            </p>
-        </div>
-    {% endfor %}
+    <div id="topics">
+        {% for topic in topics %}
+            <div class="topic box">
+                <h1>
+                    <a href="/{{ forum }}/{{ topic.id }}">{{ topic.title }}</a>
+                </h1>
+                <p style="text-align:right">
+                    {{ topic.num_comments }} comments,
+                    {{ topic.updated|timeago }}, by
+                    {% ifequal forum 'reddit' %}
+                        <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
+                    {% else %}
+                        <a href="/users/{{ topic.author }}">{{ topic.author }}</a>
+                    {% endifequal %}
+                </p>
+            </div>
+        {% endfor %}
+        
+        {% if next %}
+            <a href="/{{forum}}?next={{next}}" class="button">Next</a>
+        {% endif %}
+    </div>
 {% endblock %}
 
 

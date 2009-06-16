@@ -55,6 +55,9 @@ a:visited               { color: #67767F; }
 pre, code               { font-size: 0.8em; }
 
 label {
+    color: #47697F;
+    font-weight: bold;
+    font-size: 1.3em;
     display: block;
 }
 
