@@ -10,12 +10,13 @@
 {% block style %}
     <style>
         #content {
-            width: 800px;
+            width: 750px;
         }
         
         #sidebar {
-            width: 190px;
+            width: 200px;
             float: right;
+            text-align: right;
         }
         
         #sidebar ul {
@@ -26,10 +27,14 @@
             list-style-type: none;
         }
         
+        #sidebar input {
+            font-size: 1em;
+        }
+        
         #topics {
             width: 500px;
             margin: auto;
-            margin-right: 200px;
+            margin-right: 220px;
         }
         
         .topic {
@@ -47,7 +52,7 @@
         $(document).ready(function(){
             $('#search').one('focus', function(){
                 this.value = '';
-            })
+            });
         });
     </script>
 {% endblock %}
@@ -56,13 +61,12 @@
 {% block content %}
     <div id="sidebar">
         <h2>
-            <a href="/{{ forum }}/new_topic">Start a topic</a>
+            <a href="/{{ forum }}/new_topic">start a topic</a>
         </h2>
         <form action="/{{forum}}/search" method="get">
-            <input id="search" type="text" name="query" value="Search forum" style="width:60%">
+            <input id="search" type="text" name="query" value="search forum" style="width: 70%">
             <input type="submit" value="go">
         </form>
-        <br>
         {{ sidebar|markdownify }}
     </div>
 

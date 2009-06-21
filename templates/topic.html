@@ -56,6 +56,12 @@
         .comment:hover a.reply {
             visibility: visible;
         }
+        
+        {% if user.is_anonymous %}
+            .comment:hover a.reply {
+                visibility: hidden;
+            }
+        {% endif %}
 
         .comment_nav {
             width: 260px;
@@ -142,7 +148,9 @@
                 {{ topic.body|markdownify }}
             </div>
             <span style="float: right">
-                {{ topic.points }} points,
+                {% if topic.points %}
+                    {{ topic.points }},
+                {% endif %}
                 {% ifequal forum 'reddit' %}
                     by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
@@ -150,7 +158,7 @@
                 {% endifequal %}
                 {{ topic.updated|timeago }}
             </span>
-            <a class="reply" style="text-align:center" href="#">reply</a>
+            <a class="reply button" style="text-align:center" href="#">reply</a>
         </div>
         <div class="comment_nav">
             <a class="prev" href="#">«</a>
@@ -169,7 +177,9 @@
                     {{ comment.body|markdownify }}
                 </div>
                 <span style="float: right">
-                    {{ comment.points }} points,
+                    {% if comment.points %}
+                        {{ comment.points }},
+                    {% endif %}
                     {% ifequal forum 'reddit' %}
                         by <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>,
                     {% else %}
@@ -177,7 +187,7 @@
                     {% endifequal %}
                     {{ comment.updated|timeago }}
                 </span>
-                <a class="reply" style="text-align:center" href="#">reply</a>
+                <a class="reply button" style="text-align:center" href="#">reply</a>
             </div>
             <div class="comment_nav">
                 <a class="prev">«</a>
