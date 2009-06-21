@@ -13,42 +13,19 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     next = forms.CharField(widget=forms.HiddenInput, required=False)
 
-class RegistrationForm(forms.Form):
-    username = forms.CharField(max_length=30)
-    password = forms.CharField()
-    next = forms.CharField(widget=forms.HiddenInput, required=False)
 
 ### Views ###
-def users_new(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            User.objects.create_user(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
-                email=None
-            )
-            user = authenticate(
-                username=form.cleaned_data['username'], 
-                password=form.cleaned_data['password']
-            )
-            login(request, user)
-            redirect = form.cleaned_data['next']
-            return HttpResponseRedirect(redirect)
-    else:
-        form = RegistrationForm(
-            initial={'next': request.GET.get('next', '/')}
-        )
-        
-    return render_to_response('users/login.html', {
-        'registration_form': form,
-        'login_form': LoginForm()
-    }, context_instance=RequestContext(request))
-    
 def users_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
+            if request.POST['submit'] == 'Sign up':
+                User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    password=form.cleaned_data['password'],
+                    email=None
+                )
+            
             user = authenticate(
                 username=form.cleaned_data['username'], 
                 password=form.cleaned_data['password']
@@ -66,8 +43,7 @@ def users_login(request):
         )
         
     return render_to_response('users/login.html', {
-        'login_form': form,
-        'registration_form': RegistrationForm()
+        'form': form
     }, context_instance=RequestContext(request))
     
 def users_logout(request):

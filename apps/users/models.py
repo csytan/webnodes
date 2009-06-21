@@ -22,3 +22,4 @@ class UserManager(UserManager):
 class User(User):
     objects = UserManager()
     badges = db.StringListProperty()
+    moderator_of = db.StringListProperty()
