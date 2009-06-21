@@ -5,7 +5,6 @@ urlpatterns = patterns('apps',
     (r'^new_forum$', 'forums.views.new_forum'),
 
     (r'^users/login$', 'users.views.users_login'),
-    (r'^users/register$', 'users.views.users_new'),
     (r'^users/logout$', 'users.views.users_logout'),
     (r'^users/(.+)$', 'forums.views.user'),
     
