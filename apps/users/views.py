@@ -42,7 +42,7 @@ def users_login(request):
             initial={'next': request.GET.get('next', '/')}
         )
         
-    return render_to_response('users/login.html', {
+    return render_to_response('basic_form.html', {
         'form': form
     }, context_instance=RequestContext(request))
     
