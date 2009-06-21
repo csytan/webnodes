@@ -7,21 +7,35 @@ render_to_response() and render_to_string() use RequestContext internally.
 The app_prefixed_loader is a template loader that loads directly from the app's
 'templates' folder when you specify an app prefix ('app/template.html').
 
-It's possible to register global template libraries by adding this to your
-settings:
-GLOBALTAGS = (
-    'myapp.templatetags.cooltags',
-)
-
 The JSONResponse() function automatically converts a given Python object into
 JSON and returns it as an HttpResponse.
 """
 from django.conf import settings
 from django.http import HttpResponse
-from django.template import RequestContext, add_to_builtins, loader, \
-    TemplateDoesNotExist
+from django.template import RequestContext, loader, \
+    TemplateDoesNotExist, Library, Node, Variable, generic_tag_compiler
+from django.utils.functional import curry
+from inspect import getargspec
 from ragendja.apputils import get_app_dirs
 import os
+
+class Library(Library):
+    def context_tag(self, func):
+        params, xx, xxx, defaults = getargspec(func)
+
+        class ContextNode(Node):
+            def __init__(self, vars_to_resolve):
+                self.vars_to_resolve = map(Variable, vars_to_resolve)
+
+            def render(self, context):
+                resolved_vars = [var.resolve(context) for var in self.vars_to_resolve]
+                return func(context, *resolved_vars)
+
+        params = params[1:]
+        compile_func = curry(generic_tag_compiler, params, defaults, getattr(func, "_decorated_function", func).__name__, ContextNode)
+        compile_func.__doc__ = func.__doc__
+        self.tag(getattr(func, "_decorated_function", func).__name__, compile_func)
+        return func
 
 # The following defines a template loader that loads templates from a specific
 # app based on the prefix of the template path:
@@ -66,12 +80,6 @@ def JSONResponse(pyobj):
 def TextResponse(string=''):
     return HttpResponse(string,
         content_type='text/plain; charset=%s' % settings.DEFAULT_CHARSET)
-
-# Load app modules after all definitions, so imports won't break.
-
-# Register global template libraries.
-for lib in getattr(settings, 'GLOBALTAGS', ()):
-    add_to_builtins(lib)
 
 # This is needed by app_prefixed_loader.
 app_template_dirs = get_app_dirs('templates')

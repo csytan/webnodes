@@ -132,11 +132,11 @@ class FML(db.Model):
 # Test FakeModel, FakeModelProperty, FakeModelListProperty
 class RelationsCleanupTest(TestCase):
     def test_fake_model_property(self):
-        value = {'bla': [1, 2, {'blub': 'bla'}]}
+        value = {'bla': [1, 2, {'blub': 'bla'*1000}]}
         FM(data=FakeModel(value=value)).put()
         self.assertEqual(FM.all()[0].data.value, value)
 
     def test_fake_model_list_property(self):
-        value = {'bla': [1, 2, {'blub': 'bla'}]}
+        value = {'bla': [1, 2, {'blub': 'bla'*1000}]}
         FML(data=[FakeModel(value=value)]).put()
         self.assertEqual(FML.all()[0].data[0].value, value)        

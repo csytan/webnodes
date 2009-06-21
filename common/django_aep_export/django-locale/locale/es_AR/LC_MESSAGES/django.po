@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-13 18:20-0200\n"
-"PO-Revision-Date: 2008-11-13 18:27-0200\n"
+"POT-Creation-Date: 2008-11-14 00:42-0200\n"
+"PO-Revision-Date: 2008-11-14 00:44-0200\n"
 "Last-Translator: Ramiro Morales <rm0@gmx.net>\n"
 "Language-Team: Django-I18N <django-i18n@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -249,15 +249,15 @@ msgstr "Este mes"
 msgid "This year"
 msgstr "Este año"
 
-#: contrib/admin/filterspecs.py:146 forms/widgets.py:390
+#: contrib/admin/filterspecs.py:146 forms/widgets.py:391
 msgid "Yes"
 msgstr "Sí"
 
-#: contrib/admin/filterspecs.py:146 forms/widgets.py:390
+#: contrib/admin/filterspecs.py:146 forms/widgets.py:391
 msgid "No"
 msgstr "No"
 
-#: contrib/admin/filterspecs.py:153 forms/widgets.py:390
+#: contrib/admin/filterspecs.py:153 forms/widgets.py:391
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -476,7 +476,7 @@ msgstr "Lo sentimos, pero no se encuentra la página solicitada."
 
 #: contrib/admin/templates/admin/500.html:4
 #: contrib/admin/templates/admin/app_index.html:8
-#: contrib/admin/templates/admin/base.html:31
+#: contrib/admin/templates/admin/base.html:30
 #: contrib/admin/templates/admin/change_form.html:17
 #: contrib/admin/templates/admin/change_list.html:8
 #: contrib/admin/templates/admin/delete_confirmation.html:6
@@ -521,18 +521,18 @@ msgstr ""
 msgid "%(name)s"
 msgstr "%(name)s"
 
-#: contrib/admin/templates/admin/base.html:26
+#: contrib/admin/templates/admin/base.html:25
 msgid "Welcome,"
 msgstr "Bienvenido,"
 
-#: contrib/admin/templates/admin/base.html:26
+#: contrib/admin/templates/admin/base.html:25
 #: contrib/admin/templates/registration/password_change_done.html:3
 #: contrib/admin/templates/registration/password_change_form.html:3
 #: contrib/admindocs/templates/admin_doc/bookmarklets.html:3
 msgid "Documentation"
 msgstr "Documentación"
 
-#: contrib/admin/templates/admin/base.html:26
+#: contrib/admin/templates/admin/base.html:25
 #: contrib/admin/templates/admin/auth/user/change_password.html:13
 #: contrib/admin/templates/admin/auth/user/change_password.html:46
 #: contrib/admin/templates/registration/password_change_done.html:3
@@ -540,7 +540,7 @@ msgstr "Documentación"
 msgid "Change password"
 msgstr "Cambiar contraseña"
 
-#: contrib/admin/templates/admin/base.html:26
+#: contrib/admin/templates/admin/base.html:25
 #: contrib/admin/templates/registration/password_change_done.html:3
 #: contrib/admin/templates/registration/password_change_form.html:3
 msgid "Log out"
@@ -1188,7 +1188,7 @@ msgid "Change password: %s"
 msgstr "Cambiar contraseña: %s"
 
 #: contrib/auth/forms.py:15 contrib/auth/forms.py:48
-#: contrib/auth/models.py:127
+#: contrib/auth/models.py:136
 msgid ""
 "Required. 30 characters or fewer. Alphanumeric characters only (letters, "
 "digits and underscores)."
@@ -1260,51 +1260,51 @@ msgstr ""
 "La antigua contraseña introducida es incorrecta. Por favor introdúzcala "
 "nuevamente."
 
-#: contrib/auth/models.py:63 contrib/auth/models.py:86
+#: contrib/auth/models.py:72 contrib/auth/models.py:95
 msgid "name"
 msgstr "nombre"
 
-#: contrib/auth/models.py:65
+#: contrib/auth/models.py:74
 msgid "codename"
 msgstr "nombre en código"
 
-#: contrib/auth/models.py:68
+#: contrib/auth/models.py:77
 msgid "permission"
 msgstr "permiso"
 
-#: contrib/auth/models.py:69 contrib/auth/models.py:87
+#: contrib/auth/models.py:78 contrib/auth/models.py:96
 msgid "permissions"
 msgstr "permisos"
 
-#: contrib/auth/models.py:90
+#: contrib/auth/models.py:99
 msgid "group"
 msgstr "grupo"
 
-#: contrib/auth/models.py:91 contrib/auth/models.py:137
+#: contrib/auth/models.py:100 contrib/auth/models.py:146
 msgid "groups"
 msgstr "grupos"
 
-#: contrib/auth/models.py:127
+#: contrib/auth/models.py:136
 msgid "username"
 msgstr "nombre de usuario"
 
-#: contrib/auth/models.py:128
+#: contrib/auth/models.py:137
 msgid "first name"
 msgstr "nombre"
 
-#: contrib/auth/models.py:129
+#: contrib/auth/models.py:138
 msgid "last name"
 msgstr "apellido"
 
-#: contrib/auth/models.py:130
+#: contrib/auth/models.py:139
 msgid "e-mail address"
 msgstr "dirección de correo electrónico"
 
-#: contrib/auth/models.py:131
+#: contrib/auth/models.py:140
 msgid "password"
 msgstr "contraseña"
 
-#: contrib/auth/models.py:131
+#: contrib/auth/models.py:140
 msgid ""
 "Use '[algo]$[salt]$[hexdigest]' or use the <a href=\"password/\">change "
 "password form</a>."
@@ -1312,19 +1312,19 @@ msgstr ""
 "Use '[algo]$[salt]$[hexdigest]' o use el <a href=\"password/\">formulario de "
 "cambio de contraseña</a>."
 
-#: contrib/auth/models.py:132
+#: contrib/auth/models.py:141
 msgid "staff status"
 msgstr "es staff"
 
-#: contrib/auth/models.py:132
+#: contrib/auth/models.py:141
 msgid "Designates whether the user can log into this admin site."
 msgstr "Indica si el usuario puede ingresar a este sitio de administración."
 
-#: contrib/auth/models.py:133
+#: contrib/auth/models.py:142
 msgid "active"
 msgstr "activo"
 
-#: contrib/auth/models.py:133
+#: contrib/auth/models.py:142
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -1332,11 +1332,11 @@ msgstr ""
 "Indica si el usuario debe ser tratado como un usuario activo. Desactive este "
 "campo en lugar de eliminar usuarios."
 
-#: contrib/auth/models.py:134
+#: contrib/auth/models.py:143
 msgid "superuser status"
 msgstr "es superusuario"
 
-#: contrib/auth/models.py:134
+#: contrib/auth/models.py:143
 msgid ""
 "Designates that this user has all permissions without explicitly assigning "
 "them."
@@ -1344,15 +1344,15 @@ msgstr ""
 "Indica que este usuario posee todos los permisos sin que sea necesario "
 "asignarle los mismos en forma explícita."
 
-#: contrib/auth/models.py:135
+#: contrib/auth/models.py:144
 msgid "last login"
 msgstr "último ingreso"
 
-#: contrib/auth/models.py:136
+#: contrib/auth/models.py:145
 msgid "date joined"
 msgstr "fecha de creación"
 
-#: contrib/auth/models.py:138
+#: contrib/auth/models.py:147
 msgid ""
 "In addition to the permissions manually assigned, this user will also get "
 "all permissions granted to each group he/she is in."
@@ -1360,19 +1360,19 @@ msgstr ""
 "Además de los permisos asignados manualmente, este usuario también poseerá "
 "todos los permisos de los grupos a los que pertenezca."
 
-#: contrib/auth/models.py:139
+#: contrib/auth/models.py:148
 msgid "user permissions"
 msgstr "permisos de usuario"
 
-#: contrib/auth/models.py:143
+#: contrib/auth/models.py:152
 msgid "user"
 msgstr "usuario"
 
-#: contrib/auth/models.py:144
+#: contrib/auth/models.py:153
 msgid "users"
 msgstr "usuarios"
 
-#: contrib/auth/models.py:300
+#: contrib/auth/models.py:308
 msgid "message"
 msgstr "mensaje"
 
@@ -1587,7 +1587,7 @@ msgstr "Dirección IP"
 
 #: contrib/comments/templates/comments/moderation_queue.html:40
 msgid "Date posted"
-msgstr "fecha de creación"
+msgstr "Fecha de creación"
 
 #: contrib/comments/templates/comments/moderation_queue.html:63
 msgid "yes"
@@ -1603,7 +1603,7 @@ msgstr "Gracias por dejar su comentario"
 
 #: contrib/comments/templates/comments/posted.html:7
 msgid "Thank you for your comment"
-msgstr "Gracias por dejar su comentario"
+msgstr "Gracias por su comentario"
 
 #: contrib/comments/templates/comments/preview.html:4
 #: contrib/comments/templates/comments/preview.html:12
@@ -1613,8 +1613,8 @@ msgstr "Ver una copia previa de su comentario"
 #: contrib/comments/templates/comments/preview.html:10
 msgid "Please correct the error below"
 msgid_plural "Please correct the errors below"
-msgstr[0] "Por favor, corrija el siguiente error."
-msgstr[1] "Por favor, corrija los siguientes errores."
+msgstr[0] "Por favor, corrija el siguiente error"
+msgstr[1] "Por favor, corrija los siguientes errores"
 
 #: contrib/comments/templates/comments/preview.html:15
 msgid "Post your comment"
