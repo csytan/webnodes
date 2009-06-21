@@ -47,7 +47,7 @@ h1                      { font-size: 1.5em; }
 h2                      { font-size: 1.3em; }
 h3                      { font-size: 1.1em;  }
 h4                      { font-size: 1em; }
-                        
+
 a                       { color: #2D7BB2; text-decoration: none; outline: none; padding: 3px 0px;}
 a:hover                 { color: #FFFFFF; background-color: #2D7BB2; }
 a:visited               { color: #67767F; }
@@ -64,7 +64,7 @@ label {
 input, textarea, .button {
     background: #FFFFFF;
     font-family: Arial, sans-serif;
-    padding: 5px;
+    padding: 0.3em;
     font-size: 1em;
     margin-bottom: 5px;
     border: 3px solid #A7B6BF;
@@ -85,7 +85,7 @@ input:focus, textarea:focus {
     margin-top: 5px;
     padding-left: 5px;
     font-size: 1.2em;
-    height: 40px;
+    height: 70px;
     width: 99%;
 }
 
