@@ -29,7 +29,7 @@ class TopicForm(forms.Form):
 
 class ForumForm(forms.Form):
     title = forms.CharField(max_length=100)
-    name = forms.CharField(max_length=50, label='Name, shown in URL')
+    name = forms.CharField(max_length=50, help_text='a short name for your forum. no spaces or symbols.')
     
     def clean_name(self):
         name = self.cleaned_data['name']
