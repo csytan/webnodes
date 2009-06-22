@@ -2,6 +2,7 @@ from django import forms
 from django.shortcuts import render_to_response
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
+from django.db import IntegrityError
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -25,9 +26,7 @@ def users_login(request):
             )
             
             if user is None:
-                # sign up user if they don't have an account
-                user_exists = User.all().filter('username =', 'username').get()
-                if not user_exists:
+                try:
                     User.objects.create_user(
                         username=form.cleaned_data['username'],
                         password=form.cleaned_data['password'],
@@ -37,6 +36,8 @@ def users_login(request):
                         username=form.cleaned_data['username'], 
                         password=form.cleaned_data['password']
                     )
+                except IntegrityError:
+                    pass # username taken
             
             if user is not None:
                 if user.is_active:
