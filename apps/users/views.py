@@ -19,28 +19,34 @@ def users_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            if request.POST['submit'] == 'Sign up':
-                User.objects.create_user(
-                    username=form.cleaned_data['username'],
-                    password=form.cleaned_data['password'],
-                    email=None
-                )
-            
             user = authenticate(
                 username=form.cleaned_data['username'], 
                 password=form.cleaned_data['password']
             )
+            
+            if user is None:
+                # sign up user if they don't have an account
+                user_exists = User.all().filter('username =', 'username').get()
+                if not user_exists:
+                    User.objects.create_user(
+                        username=form.cleaned_data['username'],
+                        password=form.cleaned_data['password'],
+                        email=None
+                    )
+                    user = authenticate(
+                        username=form.cleaned_data['username'], 
+                        password=form.cleaned_data['password']
+                    )
+            
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    redirect = form.cleaned_data['next']
+                    redirect = request.POST.get('next', '/')
                     return HttpResponseRedirect(redirect)
                 else:
                     return HttpResponse('disabled acct')
     else:
-        form = LoginForm(
-            initial={'next': request.GET.get('next', '/')}
-        )
+        form = LoginForm()
         
     return render_to_response('basic_form.html', {
         'form': form
