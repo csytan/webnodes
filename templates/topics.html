@@ -21,10 +21,22 @@
         
         #sidebar ul {
             margin: 0px;
+            width: 200px;
         }
         
         #sidebar li {
             list-style-type: none;
+            width: 200px;
+        }
+        
+        #sidebar a {
+            width: 200px;
+            display: block;
+            padding:5px 10px;
+        }
+        
+        #sidebar a:hover {
+            background: orange;
         }
         
         #sidebar input {
@@ -78,12 +90,12 @@
                 </h1>
                 <p style="text-align:right">
                     {{ topic.num_comments }} comments,
-                    {{ topic.updated|timeago }}, by
                     {% ifequal forum 'reddit' %}
-                        <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>
+                        <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                     {% else %}
-                        <a href="/users/{{ topic.author }}">{{ topic.author }}</a>
+                        <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                     {% endifequal %}
+                    {{ topic.updated|timeago }}
                 </p>
             </div>
         {% endfor %}

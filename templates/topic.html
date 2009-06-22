@@ -152,9 +152,9 @@
                     {{ topic.points }},
                 {% endif %}
                 {% ifequal forum 'reddit' %}
-                    by <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
+                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
                 {% else %}
-                    by <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
+                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                 {% endifequal %}
                 {{ topic.updated|timeago }}
             </span>
@@ -181,9 +181,9 @@
                         {{ comment.points }},
                     {% endif %}
                     {% ifequal forum 'reddit' %}
-                        by <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>,
+                        <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>,
                     {% else %}
-                        by <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
+                        <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
                     {% endifequal %}
                     {{ comment.updated|timeago }}
                 </span>
