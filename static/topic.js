@@ -21,10 +21,10 @@ function layout() {
         row = removeNodes(row); // for those hard to reach areas
         row = addNodes(row);
     }
+    $('#content').css('min-height', $(document).height());
 }
 
 function update() {
-    $(document.body).css('min-height', $(document).height());
     $('canvas').remove();
     $('.container').hide();
     layout();

@@ -27,9 +27,7 @@ body {
     font-size: 16px;
     line-height: 1.5em;
     color: black;
-    background:#15052A url(http://strawpoll.s3.amazonaws.com/c/nightsky.jpg) no-repeat scroll center top;
-    background:#004976 url(http://bradcolbow.com/images_1008/background.jpg) repeat-x scroll center 0;
-    background: #BFBFBF;
+    background: #F3F2E8 url(/static/bg.gif) no-repeat scroll center top;
     width: 100%;
     height: 100%;
 }
@@ -97,6 +95,10 @@ input:focus, textarea:focus {
     margin-left: auto;
     margin-right: auto;
     width: 100%;
+}
+
+#footer {
+    padding-left: 5px;
 }
 
 /* generic styles */
