@@ -14,34 +14,7 @@
     <![endif]-->
     {% block style %}{% endblock %}
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            if (!$('#username').val()) {
-                $('#username').val('username');
-            }
-            
-            if (!$('#password').val()) {
-                $('#password').val('examplepassword');
-            }
-            
-            $('#username').one('focus', function(){
-                if (this.value == 'username'){
-                    this.value = '';
-                }
-            });
-            
-            $('#password').one('focus', function(){
-                if (this.value == 'examplepassword'){
-                    this.value = '';
-                }
-            });
-            
-            $('#next').val(window.location.pathname);
-            if ($('#logout').length) {
-                $('#logout')[0].href += '?next=' + window.location.pathname;
-            }
-        });
-    </script>
+    <script type="text/javascript" src="/static/webnodes.js"></script>
     {% block script %}{% endblock %}
 </head>
 

@@ -67,16 +67,6 @@
     </style>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(document).ready(function(){
-            $('#search').one('focus', function(){
-                this.value = '';
-            });
-        });
-    </script>
-{% endblock %}
-
 
 {% block content %}
     <div id="sidebar">
