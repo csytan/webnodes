@@ -1,33 +1,46 @@
-{% extends "base.html" %}
+{% extends "topics.html" %}
 
 {% block title %}
-    <title>{{ forum }}</title>
+    <title>{{ query }} | {{ forum }} search</title>
 {% endblock %}
 
+{% block script %}
+    <script src="http://www.google.com/jsapi?key=ABQIAAAA1XbMiDxx_BTCY2_FkPh06RRaGTYH6UMl8mADNa0YKuWNNa8VNxQEerTAUcfkyrr6OwBovxn7TDAH5Q"></script>
+    <script type="text/javascript">
+        google.load('search', '1');
+        google.setOnLoadCallback(function(){
+            var searchControl = new google.search.SearchControl();
+            var webSearch = new google.search.WebSearch();
 
-{% block style %}
+            webSearch.setSiteRestriction('www.webnodes.org/{{ forum }}/');
+            var drawOptions = new google.search.DrawOptions();
+            drawOptions.setDrawMode(google.search.SearchControl.DRAW_MODE_TABBED);
+
+            searchControl.setResultSetSize(google.search.Search.LARGE_RESULTSET);
+            searchControl.addSearcher(webSearch);
+            searchControl.draw(document.getElementById("topics"), drawOptions);
+            searchControl.execute('{{ query }}');
+        });
+    </script>
+    
     <style>
-        .result {
+        .gsc-search-box, .gsc-tabsArea, .gsc-resultsHeader {
+            display: none;
+        }
+        .gsc-control {
             width: 500px;
-            padding: 10px;
-            margin: auto;
+        }
+        
+        .gsc-result {
+            position: relative;
+            background-color: #FFFFFF;
+            padding: 0.8em;
+            border: 8px solid #A7B6BF;
             margin-bottom: 15px;
         }
     </style>
 {% endblock %}
 
 
-{% block content %}
-    {% for result in data.resultset_web %}
-        <div class="result box">
-            <h2>
-                <a href="{{result.url}}">{{result.title|safe}}</a>
-            </h2>
-            {{result.abstract|safe}}
-            <br>
-            <cite>{{result.dispurl|safe}}</cite>
-        </div>
-    {% endfor %}
-{% endblock %}
 
 

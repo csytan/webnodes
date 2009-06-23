@@ -11,7 +11,6 @@ from django.contrib.auth.decorators import login_required
 
 # Local imports
 import reddit
-import yahoosearch
 from models import Forum, Topic, Comment
 
 ### Helper functions ###
@@ -69,10 +68,10 @@ def topics(request, forum):
     return render_to_response('topics.html', {
         'forum': forum,
         'sidebar': """
-Links
+links
 ------------
-- [Start a forum](/new_forum)
-- [Browse proggit](/reddit)
+- [start a forum](/new_forum)
+- [browse proggit](/reddit)
 
         """,
         'topics': topics,
@@ -153,10 +152,9 @@ def reddit_topic(request, id):
         context_instance=RequestContext(request))
 
 def search(request, forum):
-    data = yahoosearch.search(request.GET['query'], 
-        site='http://webnodes.org/' + forum)
     return render_to_response('search.html', {
-        'data': data,
+        'query': request.GET['query'],
+        'forum': forum
     }, context_instance=RequestContext(request))
 
 def user(request, username):
