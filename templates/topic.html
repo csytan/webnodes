@@ -46,22 +46,19 @@
             visibility: hidden;
         }
         
-        a.reply {
+        .comment_controls {
             visibility: hidden;
-            text-align: center;
         }
-        
-        .comment:hover .date,
-        .comment:hover .points, 
-        .comment:hover a.reply {
-            visibility: visible;
-        }
-        
-        {% if user.is_anonymous %}
-            .comment:hover a.reply {
-                visibility: hidden;
+
+        {% if user.is_authenticated %}        
+            .comment:hover .comment_controls {
+                visibility: visible;
             }
         {% endif %}
+
+        .comment_info {
+            float: right;
+        }
 
         .comment_nav {
             width: 260px;
@@ -147,18 +144,14 @@
                 <h1>{{ topic.title }}</h1>
                 {{ topic.body|markdownify }}
             </div>
-            <span style="float: right">
+            <div class="comment_info">
                 {% if topic.points %}
                     {{ topic.points }},
                 {% endif %}
-                {% ifequal forum 'reddit' %}
-                    <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
-                {% else %}
-                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
-                {% endifequal %}
+                <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                 {{ topic.updated|timeago }}
-            </span>
-            <a class="reply button" style="text-align:center" href="#">reply</a>
+            </div>
+            <a class="reply button" style="text-align:center; font-size: 0.9em" href="#">reply</a>
         </div>
         <div class="comment_nav">
             <a class="prev" href="#">«</a>
@@ -170,24 +163,21 @@
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="container">
             <div class="comment box">
-                <div class="voting" style="position:absolute;top:10px;right:40px;visibility:hidden">
-                    <a class="up" href="#">up</a>
-                </div>
                 <div class="body">
                     {{ comment.body|markdownify }}
                 </div>
-                <span style="float: right">
+                <div class="comment_info">
                     {% if comment.points %}
                         {{ comment.points }},
                     {% endif %}
-                    {% ifequal forum 'reddit' %}
-                        <a href="http://www.reddit.com/user/{{ comment.author }}">{{ comment.author }}</a>,
-                    {% else %}
-                        <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
-                    {% endifequal %}
+                    <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
                     {{ comment.updated|timeago }}
-                </span>
-                <a class="reply button" style="text-align:center" href="#">reply</a>
+                </div>
+                <div class="comment_controls" style="font-size: 0.8em">
+                    <a class="reply button" style="text-align:center" href="#">reply</a>
+                    <a class="reply button" style="text-align:center" href="#">like</a>
+                    <a class="reply button" style="text-align:center" href="#">flag</a>
+                </div>
             </div>
             <div class="comment_nav">
                 <a class="prev">«</a>

@@ -31,7 +31,11 @@
             width: 200px;
         }
         
-        #sidebar a {
+        #sidebar a,
+        #sidebar h1,
+        #sidebar h2,
+        #sidebar h3,
+        #sidebar h4 {
             width: 180px;
             display: block;
             padding: 5px 10px;
@@ -78,6 +82,8 @@
         </form>
         <br>
         {{ sidebar|markdownify }}
+        <br>
+        <a style="font-size: 0.7em; font-weight: italic;" href="http://designdisease.com/portfolio/dilectio_wordpress_theme/">background by designdisease.com</a>
     </div>
 
     <div id="topics">
@@ -88,11 +94,7 @@
                 </h1>
                 <p style="text-align:right">
                     {{ topic.num_comments }} comments,
-                    {% ifequal forum 'reddit' %}
-                        <a href="http://www.reddit.com/user/{{ topic.author }}">{{ topic.author }}</a>,
-                    {% else %}
-                        <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
-                    {% endifequal %}
+                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
                     {{ topic.updated|timeago }}
                 </p>
             </div>
