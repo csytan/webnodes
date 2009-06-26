@@ -25,8 +25,9 @@ def markdownify(value):
     value = urlfinder.sub(r'<\1>', value)
     value = urlfinder2.sub(r' <\1>', value)
     html = markdown2.markdown(value)
-    safe_html = feedparser._sanitizeHTML(html, 'utf-8')
-    return safestring.mark_safe(safe_html)
+    html = feedparser._sanitizeHTML(html, 'utf-8')
+    html = html.replace('<a href=', '<a rel="nofollow" href=')
+    return safestring.mark_safe(html)
 markdownify.is_safe = True
 
 
