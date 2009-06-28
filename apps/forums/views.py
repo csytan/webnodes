@@ -10,7 +10,6 @@ from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
 # Local imports
-import reddit
 from models import Forum, Topic, Comment
 
 ### Helper functions ###
@@ -71,8 +70,6 @@ def topics(request, forum):
 links
 ------------
 - [start a forum](/new_forum)
-- [browse proggit](/reddit)
-
         """,
         'topics': topics,
         'next': next
@@ -151,19 +148,6 @@ def topic_edit(request, forum, id):
         'form': form
     }, context_instance=RequestContext(request))
 
-
-def reddit_topics(request):
-    return render_to_response('topics.html', {
-        'topics': reddit.hot_topics(),
-        'forum': 'reddit'
-    }, context_instance=RequestContext(request))
-
-def reddit_topic(request, id):
-    data = reddit.get_thread_data(id)
-    data['forum'] = 'reddit'
-    return render_to_response('topic.html', data,
-        context_instance=RequestContext(request))
-
 def search(request, forum):
     return render_to_response('search.html', {
         'query': request.GET['query'],
@@ -174,3 +158,4 @@ def user(request, username):
     return render_to_response('user.html', {
         'comments': Comment.get_by_username(username),
     }, context_instance=RequestContext(request))
+

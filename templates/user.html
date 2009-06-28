@@ -33,11 +33,7 @@
                 <p style="text-align:right">
                     {{ comment.num_comments }} comments,
                     {{ comment.updated|timeago }}, by
-                    {% ifequal forum 'reddit' %}
-                        <a href="http://www.reddit.com/user/{{ topic.author }}">{{ comment.author }}</a>
-                    {% else %}
-                        <a href="/users/{{ topic.author }}">{{ comment.author }}</a>
-                    {% endifequal %}
+                    <a href="/users/{{ topic.author }}">{{ comment.author }}</a>
                 </p>
             </div>
         {% else %}
@@ -47,11 +43,7 @@
                 </div>
                 <p style="text-align:right">
                     {{ comment.updated|timeago }}, by
-                    {% ifequal forum 'reddit' %}
-                        <a href="http://www.reddit.com/user/{{ topic.author }}">{{ comment.author }}</a>
-                    {% else %}
-                        <a href="/users/{{ topic.author }}">{{ comment.author }}</a>
-                    {% endifequal %}
+                    <a href="/users/{{ topic.author }}">{{ comment.author }}</a>
                 </p>
             </div>
         {% endifequal %}
