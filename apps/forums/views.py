@@ -104,15 +104,28 @@ def topics_new(request, forum):
 
 def topic(request, forum, id):
     if request.method == 'POST':
-        if not request.user.is_authenticated():
-            return HttpResponseRedirect('/users/login?next=' + request.path)
-        parent_id = request.POST['parent_id']
-        parent = Comment.get_by_id(int(parent_id))
-        parent.add_reply(
-            author=request.user.username, 
-            body=request.POST['body']
-        )
-        expire_page('/topics/' + id)
+        if 'reply_to' in request.POST:
+            if not request.user.is_authenticated():
+                return HttpResponseRedirect('/users/login?next=' + request.path)
+            parent_id = request.POST['reply_to']
+            parent = Comment.get_by_id(int(parent_id))
+            parent.add_reply(
+                author=request.user.username, 
+                body=request.POST['body']
+            )
+            expire_page('/topics/' + id)
+        
+        elif 'like' in request.POST:
+            id = request.POST['like']
+            comment = Comment.get_by_id(int(id))
+            if request.user.username not in comment.likes:
+                comment.likes.append(request.user.username)
+                comment.put()
+                return HttpResponse('hi')
+            return HttpResponse('bye')
+        elif action == 'flag':
+            pass
+    
     topic = Topic.get_by_id(int(id))
     return render_to_response('topic.html', {
         'topic': topic,

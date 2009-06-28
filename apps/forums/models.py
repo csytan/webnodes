@@ -124,6 +124,7 @@ class Topic(Comment):
         if not self._comments:
             query = Comment.all().filter('topic_id =', self.id)
             self._comments = query.order('-created').fetch(1000)
+            self._comments.append(self)
         return self._comments
     
     @property

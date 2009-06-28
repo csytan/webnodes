@@ -31,6 +31,11 @@ def markdownify(value):
 markdownify.is_safe = True
 
 
+@register.filter
+def in_list(value, arg):
+    return value in arg
+
+
 @register.filter('gravatar')
 def gravatar(email, size=20, default='wavatar'):
     if not email: return default

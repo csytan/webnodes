@@ -36,18 +36,17 @@
         }
         
         /* stuff within a comment */
-        .comment .body {
+        .comment_body {
             overflow: auto;
         }
-
-        .score, .info, .points, .date {
-            color: grey;
+        
+        .comment_info {
             float: right;
-            visibility: hidden;
         }
         
         .comment_controls {
             visibility: hidden;
+            font-size: 0.8em;
         }
 
         {% if user.is_authenticated %}        
@@ -55,10 +54,6 @@
                 visibility: visible;
             }
         {% endif %}
-
-        .comment_info {
-            float: right;
-        }
 
         .comment_nav {
             width: 260px;
@@ -120,13 +115,8 @@
     <script type="text/javascript" src="/static/topic.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            var d = new Date();
-            var start = d.getTime();
-
-            $('#{{topic.id}}').initTopic({{ graph|safe }});
-        
-            d = new Date();
-            //$(document.body).append(d.getTime() - start + 'ms');
+            $('#{{topic.id}}').initTopic({{ graph|safe }})
+            .find('.comment').addClass('topic');
         });
     </script>
 {% endblock %}
@@ -138,32 +128,10 @@
         <p style="text-align: center">Sorry, this site requires javascript</p>
     </noscript>
 
-    <div id="{{ topic.id }}" class="container">
-        <div class="comment topic box">
-            <div class="body">
-                <h1>{{ topic.title }}</h1>
-                {{ topic.body|markdownify }}
-            </div>
-            <div class="comment_info">
-                {% if topic.points %}
-                    {{ topic.points }},
-                {% endif %}
-                <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
-                {{ topic.updated|timeago }}
-            </div>
-            <a class="reply button" style="text-align:center; font-size: 0.9em" href="#">reply</a>
-        </div>
-        <div class="comment_nav">
-            <a class="prev" href="#">«</a>
-            <span class="page_num"></span>
-            <a class="next" href="#">»</a>
-        </div>
-    </div>
-
     {% for comment in comments %}
         <div id="{{ comment.id }}" class="container">
             <div class="comment box">
-                <div class="body">
+                <div class="comment_body">
                     {{ comment.body|markdownify }}
                 </div>
                 <div class="comment_info">
@@ -173,10 +141,14 @@
                     <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
                     {{ comment.updated|timeago }}
                 </div>
-                <div class="comment_controls" style="font-size: 0.8em">
-                    <a class="reply button" style="text-align:center" href="#">reply</a>
-                    <a class="reply button" style="text-align:center" href="#">like</a>
-                    <a class="reply button" style="text-align:center" href="#">flag</a>
+                <div class="comment_controls">
+                    <a class="reply button" href="#">reply</a>
+                    {% if not user.username|in_list:comment.likes %}
+                        <a class="like button" href="#">like</a>
+                    {% endif %}
+                    {% if not user.username|in_list:comment.flags %}
+                        <a class="flag button" href="#">flag</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="comment_nav">
@@ -190,7 +162,7 @@
     <div id="reply_box" class="container">
         <div class="comment box" style="padding:0.5em;padding-bottom:0px">
             <form id="reply_form" action="" method="post">
-                <input type="hidden" id="parent_id" name="parent_id" value="{{ parent_id }}">
+                <input type="hidden" id="reply_to" name="reply_to">
                 <textarea id="reply_textarea" name="body" style="height:200px; width:95%"></textarea>
                 <input type="submit" style="float:right" value="reply">
                 <span id="reply_cancel" class="button" style="float:left" href="#">cancel</span>
