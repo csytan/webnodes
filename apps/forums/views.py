@@ -37,7 +37,12 @@ class ForumForm(forms.Form):
             raise forms.ValidationError('Forum names may only contain letters, numbers, dashes and underscores.')
         return name
         
-        
+
+class ForumEditForm(forms.Form):
+    title = forms.CharField(max_length=100)
+    sidebar = forms.CharField(widget=forms.Textarea,
+        help_text='This will be displayed in your forum sidebar.  Markdown is used for formatting.')
+
 ### Request handlers ###
 def index(request):
     return topics(request, 'webnodes')
@@ -58,6 +63,21 @@ def new_forum(request):
     return render_to_response('basic_form.html', {
         'form': form,
         'title': 'Start a forum | webnodes'
+    }, context_instance=RequestContext(request))
+
+
+def edit_forum(request, forum):
+    if request.method == 'POST':
+        form = ForumEditForm(request.POST)
+        if form.is_valid():
+            pass
+            return HttpResponseRedirect('/' + forum.name)
+    else:
+        form = ForumEditForm()
+    
+    return render_to_response('basic_form.html', {
+        'form': form,
+        'title': 'Edit forum | webnodes'
     }, context_instance=RequestContext(request))
 
 def topics(request, forum):

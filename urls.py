@@ -10,6 +10,7 @@ urlpatterns = patterns('apps',
     
     (r'^(.+)/new_topic$', 'forums.views.topics_new'),
     (r'^(.+)/search$', 'forums.views.search'),
+    (r'^(.+)/edit$', 'forums.views.edit_forum'),
     
     (r'^(.+)/(\d+)$', 'forums.views.topic'),
     (r'^(.+)/(\d+)/edit$', 'forums.views.topic_edit'),

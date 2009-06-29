@@ -23,8 +23,4 @@ $(document).ready(function(){
     if ($('#logout').length) {
         $('#logout')[0].href += '?next=' + window.location.pathname;
     }
-    
-    $('#search').one('focus', function(){
-        this.value = '';
-    });
 });

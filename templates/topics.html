@@ -64,9 +64,9 @@
         }
         
         #search {
-            background:#FFFFFF url(http://stackoverflow.com/Content/Img/search.png) no-repeat scroll left center;
-            padding-left: 20px;
-            width: 160px;
+            background: #FFFFFF url(/static/search.png) no-repeat scroll left center;
+            padding-left: 27px;
+            width: 150px;
         }
     </style>
 {% endblock %}
@@ -78,8 +78,12 @@
             <a href="/{{ forum }}/new_topic">start a topic</a>
         </h2>
         <form action="/{{forum}}/search" method="get">
-            <input id="search" type="text" name="query" value="search this forum">
+            <input id="search" type="text" name="query">
         </form>
+        {% if forum|in_list:user.moderator_of %}
+            <h2>moderation</h2>
+            <a href="/{{forum}}/edit">edit group</a>
+        {% endif %}
         <br>
         {{ sidebar|markdownify }}
         <br>
