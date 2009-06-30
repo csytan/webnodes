@@ -26,8 +26,8 @@ body {
     font-family: Helvetica,Arial,sans-serif;
     font-size: 16px;
     line-height: 1.5em;
-    color: black;
-    background: #F3F2E8 url(/static/bg.gif) no-repeat fixed center top;
+    color: #000000;
+    background: #FFFFFF;
     width: 100%;
     height: 100%;
 }

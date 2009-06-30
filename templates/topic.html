@@ -115,8 +115,9 @@
     <script type="text/javascript" src="/static/topic.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('#{{topic.id}}').initTopic({{ graph|safe }})
-            .find('.comment').addClass('topic');
+            $('#{{topic.id}}')
+            .find('.comment').addClass('topic')
+            .end().initTopic({{ graph|safe }});
         });
     </script>
 {% endblock %}
