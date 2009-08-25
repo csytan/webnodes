@@ -6,7 +6,6 @@ from django.template.defaultfilters import slugify
 from django.core.cache import cache
 from django.utils.cache import get_cache_key
 from django import forms
-from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
 # Local imports
@@ -70,7 +69,6 @@ def edit_forum(request, forum):
     if request.method == 'POST':
         form = ForumEditForm(request.POST)
         if form.is_valid():
-            pass
             return HttpResponseRedirect('/' + forum.name)
     else:
         form = ForumEditForm()
@@ -86,11 +84,6 @@ def topics(request, forum):
     topics, next = Topic.recent_topics(forum, next)
     return render_to_response('topics.html', {
         'forum': forum,
-        'sidebar': """
-links
-------------
-- [start a forum](/new_forum)
-        """,
         'topics': topics,
         'next': next
     }, context_instance=RequestContext(request))
@@ -131,24 +124,12 @@ def topic(request, forum, id):
                 body=request.POST['body']
             )
             expire_page('/topics/' + id)
-        
-        elif 'like' in request.POST:
-            id = request.POST['like']
-            comment = Comment.get_by_id(int(id))
-            if request.user.username not in comment.likes:
-                comment.likes.append(request.user.username)
-                comment.put()
-                return HttpResponse('hi')
-            return HttpResponse('bye')
-        elif action == 'flag':
-            pass
     
     topic = Topic.get_by_id(int(id))
+    topic.load_replies()
     return render_to_response('topic.html', {
         'topic': topic,
-        'forum': forum,
-        'comments': topic.comments,
-        'graph': simplejson.dumps(topic.comment_graph),
+        'forum': forum
     }, context_instance=RequestContext(request))
 
 

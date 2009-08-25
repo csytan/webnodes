@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load tag_extras %}
+{% load recurse %}
 
 {% block title %}
     <title>{{ topic.title }} | {{ forum }}</title>
@@ -10,114 +11,20 @@
     <style>
         #content {
             width: 100%;
-            max-width: 1500px;
+            max-width: 600px;
         }
         
-        canvas {
-            z-index: 0;
-            position: absolute;
-        }
-        
-        .container {
-            position: absolute;
-            display: none;
-            z-index: 1;
-        }
-        
-        .comment {
-            width: 350px;
-            margin: auto;
-        }
-        
-        .topic {
-            width: 600px;
-            padding: 1em;
-            margin: auto;
-        }
-        
-        /* stuff within a comment */
-        .comment_body {
-            overflow: auto;
-        }
-        
-        .comment_info {
-            float: right;
-        }
-        
-        .comment_controls {
-            visibility: hidden;
-            font-size: 0.8em;
-        }
-
-        {% if user.is_authenticated %}        
-            .comment:hover .comment_controls {
-                visibility: visible;
-            }
-        {% endif %}
-
-        .comment_nav {
-            width: 260px;
-            margin: auto;
-        }
-
-        .comment_nav a, 
-        .comment_nav span {
-            float: left;
-            font-size: 1.2em;
-            font-weight: normal;
-            background-color: #59A5D1;
-            color: white;
-            text-align: center;
-            visibility: hidden;
-            padding: 0px;
-        }
-        
-        .comment_nav a {
-            width: 80px;
-        }
-        
-        .comment_nav span {
-            width: 100px;
-        }
-        
-        a.prev {
-            -moz-border-radius: 0 0 0 10px;
-        }
-        
-        a.next {
-            -moz-border-radius: 0 0 10px 0;
-        }
-        
-        a.prev:hover,
-        a.next:hover {
-            background-color: #408BB6;
-        }
-        
-        a.prev:active,
-        a.next:active {
-            background-color: #77C4EF;
-        }
     </style>
-    <!--[if lt IE 7]>
-        <style>
-            a.reply {
-                visibility: visible;
-            }
-        </style>
-    <![endif]-->
 {% endblock %}
 
 
 {% block script %}
-    <!--[if IE]>
-        <script type="text/javascript" src="/static/excanvas.js"></script>
-    <![endif]-->
-    <script type="text/javascript" src="/static/topic.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('#{{topic.id}}')
-            .find('.comment').addClass('topic')
-            .end().initTopic({{ graph|safe }});
+            $('a.reply').live('click', function(e){
+                $('#reply_to').val(this.id);
+                return false;
+            });
         });
     </script>
 {% endblock %}
@@ -125,40 +32,39 @@
 
 
 {% block content %}
-    <noscript>
-        <p style="text-align: center">Sorry, this site requires javascript</p>
-    </noscript>
 
-    {% for comment in comments %}
-        <div id="{{ comment.id }}" class="container">
-            <div class="comment box">
-                <div class="comment_body">
-                    {{ comment.body|markdownify }}
+    {% if tree %}
+        {% recurse comment.replies with topic as comment %}
+        <div id="comment{{comment.id}}" class="comment box">
+            {% loop %}
+                <span>
+                    {{ comment.author }}
+                    {{ comment.created }}
+                    {{ comment.id }}
+                </span>
+                {{ comment.body|markdownify }}
+
+                <a id="{{comment.id}}" href="#" class="reply">reply</a>
+                <div class="replies">
+                    {% child %}
                 </div>
-                <div class="comment_info">
-                    {% if comment.points %}
-                        {{ comment.points }},
-                    {% endif %}
-                    <a href="/users/{{ comment.author }}">{{ comment.author }}</a>,
-                    {{ comment.updated|timeago }}
-                </div>
-                <div class="comment_controls">
-                    <a class="reply button" href="#">reply</a>
-                    {% if not user.username|in_list:comment.likes %}
-                        <a class="like button" href="#">like</a>
-                    {% endif %}
-                    {% if not user.username|in_list:comment.flags %}
-                        <a class="flag button" href="#">flag</a>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="comment_nav">
-                <a class="prev">«</a>
-                <span class="page_num"></span>
-                <a class="next">»</a>
-            </div>
+            {% endloop %}
         </div>
-    {% endfor %}
+        {% endrecurse %}
+    {% else %}
+        {% for comment in comments %}
+        <div class="comment" class="comment box">
+            <span>
+                {{ comment.author }}
+                {{ comment.created }}
+                {{ comment.id }}
+            </span>
+            {{ comment.body|markdownify }}
+        <div>
+        {% endfor %}
+        
+        
+    {% endif %}
 
     <div id="reply_box" class="container">
         <div class="comment box" style="padding:0.5em;padding-bottom:0px">
