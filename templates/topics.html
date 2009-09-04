@@ -13,46 +13,9 @@
             width: 750px;
         }
         
-        #sidebar {
-            width: 200px;
-            float: right;
-            text-align: right;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        
-        #sidebar ul {
-            margin: 0px;
-            width: 200px;
-        }
-        
-        #sidebar li {
-            list-style-type: none;
-            width: 200px;
-        }
-        
-        #sidebar a,
-        #sidebar h1,
-        #sidebar h2,
-        #sidebar h3,
-        #sidebar h4 {
-            width: 180px;
-            display: block;
-            padding: 5px 10px;
-        }
-        
-        #sidebar a:hover {
-            background: #EFEBC2;
-        }
-        
-        #sidebar input {
-            font-size: 1em;
-        }
-        
         #topics {
             width: 500px;
             margin: auto;
-            margin-right: 220px;
         }
         
         .topic {
@@ -62,27 +25,19 @@
         .topic p {
             margin-bottom: 0px;
         }
-        
-        #search {
-            background: #FFFFFF url(/static/search.png) no-repeat scroll left center;
-            padding-left: 27px;
-            width: 150px;
-        }
+
     </style>
 {% endblock %}
 
 
 {% block content %}
-    <div id="sidebar">
+    <div id="navbar">
         <h2>
-            <a href="/{{ forum }}/new_topic">start a topic</a>
+            <a href="/topics/new">start a topic</a>
         </h2>
-        <form action="/{{forum}}/search" method="get">
-            <input id="search" type="text" name="query">
-        </form>
         {% if forum|in_list:user.moderator_of %}
             <h2>moderation</h2>
-            <a href="/{{forum}}/edit">edit group</a>
+            <a href="/topics/edit">edit group</a>
         {% endif %}
         <br>
         {{ sidebar|markdownify }}
@@ -92,7 +47,7 @@
         {% for topic in topics %}
             <div class="topic box">
                 <h1>
-                    <a href="/{{ forum }}/{{ topic.id }}">{{ topic.title }}</a>
+                    <a href="/topics/{{ topic.id }}">{{ topic.title }}</a>
                 </h1>
                 <p style="text-align:right">
                     {{ topic.num_comments }} comments,
@@ -103,7 +58,7 @@
         {% endfor %}
         
         {% if next %}
-            <a href="/{{forum}}?next={{next}}" class="button">Next</a>
+            <a href="/topics?next={{next}}" class="button">Next</a>
         {% endif %}
     </div>
 {% endblock %}

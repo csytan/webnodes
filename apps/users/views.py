@@ -9,35 +9,28 @@ from django.contrib.auth import authenticate, login, logout
 
 
 ### Forms ###
-class LoginForm(forms.Form):
+class SigninForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput)
     next = forms.CharField(widget=forms.HiddenInput, required=False)
 
+class SignupForm(forms.Form):
+    username = forms.CharField(max_length=30)
+    email = forms.EmailField(required=False, label='Email (optional)')
+    password = forms.CharField(widget=forms.PasswordInput)
+    next = forms.CharField(widget=forms.HiddenInput, required=False)
 
 ### Views ###
-def users_login(request):
+def sign_in(request):
+    next = {'next': request.GET.get('next', '/')}
+    
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = SigninForm(request.POST)
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data['username'], 
                 password=form.cleaned_data['password']
             )
-            
-            if user is None:
-                try:
-                    User.objects.create_user(
-                        username=form.cleaned_data['username'],
-                        password=form.cleaned_data['password'],
-                        email=None
-                    )
-                    user = authenticate(
-                        username=form.cleaned_data['username'], 
-                        password=form.cleaned_data['password']
-                    )
-                except IntegrityError:
-                    pass # username taken
             
             if user is not None:
                 if user.is_active:
@@ -47,13 +40,39 @@ def users_login(request):
                 else:
                     return HttpResponse('disabled acct')
     else:
-        form = LoginForm()
+        form = SigninForm(initial=next)
         
-    return render_to_response('basic_form.html', {
-        'form': form
+    return render_to_response('sign_in.html', {
+        'signin_form': form,
+        'signup_form': SignupForm(initial=next)
     }, context_instance=RequestContext(request))
+
+
+def sign_up(request):
+    next = {'next': request.GET.get('next', '/')}
     
-def users_logout(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            try:
+                User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password']
+                )
+                return sign_in(request)
+            except IntegrityError:
+                form.errors['username'] = ['Username has been taken']
+    else:
+        form = SignupForm(initial=next)
+        
+    return render_to_response('sign_in.html', {
+        'signin_form': SigninForm(initial=next),
+        'signup_form': form
+    }, context_instance=RequestContext(request))
+
+
+def sign_out(request):
     logout(request)
     redirect = request.GET.get('next', '/')
     return HttpResponseRedirect(redirect)

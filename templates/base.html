@@ -20,25 +20,25 @@
 
 <body>
     <div id="header">
-        <div id="header_profile">
-            {% if user.is_authenticated %}
-                <a href="/users/{{user.username}}">{{ user.username }}</a>
-                |
-                <a id="logout" href="/users/logout">sign out</a>
-            {% else %}
-                <form method="post" action="/users/login" style="font-size: 0.8em;">
-                    <input type="text" id="username" maxlength="30" name="username" style="width:150px">
-                    <input type="password" id="password" name="password" style="width:150px">
-                    <input type="hidden" id="next" value="/" name="next">
-                    <input type="submit" value="sign in / sign up" name="submit">
-                </form>
-            {% endif %}
-        </div>
-        <a href="/">home</a>
+        <a href="/" id="logo">webnodes</a>
         {% if forum %}
             <span>‣</span>
             <a href="/{{ forum }}">{{ forum }}</a>
         {% endif %}
+        
+
+        <ul id="navbar">
+            {% if user.is_authenticated %}
+                <li>{{ user.username }}</li>
+            {% endif %}
+            <li><a href="/jobs">Jobs</a></li>
+            <li><a href="/translators">Translators</a></li>
+            {% if user.is_authenticated %}
+                <li><a id="logout" href="/users/sign_out">Sign out</a></li>
+            {% else %}
+                <li><a id="logout" href="/users/sign_in">Sign in</a></li>
+            {% endif %}
+        </ul>
     </div>
     <div id="content">
         {% block content %}{% endblock %}

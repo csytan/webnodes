@@ -4,7 +4,7 @@
 {% load recurse %}
 
 {% block title %}
-    <title>{{ topic.title }} | {{ forum }}</title>
+    <title>{{ topic.title }}</title>
 {% endblock %}
 
 {% block style %}
@@ -12,8 +12,21 @@
         #content {
             width: 100%;
             max-width: 600px;
+            padding-bottom: 200px;
         }
         
+        .box {
+            margin-bottom: 5px;
+            background: #FFFFFF;
+        }
+        
+        .comment {
+            margin-left: 30px;
+        }
+        
+        #reply_box {
+            display: none;
+        }
     </style>
 {% endblock %}
 
@@ -23,8 +36,17 @@
         $(document).ready(function(){
             $('a.reply').live('click', function(e){
                 $('#reply_to').val(this.id);
+                $('#reply_box')
+                .insertAfter($(this).parent())
+                .slideDown();
                 return false;
             });
+            
+            $('#reply_cancel').click(function(e){
+                $('#reply_box').slideUp();
+            });
+            
+            $('.comment:first').css('margin-left', 0).children('.replies').children('.comment').css('margin-left',0);
         });
     </script>
 {% endblock %}
@@ -32,49 +54,32 @@
 
 
 {% block content %}
-
-    {% if tree %}
-        {% recurse comment.replies with topic as comment %}
-        <div id="comment{{comment.id}}" class="comment box">
-            {% loop %}
-                <span>
-                    {{ comment.author }}
-                    {{ comment.created }}
-                    {{ comment.id }}
-                </span>
-                {{ comment.body|markdownify }}
-
-                <a id="{{comment.id}}" href="#" class="reply">reply</a>
-                <div class="replies">
-                    {% child %}
+    {% recurse comment.replies with topic as comment %}
+    {% loop %}
+        <div class="comment" style="border-left: 1px dotted #C7CACC;">
+            <div id="comment{{comment.id}}" class="box">
+                <span style="font-weight: bold;">{{ comment.author }}</span>
+                <span style="float:right">{{ comment.created|timeago }}</span>
+                <div style="margin-top: 4px">
+                    {{ comment.body|markdownify }}
                 </div>
-            {% endloop %}
+                <a style="float:right" id="{{comment.id}}" href="#" class="reply">reply</a>
+                <div style="clear:right"></div>
+            </div>
+            <div class="replies">
+                {% child %}
+            </div>
         </div>
-        {% endrecurse %}
-    {% else %}
-        {% for comment in comments %}
-        <div class="comment" class="comment box">
-            <span>
-                {{ comment.author }}
-                {{ comment.created }}
-                {{ comment.id }}
-            </span>
-            {{ comment.body|markdownify }}
-        <div>
-        {% endfor %}
-        
-        
-    {% endif %}
+    {% endloop %}
+    {% endrecurse %}
 
-    <div id="reply_box" class="container">
-        <div class="comment box" style="padding:0.5em;padding-bottom:0px">
-            <form id="reply_form" action="" method="post">
-                <input type="hidden" id="reply_to" name="reply_to">
-                <textarea id="reply_textarea" name="body" style="height:200px; width:95%"></textarea>
-                <input type="submit" style="float:right" value="reply">
-                <span id="reply_cancel" class="button" style="float:left" href="#">cancel</span>
-                <div style="clear:left"></div>
-            </form>
-        </div>
+    <div id="reply_box" class="comment box" style="padding:0.5em;padding-bottom:0px">
+        <form id="reply_form" action="" method="post">
+            <input type="hidden" id="reply_to" name="reply_to">
+            <textarea id="reply_textarea" name="body" style="height:150px; width:98%"></textarea>
+            <input type="submit" style="float:right" value="reply">
+            <span id="reply_cancel" class="button" style="float:left" href="#">cancel</span>
+            <div style="clear:left"></div>
+        </form>
     </div>
 {% endblock %}

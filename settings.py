@@ -1,13 +1,20 @@
 ﻿import os
 import lib
 
-DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+DEBUG = os.environ.get('SERVER_SOFTWARE', 'Dev').startswith('Dev')
+
+# Appengine patch settings for running manage.py
+MEDIA_VERSION = 1
+COMBINE_MEDIA = {}
+
+#SESSION_COOKIE_DOMAIN = '.mysite.com'
 
 ADMINS = ()
-
 DATABASE_ENGINE = 'appengine'
 DJANGO_STYLE_MODEL_KIND = False
+
 AUTH_USER_MODULE = 'apps.users.models'
+
 LOGIN_URL = '/users/login'
 ROOT_URLCONF = 'urls'
 
@@ -15,16 +22,17 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.auth',
     'appenginepatcher',
-    'apps.forums',
+    'apps.core',
+    'apps.mail',
     'apps.users',
 )
 
 MIDDLEWARE_CLASSES = (
+    'apps.core.middleware.SubdomainMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 TEMPLATE_LOADERS = (

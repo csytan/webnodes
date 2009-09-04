@@ -2,49 +2,24 @@
 
 {% block style %}
     <style>
-        #example {
-            width: 700px;
+        #text {
+            max-width: 95%;
+            width: 70%;
             display:block;
             overflow: auto;
-            font-size: 1.5em;
         }
         
         select {
             font-size: 1em;
         }
-        
-        form {
-            font-size: 1.2em;
-        }
+
     </style>
 {% endblock %}
 
 {% block script %}
     <script>
         $(function(){
-            $('select').each(function(){
-                var html = [];
-                $(this).find('option').each(function(){
-                    html.push('<a>' + $(this).text() + '</a>');
-                });
-                
-                var parent = $(this).parent();
-                
-                $(this).replaceWith(html.join('<span>, </span>'));
-                
-                parent.find('a').click(function(e){
-                    $(this).css({
-                        'color': '#FFA800',
-                        'border-bottom': '1px solid #FFA800'
-                    }).siblings().css({
-                        'color': null,
-                        'border-bottom': null
-                    });
-                    return false;
-                });
-                
-                parent.find('a:first').click();
-            });
+
             
         });
     </script>
@@ -54,7 +29,7 @@
     <form method="post" action="/">
         <div style="font-size: 1.1em">
             Translate from
-            <select id="translate_from_language_code_select">
+            <select id="fr_lang" name="fr_lang">
                 <optgroup>
                     <option value="en">English</option>
                     <option value="ja">Japanese</option>
@@ -64,7 +39,7 @@
                 </optgroup>
             </select>
             to
-            <select name="translate_to_language_code" id="translate_to_language_code">
+            <select id="to_lang" name="to_lang">
                 <option value="ja">Japanese</option>
                 <option value="es">Spanish (Spain)</option>
                 <option value="zh">Chinese (Simplified)</option>
@@ -72,7 +47,7 @@
             </select>
         </div>
         <br>
-        <textarea rows="5" cols="10" id="example" name="bbq"></textarea>
+        <textarea rows="10" cols="10" id="text" name="text"></textarea>
         <input type="submit" value="translate this shit!">
     </form>
 {% endblock %}

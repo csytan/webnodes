@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>{{title}}</title>
+{% endblock %}
+
+{% block style %}
+    <style>
+        #content th {
+            padding-right: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Sign In</h1>
+    <form action="/users/sign_in" method="post">
+        <table>
+            {{ signin_form.as_table }}
+        </table>
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <br>
+    <h1>Sign up</h1>
+    <form action="/users/sign_up" method="post">
+        <table>
+            {{ signup_form.as_table }}
+        </table>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

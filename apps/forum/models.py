@@ -4,14 +4,6 @@ from google.appengine.ext.db import polymodel
 
 
 ### Models ###
-class Forum(db.Model):
-    title = db.StringProperty()
-    
-    @property
-    def name(self):
-        return self.key().name()
-
-
 class Comment(polymodel.PolyModel):
     author = db.StringProperty()
     body = db.TextProperty()
@@ -21,9 +13,9 @@ class Comment(polymodel.PolyModel):
     updated = db.DateTimeProperty(auto_now=True)
     
     @classmethod
-    def get_by_username(cls, username):
+    def get_by_author(cls, author):
         query = cls.all()
-        query.filter('author =', username)
+        query.filter('author =', author)
         query.order('-created')
         return query.fetch(50)
     
@@ -48,9 +40,9 @@ class Topic(Comment):
     num_comments = db.IntegerProperty(default=0)
     
     @classmethod
-    def recent_topics(cls, forum, next=None, limit=20):
+    def topics_by_author(cls, author, next=None, limit=20):
         query = cls.all()
-        query.filter('forum =', forum)
+        query.filter('author =', author)
         if next is not None:
             next_topic = cls.get_by_id(int(next))
             query.filter('created <', next_topic.created)
@@ -67,10 +59,11 @@ class Topic(Comment):
     def topic_id(self):
         return int(self.key().id())
     
-    def load_replies(self):
+    def replies(self):
+        """Adds the .replies to each comment for display as tree"""
         query = Comment.all()
         query.filter('topic_id =', self.id)
-        query.order('-created')
+        query.order('created')
         comments = query.fetch(1000)
         
         if self.num_comments != len(comments):
@@ -78,13 +71,15 @@ class Topic(Comment):
             self.put()
         
         ids = {self.id: self}
+        self.replies = []
+        
         for comment in comments:
             ids[comment.id] = comment
+            comment.replies = []
             
         for comment in comments:
             parent = ids[comment.parent_id]
-            parent.replies = getattr(parent, 'replies', [])
             parent.replies.append(comment)
         
-        
+        return self.replies
 
