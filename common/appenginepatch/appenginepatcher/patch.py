@@ -58,9 +58,14 @@ def patch_app_engine():
     # of results to 301, so there won't be any timeouts (301, so you can say
     # "more than 300 results").
     def __len__(self):
-        return self.count(301)
+        return self.count()
     db.Query.__len__ = __len__
-
+    
+    old_count = db.Query.count
+    def count(self, limit=301):
+        return old_count(self, limit)
+    db.Query.count = count
+    
     # Add "model" property to Query (needed by generic views)
     class ModelProperty(object):
         def __get__(self, query, unused):
@@ -127,15 +132,31 @@ def patch_app_engine():
         return self.name
     db.Property.attname = property(attname)
 
+    class EmptyObject(object):
+        pass
+
     class Rel(object):
         def __init__(self, property):
             self.field_name = 'key'
+            self.field = EmptyObject()
+            self.field.name = self.field_name
             self.property = property
             self.to = property.reference_class
             self.multiple = True
             self.parent_link = False
             self.related_name = getattr(property, 'collection_name', None)
             self.through = None
+
+        def get_related_field(self):
+            """
+            Returns the Field in the 'to' object to which this relationship is
+            tied.
+            """
+            data = self.to._meta.get_field_by_name(self.field_name)
+            if not data[2]:
+                raise FieldDoesNotExist("No related field named '%s'" %
+                        self.field_name)
+            return data[0]
 
     class RelProperty(object):
         def __get__(self, property, cls):
@@ -151,6 +172,21 @@ def patch_app_engine():
     def formfield(self, **kwargs):
         return self.get_form_field(**kwargs)
     db.Property.formfield = formfield
+
+    def _get_flatchoices(self):
+        """Flattened version of choices tuple."""
+        if not self.choices:
+            return []
+        if not isinstance(choices[0], (list, tuple)):
+            return [(choice, choice) for choice in self.choices]
+        flat = []
+        for choice, value in self.choices:
+            if type(value) in (list, tuple):
+                flat.extend(value)
+            else:
+                flat.append((choice,value))
+        return flat
+    db.Property.flatchoices = property(_get_flatchoices)
     
     # Add repr to make debugging a little bit easier
     def __repr__(self):
@@ -161,6 +197,9 @@ def patch_app_engine():
             else:
                 data.append('key_id='+repr(self.key().id()))
         for field in self._meta.fields:
+            if isinstance(field, db.ReferenceProperty):
+                data.append(field.name+'='+repr(field.get_value_for_datastore(self)))
+                continue
             try:
                 data.append(field.name+'='+repr(getattr(self, field.name)))
             except:
@@ -194,6 +233,12 @@ def patch_app_engine():
             name = 'key'
             attname = 'pk'
 
+            @classmethod
+            def get_db_prep_lookup(cls, lookup_type, pk_value):
+                if isinstance(pk_value, db.Key):
+                    return pk_value
+                return db.Key(pk_value)
+
         def __init__(self, model, bases):
             try:
                 self.app_label = model.__module__.split('.')[-2]
@@ -207,6 +252,8 @@ def patch_app_engine():
             self.abstract = model is db.Model
             self.model = model
             self.unique_together = ()
+            self.proxy = False
+            self.has_auto_field = True
             self.installed = model.__module__.rsplit('.', 1)[0] in \
                              settings.INSTALLED_APPS
             self.permissions = []
@@ -235,6 +282,9 @@ def patch_app_engine():
                     raise TypeError, "'class Meta' got invalid attribute(s): %s" % ','.join(meta_attrs.keys())
             else:
                 self.verbose_name_plural = self.verbose_name + 's'
+
+            if not isinstance(self.permissions, list):
+                self.permissions = list(self.permissions)
 
             if not self.abstract:
                 self.permissions.extend([
@@ -306,6 +356,28 @@ def patch_app_engine():
         def fields(self):
             return self.local_fields + self.local_many_to_many
 
+        def init_name_map(self):
+            """
+            Initialises the field name -> field object mapping.
+            """
+            from django.db.models.loading import app_cache_ready
+            cache = {}
+            # We intentionally handle related m2m objects first so that symmetrical
+            # m2m accessor names can be overridden, if necessary.
+            for f, model in self.get_all_related_m2m_objects_with_model():
+                try:
+                    cache[f.field.collection_name] = (f, model, False, True)
+                except:
+                    pass
+            for f, model in self.get_all_related_objects_with_model():
+                try:
+                    cache[f.field.collection_name] = (f, model, False, False)
+                except:
+                    pass
+            if app_cache_ready():
+                self._name_map = cache
+            return cache
+
         def get_field(self, name, many_to_many=True):
             """
             Returns the requested field by name. Raises FieldDoesNotExist on error.
@@ -315,6 +387,29 @@ def patch_app_engine():
                     return f
             from django.db.models.fields import FieldDoesNotExist
             raise FieldDoesNotExist, '%s has no field named %r' % (self.object_name, name)
+
+        def get_field_by_name(self, name):
+            """
+            Returns the (field_object, model, direct, m2m), where field_object is
+            the Field instance for the given name, model is the model containing
+            this field (None for local fields), direct is True if the field exists
+            on this model, and m2m is True for many-to-many relations. When
+            'direct' is False, 'field_object' is the corresponding RelatedObject
+            for this field (since the field doesn't have an instance associated
+            with it).
+
+            Uses a cache internally, so after the first access, this is very fast.
+            """
+            try:
+                try:
+                    return self._name_map[name]
+                except AttributeError:
+                    cache = self.init_name_map()
+                    return cache[name]
+            except KeyError:
+                from django.db.models.fields import FieldDoesNotExist
+                raise FieldDoesNotExist('%s has no field named %r'
+                        % (self.object_name, name))
 
         def get_all_related_objects(self, local_only=False):
             try:
@@ -478,15 +573,39 @@ def patch_app_engine():
     if not hasattr(db.Model.put, 'patched'):
         old_put = db.Model.put
         def put(self, *args, **kwargs):
-            raw = False
-            signals.pre_save.send(sender=self.__class__, instance=self, raw=raw)
+            signals.pre_save.send(sender=self.__class__, instance=self,
+                                  raw=False)
             created = not self.is_saved()
             result = old_put(self, *args, **kwargs)
             signals.post_save.send(sender=self.__class__, instance=self,
-                created=created, raw=raw)
+                created=created, raw=False)
             return result
         put.patched = True
         db.Model.put = put
+
+    if not hasattr(db.put, 'patched'):
+        old_db_put = db.put
+        def put(models, *args, **kwargs):
+            if not isinstance(models, (list, tuple)):
+                items = (models,)
+            else:
+                items = models
+            items_created = []
+            for item in items:
+                if not isinstance(item, db.Model):
+                    continue
+                signals.pre_save.send(sender=item.__class__, instance=item,
+                                      raw=False)
+                items_created.append(not item.is_saved())
+            result = old_db_put(models, *args, **kwargs)
+            for item, created in zip(items, items_created):
+                if not isinstance(item, db.Model):
+                    continue
+                signals.post_save.send(sender=item.__class__, instance=item,
+                    created=created, raw=False)
+            return result
+        put.patched = True
+        db.put = put
 
     if not hasattr(db.Model.delete, 'patched'):
         old_delete = db.Model.delete
@@ -497,6 +616,26 @@ def patch_app_engine():
             return result
         delete.patched = True
         db.Model.delete = delete
+
+    if not hasattr(db.delete, 'patched'):
+        old_db_delete = db.delete
+        def delete(models, *args, **kwargs):
+            if not isinstance(models, (list, tuple)):
+                items = (models,)
+            else:
+                items = models
+            for item in items:
+                if not isinstance(item, db.Model):
+                    continue
+                signals.pre_delete.send(sender=item.__class__, instance=item)
+            result = old_db_delete(models, *args, **kwargs)
+            for item in items:
+                if not isinstance(item, db.Model):
+                    continue
+                signals.post_delete.send(sender=item.__class__, instance=item)
+            return result
+        delete.patched = True
+        db.delete = delete
 
     # This has to come last because we load Django here
     from django.db.models.fields import BLANK_CHOICE_DASH
@@ -566,7 +705,10 @@ def fix_app_engine_bugs():
     db.TimeProperty.get_form_field = get_form_field
 
     # Improve handing of StringListProperty
-    def get_form_field(self, **defaults):
+    def get_form_field(self, **kwargs):
+        defaults = {'widget': forms.Textarea,
+                    'initial': ''}
+        defaults.update(kwargs)
         defaults['required'] = False
         return super(db.StringListProperty, self).get_form_field(**defaults)
     db.StringListProperty.get_form_field = get_form_field
