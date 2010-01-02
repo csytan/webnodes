@@ -27,7 +27,7 @@ body {
     font-size: 18px;
     line-height: 1.3em;
     color: #000000;
-    background: #FFFFFF;
+    background: #E3E3E3;
     width: 100%;
     max-width: 1400px;
     height: 100%;
@@ -112,10 +112,11 @@ input:focus, textarea:focus {
 /* generic styles */
 .box {
     padding: 0.4em;
-    border: 4px solid #C7CACC;
+    border: 4px solid #AEAEAE;
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
+    background: white;
 }
 
 .box img {
