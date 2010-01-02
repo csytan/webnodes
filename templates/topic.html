@@ -1,85 +1,143 @@
 {% extends "base.html" %}
 
-{% load tag_extras %}
-{% load recurse %}
 
 {% block title %}
-    <title>{{ topic.title }}</title>
-{% endblock %}
+    <title>webnodes | {{ topic['title'] }}</title>
+{% end %}
+
 
 {% block style %}
     <style>
         #content {
             width: 100%;
-            max-width: 600px;
-            padding-bottom: 200px;
+            max-width: 1500px;
         }
         
-        .box {
-            margin-bottom: 5px;
-            background: #FFFFFF;
+        canvas {
+            z-index: 0;
+            position: absolute;
+        }
+        
+        .container {
+            position: absolute;
+            display: none;
+            z-index: 1;
         }
         
         .comment {
-            margin-left: 30px;
+            width: 350px;
+            margin: auto;
+            background: white;
         }
         
-        #reply_box {
-            display: none;
+        .topic {
+            width: 600px;
+            padding: 1em;
+            margin: auto;
+        }
+        
+        /* stuff within a comment */
+        .comment_body {
+            overflow: auto;
+        }
+        
+        .comment_info {
+            float: right;
+        }
+        
+        .comment_controls {
+            visibility: hidden;
+            font-size: 0.8em;
+        }
+
+        .comment_nav {
+            width: 260px;
+            margin: auto;
+        }
+
+        .comment_nav a, 
+        .comment_nav span {
+            float: left;
+            font-size: 1.2em;
+            font-weight: normal;
+            background-color: #59A5D1;
+            color: white;
+            text-align: center;
+            visibility: hidden;
+            padding: 0px;
+        }
+        
+        .comment_nav a {
+            width: 80px;
+        }
+        
+        .comment_nav span {
+            width: 100px;
+        }
+        
+        a.prev {
+            -moz-border-radius: 0 0 0 10px;
+        }
+        
+        a.next {
+            -moz-border-radius: 0 0 10px 0;
+        }
+        
+        a.prev:hover,
+        a.next:hover {
+            background-color: #408BB6;
+        }
+        
+        a.prev:active,
+        a.next:active {
+            background-color: #77C4EF;
         }
     </style>
-{% endblock %}
+{% end %}
 
 
 {% block script %}
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('a.reply').live('click', function(e){
-                $('#reply_to').val(this.id);
-                $('#reply_box')
-                .insertAfter($(this).parent())
-                .slideDown();
-                return false;
-            });
-            
-            $('#reply_cancel').click(function(e){
-                $('#reply_box').slideUp();
-            });
-            
-            $('.comment:first').css('margin-left', 0).children('.replies').children('.comment').css('margin-left',0);
+    <!--[if IE]>
+        <script type="text/javascript" src="/static/excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="/static/topic.js"></script>
+    <script>
+        jQuery(function($){
+            $('#{{ topic["id"] }}')
+            .initTopic({{ graph }})
+            .find('.comment')
+            .addClass('topic');
         });
     </script>
-{% endblock %}
+{% end %}
 
 
 
 {% block content %}
-    {% recurse comment.replies with topic as comment %}
-    {% loop %}
-        <div class="comment" style="border-left: 1px dotted #C7CACC;">
-            <div id="comment{{comment.id}}" class="box">
-                <span style="font-weight: bold;">{{ comment.author }}</span>
-                <span style="float:right">{{ comment.created|timeago }}</span>
-                <div style="margin-top: 4px">
-                    {{ comment.body|markdownify }}
+    <noscript>
+        <p style="text-align: center">Sorry, this site requires javascript</p>
+    </noscript>
+
+    {% for comment in comments %}
+        <div id="{{ comment['id'] }}" class="container">
+            <div class="comment box">
+                <div class="comment_body">
+                    {{ markdown(comment['body']) }}
                 </div>
-                <a style="float:right" id="{{comment.id}}" href="#" class="reply">reply</a>
-                <div style="clear:right"></div>
+                <div class="comment_info">
+                    {{ comment['points'] }} points,
+                    <a href="http://www.reddit.com/user/{{ comment['author'] }}">
+                        {{ comment['author'] }}
+                    </a>
+                    ,{{ locale.format_date(comment['updated']) }}
+                </div>
+                <div style="clear:both"></div>
             </div>
-            <div class="replies">
-                {% child %}
+            <div class="comment_nav">
+                <a class="prev">«</a>
+                <span class="page_num"></span>
+                <a class="next">»</a>
             </div>
         </div>
-    {% endloop %}
-    {% endrecurse %}
-
-    <div id="reply_box" class="comment box" style="padding:0.5em;padding-bottom:0px">
-        <form id="reply_form" action="" method="post">
-            <input type="hidden" id="reply_to" name="reply_to">
-            <textarea id="reply_textarea" name="body" style="height:150px; width:98%"></textarea>
-            <input type="submit" style="float:right" value="reply">
-            <span id="reply_cancel" class="button" style="float:left" href="#">cancel</span>
-            <div style="clear:left"></div>
-        </form>
-    </div>
-{% endblock %}
+    {% end %}
+{% end %}

@@ -91,7 +91,7 @@ input:focus, textarea:focus {
 }
 
 #logo {
-    color: #000000;
+    color: #4F4F4F;
     text-shadow: #3F3F3F 1px 1px 2px;
     font-size: 2.5em; 
     letter-spacing: -5px; 
@@ -100,26 +100,9 @@ input:focus, textarea:focus {
     top: 30px;
 }
 
-#navbar {
-    position: relative;
-    top: 25px;
-    float: right;
-}
-
-#navbar li {
-    display: block;
-    float: left;
-    list-style-type: none;
-    border-bottom: 2px solid #FFFFFF;
-    padding: 15px;
-}
-
-#navbar li:hover {
-    border-bottom: 2px solid black;
-}
-
 #content {
-    padding-left: 20px;
+    width: 600px;
+    margin: auto;
 }
 
 #footer {

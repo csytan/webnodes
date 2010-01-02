@@ -1,66 +1,32 @@
 {% extends "base.html" %}
 
-{% load tag_extras %}
-
-{% block title %}
-    <title>{{ forum }}</title>
-{% endblock %}
-
 
 {% block style %}
     <style>
-        #content {
-            width: 750px;
-        }
-        
-        #topics {
-            width: 500px;
-            margin: auto;
-        }
-        
         .topic {
             margin-bottom: 15px;
         }
-
+        
         .topic p {
             margin-bottom: 0px;
         }
-
     </style>
-{% endblock %}
+{% end %}
 
 
 {% block content %}
-    <div id="navbar">
-        <h2>
-            <a href="/topics/new">start a topic</a>
-        </h2>
-        {% if forum|in_list:user.moderator_of %}
-            <h2>moderation</h2>
-            <a href="/topics/edit">edit group</a>
-        {% endif %}
-        <br>
-        {{ sidebar|markdownify }}
-    </div>
-
-    <div id="topics">
-        {% for topic in topics %}
-            <div class="topic box">
-                <h1>
-                    <a href="/topics/{{ topic.id }}">{{ topic.title }}</a>
-                </h1>
-                <p style="text-align:right">
-                    {{ topic.num_comments }} comments,
-                    <a href="/users/{{ topic.author }}">{{ topic.author }}</a>,
-                    {{ topic.updated|timeago }}
-                </p>
-            </div>
-        {% endfor %}
-        
-        {% if next %}
-            <a href="/topics?next={{next}}" class="button">Next</a>
-        {% endif %}
-    </div>
-{% endblock %}
+    {% for topic in topics %}
+        <div class="topic box">
+            <h1>
+                <a href="/{{ topic['id'] }}">{{ topic['title'] }}</a>
+            </h1>
+            <p style="text-align:right">
+                {{ topic['num_comments'] }} comments,
+                <a href="http://www.reddit.com/user/{{ topic['author'] }}">{{ topic['author'] }}</a>,
+                {{ locale.format_date(topic['updated']) }}
+            </p>
+        </div>
+    {% end %}
+{% end %}
 
 

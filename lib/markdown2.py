@@ -44,8 +44,8 @@ text-to-HTML conversion tool for web writers.
 #   not yet sure if there implications with this. Compare 'pydoc sre'
 #   and 'perldoc perlre'.
 
-__version_info__ = (1, 0, 1, 12, 'a') # first three nums match Markdown.pl
-__version__ = '1.0.1.12a'
+__version_info__ = (1, 0, 1, 15) # first three nums match Markdown.pl
+__version__ = '1.0.1.15'
 __author__ = "Trent Mick"
 
 import os
@@ -58,8 +58,9 @@ try:
 except ImportError:
     from md5 import md5
 import optparse
-from random import random
+from random import random, randint
 import codecs
+from urllib import quote
 
 
 
@@ -84,14 +85,21 @@ log = logging.getLogger("markdown")
 
 DEFAULT_TAB_WIDTH = 4
 
-# Table of hash values for escaped characters:
-def _escape_hash(s):
-    # Lame attempt to avoid possible collision with someone actually
-    # using the MD5 hexdigest of one of these chars in there text.
-    # Other ideas: random.random(), uuid.uuid()
+
+try:
+    import uuid
+except ImportError:
+    SECRET_SALT = str(randint(0, 1000000))
+else:
+    SECRET_SALT = str(uuid.uuid4())
+def _hash_ascii(s):
     #return md5(s).hexdigest()   # Markdown.pl effectively does this.
-    return 'md5:'+md5(s).hexdigest()
-g_escape_table = dict([(ch, _escape_hash(ch))
+    return 'md5-' + md5(SECRET_SALT + s).hexdigest()
+def _hash_text(s):
+    return 'md5-' + md5(SECRET_SALT + s.encode("utf-8")).hexdigest()
+
+# Table of hash values for escaped characters:
+g_escape_table = dict([(ch, _hash_ascii(ch))
                        for ch in '\\`*_{}[]()>#+-.!'])
 
 
@@ -109,7 +117,9 @@ def markdown_path(path, encoding="utf-8",
                   html4tags=False, tab_width=DEFAULT_TAB_WIDTH,
                   safe_mode=None, extras=None, link_patterns=None,
                   use_file_vars=False):
-    text = codecs.open(path, 'r', encoding).read()
+    fp = codecs.open(path, 'r', encoding)
+    text = fp.read()
+    fp.close()
     return Markdown(html4tags=html4tags, tab_width=tab_width,
                     safe_mode=safe_mode, extras=extras,
                     link_patterns=link_patterns,
@@ -249,10 +259,10 @@ class Markdown(object):
 
         text = self._run_block_gamut(text)
 
-        text = self._unescape_special_chars(text)
-
         if "footnotes" in self.extras:
             text = self._add_footnotes(text)
+
+        text = self._unescape_special_chars(text)
 
         if self.safe_mode:
             text = self._unhash_html_spans(text)
@@ -834,7 +844,7 @@ class Markdown(object):
         Markdown.pl because of the lack of atomic matching support in
         Python's regex engine used in $g_nested_brackets.
         """
-        MAX_LINK_TEXT_SENTINEL = 300
+        MAX_LINK_TEXT_SENTINEL = 3000  # markdown2 issue 24
 
         # `anchor_allowed_pos` is used to support img links inside
         # anchors, but not anchors inside anchors. An anchor's start
@@ -930,7 +940,8 @@ class Markdown(object):
                         title_str = ''
                     if is_img:
                         result = '<img src="%s" alt="%s"%s%s' \
-                            % (url, link_text.replace('"', '&quot;'),
+                            % (url.replace('"', '&quot;'),
+                               link_text.replace('"', '&quot;'),
                                title_str, self.empty_element_suffix)
                         curr_pos = start_idx + len(result)
                         text = text[:start_idx] + result + text[match.end():]
@@ -973,7 +984,8 @@ class Markdown(object):
                             title_str = ''
                         if is_img:
                             result = '<img src="%s" alt="%s"%s%s' \
-                                % (url, link_text.replace('"', '&quot;'),
+                                % (url.replace('"', '&quot;'),
+                                   link_text.replace('"', '&quot;'),
                                    title_str, self.empty_element_suffix)
                             curr_pos = start_idx + len(result)
                             text = text[:start_idx] + result + text[match.end():]
@@ -1444,7 +1456,7 @@ class Markdown(object):
           (
               [-.\w]+
               \@
-              [-\w]+(\.[-\w]+)*\.[a-zA-Z]+
+              [-\w]+(\.[-\w]+)*\.[a-z]+
           )
           >
         """, re.I | re.X | re.U)
@@ -1501,7 +1513,7 @@ class Markdown(object):
                         .replace('*', g_escape_table['*'])
                         .replace('_', g_escape_table['_']))
                 link = '<a href="%s">%s</a>' % (escaped_href, text[start:end])
-                hash = md5(link).hexdigest()
+                hash = _hash_text(link)
                 link_from_hash[hash] = link
                 text = text[:start] + hash + text[end:]
         for hash, link in link_from_hash.items():
@@ -1731,7 +1743,8 @@ def _xml_encode_email_char_at_random(ch):
     r = random()
     # Roughly 10% raw, 45% hex, 45% dec.
     # '@' *must* be encoded. I [John Gruber] insist.
-    if r > 0.9 and ch != "@":
+    # Issue 26: '_' must be encoded.
+    if r > 0.9 and ch not in "@_":
         return ch
     elif r < 0.45:
         # The [1:] is to drop leading '0': 0x63 -> x63
@@ -1739,8 +1752,6 @@ def _xml_encode_email_char_at_random(ch):
     else:
         return '&#%s;' % ord(ch)
 
-def _hash_text(text):
-    return 'md5:'+md5(text.encode("utf-8")).hexdigest()
 
 
 #---- mainline
@@ -1839,7 +1850,7 @@ def main(argv=None):
     else:
         link_patterns = None
 
-    from os.path import join, dirname, abspath
+    from os.path import join, dirname, abspath, exists
     markdown_pl = join(dirname(dirname(abspath(__file__))), "test",
                        "Markdown.pl")
     for path in paths:
@@ -1859,7 +1870,16 @@ def main(argv=None):
         sys.stdout.write(
             html.encode(sys.stdout.encoding or "utf-8", 'xmlcharrefreplace'))
         if opts.compare:
-            print "==== match? %r ====" % (perl_html == html)
+            test_dir = join(dirname(dirname(abspath(__file__))), "test")
+            if exists(join(test_dir, "test_markdown2.py")):
+                sys.path.insert(0, test_dir)
+                from test_markdown2 import norm_html_from_html
+                norm_html = norm_html_from_html(html)
+                norm_perl_html = norm_html_from_html(perl_html)
+            else:
+                norm_html = html
+                norm_perl_html = perl_html
+            print "==== match? %r ====" % (norm_perl_html == norm_html)
 
 
 if __name__ == "__main__":
