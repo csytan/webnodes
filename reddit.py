@@ -3,9 +3,14 @@ from datetime import datetime
 from django.utils import simplejson
 
 
+def urlopen(url):
+    try:
+        return urllib.urlopen(url)
+    except:
+        return urllib.urlopen(url)
 
 def topics():
-    json = urllib.urlopen('http://www.reddit.com/r/programming/.json').read()
+    json = urlopen('http://www.reddit.com/r/programming/.json').read()
     data = simplejson.loads(json)
     topics = [topic['data'] for topic in data['data']['children']]
     
@@ -17,7 +22,7 @@ def topics():
     return topics
  
 def topic(id):
-    json = urllib.urlopen('http://reddit.com/comments/' + \
+    json = urlopen('http://reddit.com/comments/' + \
         id + '/.json').read()
     nodes = simplejson.loads(json)
     
