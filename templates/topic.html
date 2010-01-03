@@ -104,9 +104,10 @@
     <script>
         jQuery(function($){
             $('#{{ topic["id"] }}')
-            .initTopic({{ graph }})
             .find('.comment')
-            .addClass('topic');
+            .addClass('topic')
+            .end()
+            .initTopic({{ graph }});
         });
     </script>
 {% end %}
