@@ -26,6 +26,7 @@
         
         .comment {
             width: 350px;
+            padding: 0.7em;
             margin: auto;
         }
         
@@ -125,10 +126,8 @@
                 </div>
                 <div class="comment_info">
                     {{ comment['points'] }} points,
-                    <a href="http://www.reddit.com/user/{{ comment['author'] }}">
-                        {{ comment['author'] }}
-                    </a>
-                    ,{{ locale.format_date(comment['updated']) }}
+                    <a href="http://www.reddit.com/user/{{ comment['author'] }}">{{ comment['author'] }}</a>,
+                    {{ locale.format_date(comment['updated']) }}
                 </div>
                 <div style="clear:both"></div>
             </div>

@@ -40,7 +40,7 @@ def topic(id):
             # root comment
             comments.append(data)
             data['id'] = data['name']
-            data['body'] = data['url']
+            data['body'] = data['selftext'] if data['selftext'] else data['url']
             ups = data['ups'] if data['ups'] else 0
             downs = data['downs'] if data['downs'] else 0
             data['points'] = ups - downs
