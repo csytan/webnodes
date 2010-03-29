@@ -81,7 +81,6 @@ $.fn.initTopic = function(graph){
             }
         }
         if (!lowest) return null;
-        
         var kids = layoutKids(lowest);
         var left = row.slice(0, index);
         var right = row.slice(index + 1);
@@ -102,7 +101,6 @@ $.fn.initTopic = function(graph){
             initNode(kid);
             kids.push(kid);
         }
-        
         showNavButtons(node);
         drawConnections(node, kids);
         return kids;
@@ -111,15 +109,15 @@ $.fn.initTopic = function(graph){
     function showNavButtons(node) {
         var next = node.kids.length - node.start - node.nKids;
         $(node).find('a.next')
-        .css('visibility', next > 0 ? 'visible' : 'hidden');
-        
+            .css('visibility', next > 0 ? 'visible' : 'hidden');
         $(node).find('a.prev')
-        .css('visibility', node.start ? 'visible' : 'hidden');
+            .css('visibility', node.start ? 'visible' : 'hidden');
         
         if (next > 0 || node.start) {
             var curr_page = Math.ceil((node.start + node.nKids) / node.perPage);
-            $(node).find('span.page_num').css('visibility', 'visible')
-            .text(curr_page + ' of ' + Math.ceil(node.kids.length / node.perPage));
+            $(node).find('span.page_num')
+                .css('visibility', 'visible')
+                .text(curr_page + ' of ' + Math.ceil(node.kids.length / node.perPage));
         } else {
             $(node).find('span.page_num').css('visibility', 'hidden');
         }
@@ -158,11 +156,8 @@ $.fn.initTopic = function(graph){
     }
     
     
-    // EVENTS
-    $('a.next, a.prev').live('click', function(e) {
+    $('a.next, a.prev').live('click', function() {
         // Reply pagination
-        if (e.button != 0) return;
-        
         var node = $(this).closest('.container')[0];
         if ($(this).hasClass('next')) {
             node.prev_starts = node.prev_starts || [];
