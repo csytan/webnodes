@@ -7,7 +7,7 @@ $.fn.initTopic = function(graph){
     var NODE_WIDTH = 350;
     var LINK_COLOR = '#6F6F6F';
     var LINK_WIDTH = 8;
-    var VERT_SPACE = 10; // unit of vertical spacing between nodes
+    var VERT_SPACE = 10; // unit of spacing between nodes
     
     
     function layout() {
@@ -85,7 +85,6 @@ $.fn.initTopic = function(graph){
         var kids = layoutKids(lowest);
         var left = row.slice(0, index);
         var right = row.slice(index + 1);
-        
         return left.concat(kids, right);
     }
     
@@ -111,17 +110,11 @@ $.fn.initTopic = function(graph){
     
     function showNavButtons(node) {
         var next = node.kids.length - node.start - node.nKids;
-        if (next > 0) {
-            $(node).find('a.next').css('visibility', 'visible');
-        } else {
-            $(node).find('a.next').css('visibility', 'hidden');
-        }
+        $(node).find('a.next')
+        .css('visibility', next > 0 ? 'visible' : 'hidden');
         
-        if (node.start) {
-            $(node).find('a.prev').css('visibility', 'visible');
-        } else {
-            $(node).find('a.prev').css('visibility', 'hidden');
-        }
+        $(node).find('a.prev')
+        .css('visibility', node.start ? 'visible' : 'hidden');
         
         if (next > 0 || node.start) {
             var curr_page = Math.ceil((node.start + node.nKids) / node.perPage);
@@ -147,9 +140,8 @@ $.fn.initTopic = function(graph){
         }).appendTo(CONTAINER);
         
         // Initialize Excanvas
-        if (window.G_vmlCanvasManager) {
+        if (window.G_vmlCanvasManager)
             window.G_vmlCanvasManager.initElement(canvas);
-        }
         
         var ctx = canvas.getContext('2d');
         ctx.strokeStyle = LINK_COLOR;

@@ -12,8 +12,7 @@ import tornado.web
 
 # Local imports
 import reddit
-from lib import markdown2
-
+import markdown2
 
 
 def markdown(value):
@@ -31,8 +30,8 @@ class Topics(tornado.web.RequestHandler):
         if topics is None:
             topics = reddit.topics()
             memcache.add('topics', topics, 10)
-        
         self.render('topics.html', topics=topics)
+
 
 class Topic(tornado.web.RequestHandler):
     def get(self, id):
@@ -40,18 +39,13 @@ class Topic(tornado.web.RequestHandler):
         if topic is None:
             topic = reddit.topic(id)
             memcache.add('topic:' + id, topic, 10)
-        
         self.render('topic.html', markdown=markdown, **topic)
-
 
 
 settings = {
     'template_path': os.path.join(os.path.dirname(__file__), 'templates'),
-    'cookie_secret': 'cookie munster',
-    'xsrf_cookies': True,
     'debug': os.environ['SERVER_SOFTWARE'].startswith('Dev')
 }
-
 application = tornado.wsgi.WSGIApplication([
     (r'/', Topics),
     (r'/(.+)', Topic)
