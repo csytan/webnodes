@@ -2,9 +2,9 @@
 <html>
 <head>
     {% block title %}
-        <title>webnodes | proggit</title>
+        <title>webnodes | a visualization of proggit</title>
     {% end %}
-    <link type="text/css" href="/static/webnodes.css" rel="stylesheet">
+    <link type="text/css" href="/static/style.css" rel="stylesheet">
     {% block style %}{% end %}
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     {% block script %}{% end %}
@@ -13,6 +13,8 @@
 <body>
     <div id="header">
         <a href="/" id="logo">webnodes</a>
+        <br>
+        a visualization of <a href="http://www.reddit.com/r/programming/">proggit</a>
     </div>
     <div id="content">
         {% block content %}{% end %}

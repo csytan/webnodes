@@ -26,7 +26,7 @@ body {
     font-family: Helvetica,Arial,sans-serif;
     font-size: 18px;
     line-height: 1.3em;
-    color: #000000;
+    color: #454545;
     background: #E3E3E3;
     width: 100%;
     max-width: 1400px;
@@ -84,10 +84,10 @@ input:focus, textarea:focus {
 
 /* base.html */
 #header {
-    margin-top: 5px;
+    margin: 25px 10px;
     padding: 0px 20px;
-    font-size: 1.2em;
-    height: 110px;
+    color: #4F4F4F;
+    position:relative;
 }
 
 #logo {
@@ -97,7 +97,6 @@ input:focus, textarea:focus {
     letter-spacing: -5px; 
     font-weight:bold; 
     position:relative; 
-    top: 30px;
 }
 
 #content {
