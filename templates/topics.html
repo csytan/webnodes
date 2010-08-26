@@ -19,15 +19,34 @@
     {% for topic in topics %}
         <div class="topic box">
             <h1>
-                <a href="/{{ topic['id'] }}">{{ topic['title'] }}</a>
+                <a href="/{{ topic.id }}">{{ escape(topic.title) }}</a>
             </h1>
             <p style="text-align:right">
                 {{ topic['num_comments'] }} comments,
-                <a href="http://www.reddit.com/user/{{ topic['author'] }}">{{ topic['author'] }}</a>,
-                {{ locale.format_date(topic['updated']) }}
+                <a href="#">{{ topic.author }}</a>,
+                {{ locale.format_date(topic.updated) }}
             </p>
         </div>
     {% end %}
+    <div class="topic box">
+        <form method="post" action="">
+            <table>
+                <tr>
+                    <td>Author</td>
+                    <td><input type="text" name="author"></td>
+                </tr>
+                <tr>
+                    <td>Title</td>
+                    <td><input type="text" name="title"></td>
+                </tr>
+                <tr>
+                    <td>Text</td>
+                    <td><textarea></textarea></td>
+                </tr>
+            </table>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 {% end %}
 
 

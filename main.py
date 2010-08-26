@@ -3,43 +3,42 @@ import re
 import os
 import wsgiref.handlers
 
-# Appengine imports
-from google.appengine.api import memcache
-
 # Tornado imports
 import tornado.wsgi
 import tornado.web
 
 # Local imports
-import reddit
+import models
 import markdown2
 
 
-def markdown(value):
-    # real line breaks
-    value = re.sub(r'(\S ?)(\r\n|\r|\n)', r'\1  \n', value)
-    # automatic hyperlinks
-    value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1<\2>', value)
-    html = markdown2.markdown(value, safe_mode='escape')
-    return html.replace('<a href=', '<a rel="nofollow" href=')
-    
 
 class Topics(tornado.web.RequestHandler):
     def get(self):
-        topics = memcache.get('topics')
-        if topics is None:
-            topics = reddit.topics()
-            memcache.add('topics', topics, 10)
+        topics = models.Topic.all().order('-updated').fetch(100)
         self.render('topics.html', topics=topics)
+        
+    def post(self):
+        topic = models.Topic(
+            author=self.get_argument('author', None),
+            title=self.get_argument('title', None),
+            body=self.get_argument('body', None)
+        )
 
 
 class Topic(tornado.web.RequestHandler):
     def get(self, id):
-        topic = memcache.get('topic:' + id)
-        if topic is None:
-            topic = reddit.topic(id)
-            memcache.add('topic:' + id, topic, 10)
-        self.render('topic.html', markdown=markdown, **topic)
+        topic = models.Topic.get_by_id(int(id))
+        self.render('topic.html', markdown=self.markdown, topic=topic)
+        
+    @staticmethod
+    def markdown(value):
+        # real line breaks
+        value = re.sub(r'(\S ?)(\r\n|\r|\n)', r'\1  \n', value)
+        # automatic hyperlinks
+        value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1<\2>', value)
+        html = markdown2.markdown(value, safe_mode='escape')
+        return html.replace('<a href=', '<a rel="nofollow" href=')
 
 
 settings = {
@@ -58,4 +57,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
