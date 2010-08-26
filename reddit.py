@@ -1,6 +1,6 @@
 import urllib
 from datetime import datetime
-from django.utils import simplejson
+import simplejson
 
 
 def urlopen(url):
