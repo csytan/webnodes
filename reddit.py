@@ -16,7 +16,7 @@ def topics():
     return topics
  
 def topic(id):
-    json = urllib.urlopen('http://reddit.com/comments/' + id + '/.json').read()
+    json = urllib.urlopen('http://reddit.com/comments/' + id + '.json').read()
     nodes = simplejson.loads(json)
     
     comments = []
