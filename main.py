@@ -28,7 +28,10 @@ class Topics(tornado.web.RequestHandler):
     def get(self):
         topics = memcache.get('topics')
         if topics is None:
-            topics = reddit.topics()
+            try:
+                topics = reddit.topics()
+            except:
+                return self.render('error.html')
             memcache.add('topics', topics, 10)
         self.render('topics.html', topics=topics)
 
@@ -37,7 +40,10 @@ class Topic(tornado.web.RequestHandler):
     def get(self, id):
         topic = memcache.get('topic:' + id)
         if topic is None:
-            topic = reddit.topic(id)
+            try:
+                topic = reddit.topic(id)
+            except:
+                return self.render('error.html')
             memcache.add('topic:' + id, topic, 10)
         self.render('topic.html', markdown=markdown, **topic)
 
