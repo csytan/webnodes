@@ -50,6 +50,7 @@ for define() below.
 
 import datetime
 import logging
+import logging.handlers
 import re
 import sys
 import time
@@ -100,12 +101,15 @@ def parse_command_line(args=None):
     We return all command line arguments that are not options as a list.
     """
     if args is None: args = sys.argv
+    remaining = []
     for i in xrange(1, len(args)):
         # All things after the last option are command line arguments
         if not args[i].startswith("-"):
-            return args[i:]
+            remaining = args[i:]
+            break
         if args[i] == "--":
-            continue
+            remaining = args[i+1:]
+            break
         arg = args[i].lstrip("-")
         name, equals, value = arg.partition("=")
         name = name.replace('-', '_')
@@ -124,13 +128,14 @@ def parse_command_line(args=None):
         sys.exit(0)
 
     # Set up log level and pretty console logging by default
-    logging.getLogger().setLevel(getattr(logging, options.logging.upper()))
-    enable_pretty_logging()
+    if options.logging != 'none':
+        logging.getLogger().setLevel(getattr(logging, options.logging.upper()))
+        enable_pretty_logging()
 
-    return []
+    return remaining
 
 
-def parse_config_file(path, overwrite=True):
+def parse_config_file(path):
     """Parses and loads the Python config file at the given path."""
     config = {}
     execfile(path, config, config)
@@ -170,7 +175,7 @@ class _Options(dict):
     def __getattr__(self, name):
         if isinstance(self.get(name), _Option):
             return self[name].value()
-        raise Error("Unrecognized option %r" % name)
+        raise AttributeError("Unrecognized option %r" % name)
 
 
 class _Option(object):
@@ -298,29 +303,46 @@ class Error(Exception):
 
 
 def enable_pretty_logging():
-    """Turns on colored logging output for stderr if we are in a tty."""
-    if not curses: return
-    try:
-        if not sys.stderr.isatty(): return
-        curses.setupterm()
-    except:
-        return
-    channel = logging.StreamHandler()
-    channel.setFormatter(_ColorLogFormatter())
-    logging.getLogger().addHandler(channel)        
+    """Turns on formatted logging output as configured."""
+    root_logger = logging.getLogger()
+    if options.log_file_prefix:
+        channel = logging.handlers.RotatingFileHandler(
+            filename=options.log_file_prefix,
+            maxBytes=options.log_file_max_size,
+            backupCount=options.log_file_num_backups)
+        channel.setFormatter(_LogFormatter(color=False))
+        root_logger.addHandler(channel)
+
+    if (options.log_to_stderr or
+        (options.log_to_stderr is None and not root_logger.handlers)):
+        # Set up color if we are in a tty and curses is installed
+        color = False
+        if curses and sys.stderr.isatty():
+            try:
+                curses.setupterm()
+                if curses.tigetnum("colors") > 0:
+                    color = True
+            except:
+                pass
+        channel = logging.StreamHandler()
+        channel.setFormatter(_LogFormatter(color=color))
+        root_logger.addHandler(channel)
 
 
-class _ColorLogFormatter(logging.Formatter):
-    def __init__(self, *args, **kwargs):
+
+class _LogFormatter(logging.Formatter):
+    def __init__(self, color, *args, **kwargs):
         logging.Formatter.__init__(self, *args, **kwargs)
-        fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or ""
-        self._colors = {
-            logging.DEBUG: curses.tparm(fg_color, 4), # Blue
-            logging.INFO: curses.tparm(fg_color, 2), # Green
-            logging.WARNING: curses.tparm(fg_color, 3), # Yellow
-            logging.ERROR: curses.tparm(fg_color, 1), # Red
-        }
-        self._normal = curses.tigetstr("sgr0")
+        self._color = color
+        if color:
+            fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or ""
+            self._colors = {
+                logging.DEBUG: curses.tparm(fg_color, 4), # Blue
+                logging.INFO: curses.tparm(fg_color, 2), # Green
+                logging.WARNING: curses.tparm(fg_color, 3), # Yellow
+                logging.ERROR: curses.tparm(fg_color, 1), # Red
+            }
+            self._normal = curses.tigetstr("sgr0")
 
     def format(self, record):
         try:
@@ -331,8 +353,10 @@ class _ColorLogFormatter(logging.Formatter):
             "%y%m%d %H:%M:%S", self.converter(record.created))
         prefix = '[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d]' % \
             record.__dict__
-        color = self._colors.get(record.levelno, self._normal)
-        formatted = color + prefix + self._normal + " " + record.message
+        if self._color:
+            prefix = (self._colors.get(record.levelno, self._normal) +
+                      prefix + self._normal)
+        formatted = prefix + " " + record.message
         if record.exc_info:
             if not record.exc_text:
                 record.exc_text = self.formatException(record.exc_info)
@@ -346,5 +370,20 @@ options = _Options.instance()
 
 # Default options
 define("help", type=bool, help="show this help information")
-define("logging", default="info", help="set the Python log level",
-       metavar="info|warning|error")
+define("logging", default="info",
+       help=("Set the Python log level. If 'none', tornado won't touch the "
+             "logging configuration."),
+       metavar="info|warning|error|none")
+define("log_to_stderr", type=bool, default=None,
+       help=("Send log output to stderr (colorized if possible). "
+             "By default use stderr if --log_file_prefix is not set and "
+             "no other logging is configured."))
+define("log_file_prefix", type=str, default=None, metavar="PATH",
+       help=("Path prefix for log files. "
+             "Note that if you are running multiple tornado processes, "
+             "log_file_prefix must be different for each of them (e.g. "
+             "include the port number)"))
+define("log_file_max_size", type=int, default=100 * 1000 * 1000,
+       help="max size of log files before rollover")
+define("log_file_num_backups", type=int, default=10,
+       help="number of log files to keep")

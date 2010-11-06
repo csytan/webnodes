@@ -18,20 +18,48 @@
 
 import cgi
 import errno
-import fcntl
-import functools
-import ioloop
-import iostream
 import logging
 import os
 import socket
 import time
 import urlparse
 
+from tornado import httputil
+from tornado import ioloop
+from tornado import iostream
+from tornado import stack_context
+
+try:
+    import fcntl
+except ImportError:
+    if os.name == 'nt':
+        from tornado import win32_support as fcntl
+    else:
+        raise
+
 try:
     import ssl # Python 2.6+
 except ImportError:
     ssl = None
+
+try:
+    import multiprocessing # Python 2.6+
+except ImportError:
+    multiprocessing = None
+
+def _cpu_count():
+    if multiprocessing is not None:
+        try:
+            return multiprocessing.cpu_count()
+        except NotImplementedError:
+            pass
+    try:
+        return os.sysconf("SC_NPROCESSORS_CONF")
+    except ValueError:
+        pass
+    logging.error("Could not detect number of processors; "
+                  "running with one process")
+    return 1
 
 
 class HTTPServer(object):
@@ -89,10 +117,10 @@ class HTTPServer(object):
 
         http_server = httpserver.HTTPServer(handle_request)
         http_server.bind(8888)
-        http_server.start() # Forks multiple sub-processes
+        http_server.start(0) # Forks multiple sub-processes
         ioloop.IOLoop.instance().start()
 
-    start() detects the number of CPUs on this machine and "pre-forks" that
+    start(0) detects the number of CPUs on this machine and "pre-forks" that
     number of child processes so that we have one Tornado process per CPU,
     all with their own IOLoop. You can also pass in the specific number of
     child processes you want to run with if you want to override this
@@ -144,29 +172,29 @@ class HTTPServer(object):
         self._socket.bind((address, port))
         self._socket.listen(128)
 
-    def start(self, num_processes=None):
+    def start(self, num_processes=1):
         """Starts this server in the IOLoop.
 
-        By default, we detect the number of cores available on this machine
-        and fork that number of child processes. If num_processes is given, we
-        fork that specific number of sub-processes.
+        By default, we run the server in this process and do not fork any
+        additional child process.
 
-        If num_processes is 1 or we detect only 1 CPU core, we run the server
-        in this process and do not fork any additional child process.
+        If num_processes is None or <= 0, we detect the number of cores
+        available on this machine and fork that number of child
+        processes. If num_processes is given and > 1, we fork that
+        specific number of sub-processes.
 
-        Since we run use processes and not threads, there is no shared memory
+        Since we use processes and not threads, there is no shared memory
         between any server code.
+
+        Note that multiple processes are not compatible with the autoreload
+        module (or the debug=True option to tornado.web.Application).
+        When using multiple processes, no IOLoops can be created or
+        referenced until after the call to HTTPServer.start(n).
         """
         assert not self._started
         self._started = True
-        if num_processes is None:
-            # Use sysconf to detect the number of CPUs (cores)
-            try:
-                num_processes = os.sysconf("SC_NPROCESSORS_CONF")
-            except ValueError:
-                logging.error("Could not get num processors from sysconf; "
-                              "running with one process")
-                num_processes = 1
+        if num_processes is None or num_processes <= 0:
+            num_processes = _cpu_count()
         if num_processes > 1 and ioloop.IOLoop.initialized():
             logging.error("Cannot run in multiple processes: IOLoop instance "
                           "has already been initialized. You cannot call "
@@ -176,30 +204,64 @@ class HTTPServer(object):
             logging.info("Pre-forking %d server processes", num_processes)
             for i in range(num_processes):
                 if os.fork() == 0:
-                    ioloop.IOLoop.instance().add_handler(
+                    import random
+                    from binascii import hexlify
+                    try:
+                        # If available, use the same method as
+                        # random.py
+                        seed = long(hexlify(os.urandom(16)), 16)
+                    except NotImplementedError:
+                        # Include the pid to avoid initializing two
+                        # processes to the same value
+                        seed(int(time.time() * 1000) ^ os.getpid())
+                    random.seed(seed)
+                    self.io_loop = ioloop.IOLoop.instance()
+                    self.io_loop.add_handler(
                         self._socket.fileno(), self._handle_events,
                         ioloop.IOLoop.READ)
                     return
             os.waitpid(-1, 0)
         else:
-            io_loop = self.io_loop or ioloop.IOLoop.instance()
-            io_loop.add_handler(self._socket.fileno(), self._handle_events,
-                                ioloop.IOLoop.READ)
+            if not self.io_loop:
+                self.io_loop = ioloop.IOLoop.instance()
+            self.io_loop.add_handler(self._socket.fileno(),
+                                     self._handle_events,
+                                     ioloop.IOLoop.READ)
+
+    def stop(self):
+        self.io_loop.remove_handler(self._socket.fileno())
+        self._socket.close()
 
     def _handle_events(self, fd, events):
         while True:
             try:
                 connection, address = self._socket.accept()
             except socket.error, e:
-                if e[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
+                if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                     return
                 raise
             if self.ssl_options is not None:
                 assert ssl, "Python 2.6+ and OpenSSL required for SSL"
-                connection = ssl.wrap_socket(
-                    connection, server_side=True, **self.ssl_options)
+                try:
+                    connection = ssl.wrap_socket(connection,
+                                                 server_side=True,
+                                                 do_handshake_on_connect=False,
+                                                 **self.ssl_options)
+                except ssl.SSLError, err:
+                    if err.args[0] == ssl.SSL_ERROR_EOF:
+                        return connection.close()
+                    else:
+                        raise
+                except socket.error, err:
+                    if err.args[0] == errno.ECONNABORTED:
+                        return connection.close()
+                    else:
+                        raise
             try:
-                stream = iostream.IOStream(connection, io_loop=self.io_loop)
+                if self.ssl_options is not None:
+                    stream = iostream.SSLIOStream(connection, io_loop=self.io_loop)
+                else:
+                    stream = iostream.IOStream(connection, io_loop=self.io_loop)
                 HTTPConnection(stream, address, self.request_callback,
                                self.no_keep_alive, self.xheaders)
             except:
@@ -221,11 +283,15 @@ class HTTPConnection(object):
         self.xheaders = xheaders
         self._request = None
         self._request_finished = False
-        self.stream.read_until("\r\n\r\n", self._on_headers)
+        # Save stack context here, outside of any request.  This keeps
+        # contexts from one request from leaking into the next.
+        self._header_callback = stack_context.wrap(self._on_headers)
+        self.stream.read_until("\r\n\r\n", self._header_callback)
 
     def write(self, chunk):
         assert self._request, "Request closed"
-        self.stream.write(chunk, self._on_write_complete)
+        if not self.stream.closed():
+            self.stream.write(chunk, self._on_write_complete)
 
     def finish(self):
         assert self._request, "Request closed"
@@ -244,7 +310,7 @@ class HTTPConnection(object):
             connection_header = self._request.headers.get("Connection")
             if self._request.supports_http_1_1():
                 disconnect = connection_header == "close"
-            elif ("Content-Length" in self._request.headers 
+            elif ("Content-Length" in self._request.headers
                     or self._request.method in ("HEAD", "GET")):
                 disconnect = connection_header != "Keep-Alive"
             else:
@@ -254,7 +320,7 @@ class HTTPConnection(object):
         if disconnect:
             self.stream.close()
             return
-        self.stream.read_until("\r\n\r\n", self._on_headers)
+        self.stream.read_until("\r\n\r\n", self._header_callback)
 
     def _on_headers(self, data):
         eol = data.find("\r\n")
@@ -262,7 +328,7 @@ class HTTPConnection(object):
         method, uri, version = start_line.split(" ")
         if not version.startswith("HTTP/"):
             raise Exception("Malformed HTTP version in HTTP Request-Line")
-        headers = HTTPHeaders.parse(data[eol:])
+        headers = httputil.HTTPHeaders.parse(data[eol:])
         self._request = HTTPRequest(
             connection=self, method=method, uri=uri, version=version,
             headers=headers, remote_ip=self.address[0])
@@ -282,7 +348,7 @@ class HTTPConnection(object):
     def _on_request_body(self, data):
         self._request.body = data
         content_type = self._request.headers.get("Content-Type", "")
-        if self._request.method == "POST":
+        if self._request.method in ("POST", "PUT"):
             if content_type.startswith("application/x-www-form-urlencoded"):
                 arguments = cgi.parse_qs(self._request.body)
                 for name, values in arguments.iteritems():
@@ -291,11 +357,21 @@ class HTTPConnection(object):
                         self._request.arguments.setdefault(name, []).extend(
                             values)
             elif content_type.startswith("multipart/form-data"):
-                boundary = content_type[30:]
-                if boundary: self._parse_mime_body(boundary, data)
+                if 'boundary=' in content_type:
+                    boundary = content_type.split('boundary=',1)[1]
+                    if boundary: self._parse_mime_body(boundary, data)
+                else:
+                    logging.warning("Invalid multipart/form-data")
         self.request_callback(self._request)
 
     def _parse_mime_body(self, boundary, data):
+        # The standard allows for the boundary to be quoted in the header,
+        # although it's rare (it happens at least for google app engine
+        # xmpp).  I think we're also supposed to handle backslash-escapes
+        # here but I'll save that until we see a client that uses them
+        # in the wild.
+        if boundary.startswith('"') and boundary.endswith('"'):
+            boundary = boundary[1:-1]
         if data.endswith("\r\n"):
             footer_length = len(boundary) + 6
         else:
@@ -307,7 +383,7 @@ class HTTPConnection(object):
             if eoh == -1:
                 logging.warning("multipart/form-data missing headers")
                 continue
-            headers = HTTPHeaders.parse(part[:eoh])
+            headers = httputil.HTTPHeaders.parse(part[:eoh])
             name_header = headers.get("Content-Disposition", "")
             if not name_header.startswith("form-data;") or \
                not part.endswith("\r\n"):
@@ -355,17 +431,17 @@ class HTTPRequest(object):
         self.method = method
         self.uri = uri
         self.version = version
-        self.headers = headers or HTTPHeaders()
+        self.headers = headers or httputil.HTTPHeaders()
         self.body = body or ""
         if connection and connection.xheaders:
             # Squid uses X-Forwarded-For, others use X-Real-Ip
-            self.remote_ip = headers.get(
-                "X-Real-Ip", headers.get("X-Forwarded-For", remote_ip))
-            self.protocol = headers.get("X-Scheme", protocol) or "http"
+            self.remote_ip = self.headers.get(
+                "X-Real-Ip", self.headers.get("X-Forwarded-For", remote_ip))
+            self.protocol = self.headers.get("X-Scheme", protocol) or "http"
         else:
             self.remote_ip = remote_ip
             self.protocol = protocol or "http"
-        self.host = host or headers.get("Host") or "127.0.0.1"
+        self.host = host or self.headers.get("Host") or "127.0.0.1"
         self.files = files or {}
         self.connection = connection
         self._start_time = time.time()
@@ -411,24 +487,3 @@ class HTTPRequest(object):
         args = ", ".join(["%s=%r" % (n, getattr(self, n)) for n in attrs])
         return "%s(%s, headers=%s)" % (
             self.__class__.__name__, args, dict(self.headers))
-
-
-class HTTPHeaders(dict):
-    """A dictionary that maintains Http-Header-Case for all keys."""
-    def __setitem__(self, name, value):
-        dict.__setitem__(self, self._normalize_name(name), value)
-
-    def __getitem__(self, name):
-        return dict.__getitem__(self, self._normalize_name(name))
-
-    def _normalize_name(self, name):
-        return "-".join([w.capitalize() for w in name.split("-")])
-
-    @classmethod
-    def parse(cls, headers_string):
-        headers = cls()
-        for line in headers_string.splitlines():
-            if line:
-                name, value = line.split(": ", 1)
-                headers[name] = value
-        return headers

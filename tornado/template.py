@@ -83,11 +83,11 @@ from __future__ import with_statement
 
 import cStringIO
 import datetime
-import escape
 import logging
 import os.path
 import re
 
+from tornado import escape
 
 class Template(object):
     """A compiled template.
@@ -115,6 +115,7 @@ class Template(object):
         """Generate this template with the given arguments."""
         namespace = {
             "escape": escape.xhtml_escape,
+            "xhtml_escape": escape.xhtml_escape,
             "url_escape": escape.url_escape,
             "json_encode": escape.json_encode,
             "squeeze": escape.squeeze,
@@ -169,7 +170,10 @@ class Loader(object):
         self.root = os.path.abspath(root_directory)
         self.templates = {}
 
-    def load(self, name, parent_path=None):
+    def reset(self):
+        self.templates = {}
+
+    def resolve_path(self, name, parent_path=None):
         if parent_path and not parent_path.startswith("<") and \
            not parent_path.startswith("/") and \
            not name.startswith("/"):
@@ -178,6 +182,10 @@ class Loader(object):
             relative_path = os.path.abspath(os.path.join(file_dir, name))
             if relative_path.startswith(self.root):
                 name = relative_path[len(self.root) + 1:]
+        return name
+
+    def load(self, name, parent_path=None):
+        name = self.resolve_path(name, parent_path=parent_path)
         if name not in self.templates:
             path = os.path.join(self.root, name)
             f = open(path, "r")
@@ -421,7 +429,7 @@ class _TemplateReader(object):
     def __getitem__(self, key):
         if type(key) is slice:
             size = len(self)
-            start, stop, step = slice.indices(size)
+            start, stop, step = key.indices(size)
             if start is None: start = self.pos
             else: start += self.pos
             if stop is not None: stop += self.pos
@@ -458,6 +466,13 @@ def _parse(reader, in_block=None):
             # If the first curly brace is not the start of a special token,
             # start searching from the character after it
             if reader[curly + 1] not in ("{", "%"):
+                curly += 1
+                continue
+            # When there are more than 2 curlies in a row, use the
+            # innermost ones.  This is useful when generating languages
+            # like latex where curlies are also meaningful
+            if (curly + 2 < reader.remaining() and
+                reader[curly + 1] == '{' and reader[curly + 2] == '{'):
                 curly += 1
                 continue
             break

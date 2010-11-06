@@ -21,11 +21,13 @@ import re
 import xml.sax.saxutils
 import urllib
 
+# json module is in the standard library as of python 2.6; fall back to
+# simplejson if present for older versions.
 try:
     import json
     assert hasattr(json, "loads") and hasattr(json, "dumps")
-    _json_decode = lambda s: json.loads(s)
-    _json_encode = lambda v: json.dumps(v)
+    _json_decode = json.loads
+    _json_encode = json.dumps
 except:
     try:
         import simplejson
@@ -38,13 +40,16 @@ except:
             _json_decode = lambda s: simplejson.loads(_unicode(s))
             _json_encode = lambda v: simplejson.dumps(v)
         except ImportError:
-            raise Exception("A JSON parser is required, e.g., simplejson at "
-                            "http://pypi.python.org/pypi/simplejson/")
+            def _json_decode(s):
+                raise NotImplementedError(
+                    "A JSON parser is required, e.g., simplejson at "
+                    "http://pypi.python.org/pypi/simplejson/")
+            _json_encode = _json_decode
 
 
 def xhtml_escape(value):
     """Escapes a string so it is valid within XML or XHTML."""
-    return utf8(xml.sax.saxutils.escape(value))
+    return xml.sax.saxutils.escape(value, {'"': "&quot;"})
 
 
 def xhtml_unescape(value):
@@ -54,7 +59,13 @@ def xhtml_unescape(value):
 
 def json_encode(value):
     """JSON-encodes the given Python object."""
-    return _json_encode(value)
+    # JSON permits but does not require forward slashes to be escaped.
+    # This is useful when json data is emitted in a <script> tag
+    # in HTML, as it prevents </script> tags from prematurely terminating
+    # the javscript.  Some json libraries do this escaping by default,
+    # although python's standard library does not, so we do it here.
+    # http://stackoverflow.com/questions/1580647/json-why-are-forward-slashes-escaped
+    return _json_encode(value).replace("</", "<\\/")
 
 
 def json_decode(value):
@@ -82,6 +93,93 @@ def utf8(value):
         return value.encode("utf-8")
     assert isinstance(value, str)
     return value
+
+
+# I originally used the regex from 
+# http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+# but it gets all exponential on certain patterns (such as too many trailing
+# dots), causing the regex matcher to never return.
+# This regex should avoid those problems.
+_URL_RE = re.compile(ur"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)""")
+
+
+def linkify(text, shorten=False, extra_params="",
+            require_protocol=False, permitted_protocols=["http", "https"]):
+    """Converts plain text into HTML with links.
+
+    For example: linkify("Hello http://tornadoweb.org!") would return
+    Hello <a href="http://tornadoweb.org">http://tornadoweb.org</a>!
+
+    Parameters:
+    shorten: Long urls will be shortened for display.
+    extra_params: Extra text to include in the link tag,
+        e.g. linkify(text, extra_params='rel="nofollow" class="external"')
+    require_protocol: Only linkify urls which include a protocol. If this is
+        False, urls such as www.facebook.com will also be linkified.
+    permitted_protocols: List (or set) of protocols which should be linkified,
+        e.g. linkify(text, permitted_protocols=["http", "ftp", "mailto"]).
+        It is very unsafe to include protocols such as "javascript".
+    """
+    if extra_params:
+        extra_params = " " + extra_params.strip()
+
+    def make_link(m):
+        url = m.group(1)
+        proto = m.group(2)
+        if require_protocol and not proto:
+            return url  # not protocol, no linkify
+
+        if proto and proto not in permitted_protocols:
+            return url  # bad protocol, no linkify
+
+        href = m.group(1)
+        if not proto:
+            href = "http://" + href   # no proto specified, use http
+
+        params = extra_params
+
+        # clip long urls. max_len is just an approximation
+        max_len = 30
+        if shorten and len(url) > max_len:
+            before_clip = url
+            if proto:
+                proto_len = len(proto) + 1 + len(m.group(3) or "")  # +1 for :
+            else:
+                proto_len = 0
+
+            parts = url[proto_len:].split("/")
+            if len(parts) > 1:
+                # Grab the whole host part plus the first bit of the path
+                # The path is usually not that interesting once shortened
+                # (no more slug, etc), so it really just provides a little
+                # extra indication of shortening.
+                url = url[:proto_len] + parts[0] + "/" + \
+                        parts[1][:8].split('?')[0].split('.')[0]
+
+            if len(url) > max_len * 1.5:  # still too long
+                url = url[:max_len]
+
+            if url != before_clip:
+                amp = url.rfind('&')
+                # avoid splitting html char entities
+                if amp > max_len - 5:
+                    url = url[:amp]
+                url += "..."
+
+                if len(url) >= len(before_clip):
+                    url = before_clip
+                else:
+                    # full url is visible on mouse-over (for those who don't
+                    # have a status bar, such as Safari by default)
+                    params += ' title="%s"' % href
+
+        return u'<a href="%s"%s>%s</a>' % (href, params, url)
+
+    # First HTML-escape so that our strings are all safe.
+    # The regex is modified to avoid character entites other than &amp; so
+    # that we won't pick up &quot;, etc.
+    text = _unicode(xhtml_escape(text))
+    return _URL_RE.sub(make_link, text)
 
 
 def _unicode(value):

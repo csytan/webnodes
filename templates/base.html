@@ -2,7 +2,7 @@
 <html>
 <head>
     {% block title %}
-        <title>webnodes | a visualization of proggit</title>
+        <title>webnodes</title>
     {% end %}
     <link type="text/css" href="/static/style.css" rel="stylesheet">
     {% block style %}{% end %}
@@ -11,11 +11,8 @@
 </head>
 
 <body>
-    <a href="http://github.com/csytan/webnodes"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
     <div id="header">
         <a href="/" id="logo">webnodes</a>
-        <br>
-        a visualization of <a href="http://www.reddit.com/r/programming/">proggit</a>
     </div>
     <div id="content">
         {% block content %}{% end %}

@@ -50,16 +50,18 @@ frameworks on the Tornado HTTP server and I/O loop. See WSGIContainer for
 details and documentation.
 """
 
-import cgi
 import cStringIO
-import escape
+import cgi
 import httplib
 import logging
 import sys
 import time
+import tornado
 import urllib
-import web
 
+from tornado import escape
+from tornado import httputil
+from tornado import web
 
 class WSGIApplication(web.Application):
     """A WSGI-equivalent of web.Application.
@@ -101,7 +103,7 @@ class HTTPRequest(object):
                 values = [v for v in values if v]
                 if values: self.arguments[name] = values
         self.version = "HTTP/1.1"
-        self.headers = HTTPHeaders()
+        self.headers = httputil.HTTPHeaders()
         if environ.get("CONTENT_TYPE"):
             self.headers["Content-Type"] = environ["CONTENT_TYPE"]
         if environ.get("CONTENT_LENGTH"):
@@ -127,8 +129,11 @@ class HTTPRequest(object):
             for name, values in cgi.parse_qs(self.body).iteritems():
                 self.arguments.setdefault(name, []).extend(values)
         elif content_type.startswith("multipart/form-data"):
-            boundary = content_type[30:]
-            if boundary: self._parse_mime_body(boundary)
+            if 'boundary=' in content_type:
+                boundary = content_type.split('boundary=',1)[1]
+                if boundary: self._parse_mime_body(boundary)
+            else:
+                logging.warning("Invalid multipart/form-data")
 
         self._start_time = time.time()
         self._finish_time = None
@@ -149,6 +154,8 @@ class HTTPRequest(object):
             return self._finish_time - self._start_time
 
     def _parse_mime_body(self, boundary):
+        if boundary.startswith('"') and boundary.endswith('"'):
+            boundary = boundary[1:-1]
         if self.body.endswith("\r\n"):
             footer_length = len(boundary) + 6
         else:
@@ -160,7 +167,7 @@ class HTTPRequest(object):
             if eoh == -1:
                 logging.warning("multipart/form-data missing headers")
                 continue
-            headers = HTTPHeaders.parse(part[:eoh])
+            headers = httputil.HTTPHeaders.parse(part[:eoh])
             name_header = headers.get("Content-Disposition", "")
             if not name_header.startswith("form-data;") or \
                not part.endswith("\r\n"):
@@ -210,22 +217,32 @@ class WSGIContainer(object):
 
     def __call__(self, request):
         data = {}
-        def start_response(status, response_headers):
+        response = []
+        def start_response(status, response_headers, exc_info=None):
             data["status"] = status
-            data["headers"] = HTTPHeaders(response_headers)
-        body = "".join(self.wsgi_application(
-            self._environ(request), start_response))
+            data["headers"] = response_headers
+            return response.append
+        app_response = self.wsgi_application(
+            WSGIContainer.environ(request), start_response)
+        response.extend(app_response)
+        body = "".join(response)
+        if hasattr(app_response, "close"):
+            app_response.close()
         if not data: raise Exception("WSGI app did not call start_response")
 
         status_code = int(data["status"].split()[0])
         headers = data["headers"]
+        header_set = set(k.lower() for (k,v) in headers)
         body = escape.utf8(body)
-        headers["Content-Length"] = str(len(body))
-        headers.setdefault("Content-Type", "text/html; charset=UTF-8")
-        headers.setdefault("Server", "TornadoServer/0.1")
+        if "content-length" not in header_set:
+            headers.append(("Content-Length", str(len(body))))
+        if "content-type" not in header_set:
+            headers.append(("Content-Type", "text/html; charset=UTF-8"))
+        if "server" not in header_set:
+            headers.append(("Server", "TornadoServer/%s" % tornado.version))
 
         parts = ["HTTP/1.1 " + data["status"] + "\r\n"]
-        for key, value in headers.iteritems():
+        for key, value in headers:
             parts.append(escape.utf8(key) + ": " + escape.utf8(value) + "\r\n")
         parts.append("\r\n")
         parts.append(body)
@@ -233,7 +250,8 @@ class WSGIContainer(object):
         request.finish()
         self._log(status_code, request)
 
-    def _environ(self, request):
+    @staticmethod
+    def environ(request):
         hostport = request.host.split(":")
         if len(hostport) == 2:
             host = hostport[0]
@@ -246,11 +264,13 @@ class WSGIContainer(object):
             "SCRIPT_NAME": "",
             "PATH_INFO": request.path,
             "QUERY_STRING": request.query,
+            "REMOTE_ADDR": request.remote_ip,
             "SERVER_NAME": host,
             "SERVER_PORT": port,
+            "SERVER_PROTOCOL": request.version,
             "wsgi.version": (1, 0),
             "wsgi.url_scheme": request.protocol,
-            "wsgi.input": cStringIO.StringIO(request.body),
+            "wsgi.input": cStringIO.StringIO(escape.utf8(request.body)),
             "wsgi.errors": sys.stderr,
             "wsgi.multithread": False,
             "wsgi.multiprocess": True,
@@ -275,24 +295,3 @@ class WSGIContainer(object):
         summary = request.method + " " + request.uri + " (" + \
             request.remote_ip + ")"
         log_method("%d %s %.2fms", status_code, summary, request_time)
-
-
-class HTTPHeaders(dict):
-    """A dictionary that maintains Http-Header-Case for all keys."""
-    def __setitem__(self, name, value):
-        dict.__setitem__(self, self._normalize_name(name), value)
-
-    def __getitem__(self, name):
-        return dict.__getitem__(self, self._normalize_name(name))
-
-    def _normalize_name(self, name):
-        return "-".join([w.capitalize() for w in name.split("-")])
-
-    @classmethod
-    def parse(cls, headers_string):
-        headers = cls()
-        for line in headers_string.splitlines():
-            if line:
-                name, value = line.split(": ", 1)
-                headers[name] = value
-        return headers
