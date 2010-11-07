@@ -44,6 +44,7 @@ h1, h2, h3, h4, h5 {
     font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
     font-weight: bold;
     color: #202020;
+    line-height: 1.4em;
     font-weight: normal;
 }
 h1 a, h2 a, h3 a, h4 a, h5 a {
@@ -102,8 +103,12 @@ pre {
 
 
 .topic h2 {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.3em;
 }
 .topic_info {
     color: #808080;
+}
+
+.comment .comment {
+    margin-left: 20px;
 }

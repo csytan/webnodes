@@ -18,8 +18,31 @@
 {% end %}
 
 
+{% block style %}
+    <style>
+        h1 { margin-bottom: 0.5em; }
+        #topic_body {
+            border-bottom: 1px solid #EEE;
+        }
+        #reply_box {
+            display: none;
+        }
+        textarea {
+            width: 600px;
+            height: 150px;
+        }
+    </style>
+{% end %}
+
+
 {% block content %}
-    <h1>{{ escape(topic.title) }}</h1>
+    <h1>
+        {% if topic.link %}
+            <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
+        {% else %}
+            {{ escape(topic.title) }}
+        {% end %}
+    </h1>
     <p class="topic_info">
         {% if topic.points == 1 %}
             1 point
@@ -29,14 +52,22 @@
         by anonymous
         {{ locale.format_date(topic.created) }}
     </p>
-    <div class="topic_body">
-        {{ topic.text }}
+    <div id="topic_body">
+        {% if topic.text %}
+            {{ handler.markdown(topic.text) }}
+        {% end %}
     </div>
-    
+    <form action="" method="post">
+        {{ xsrf_form_html() }}
+        <textarea name="text"></textarea>
+        <br>
+        <input type="submit" value="Add Comment">
+    </form>
     <form id="reply_box" action="" method="post">
         {{ xsrf_form_html() }}
         <input type="hidden" id="reply_to" name="reply_to">
         <textarea name="text"></textarea>
+        <br>
         <input type="submit" value="Add Comment">
     </form>
     
