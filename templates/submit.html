@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <h1>Submit Article</h1>
+    
+    <form action="" method="post">
+        {{ xsrf_form_html() }}
+        <table>
+            <tr>
+                <td>Title</td>
+                <td>
+                    <input type="text" name="title">
+                </td>
+            </tr>
+            <tr>
+                <td>Link</td>
+                <td>
+                    <input type="text" name="link">
+                </td>
+            </tr>
+            <tr>
+                <td>Text</td>
+                <td>
+                    <textarea name="text"></textarea>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Submit">
+    </form>
+{% end %}

@@ -9,11 +9,9 @@ html {
 
 body {
     font-size: 16px;
-    margin: auto;
-    margin-top: 2px;
-    width: 800px;
+    margin: 4em auto;
+    width: 750px;
 }
-
 
 a {
     background-color: white;
@@ -38,20 +36,25 @@ code, pre {
 }
 
 blockquote, div, ol, p, pre, ul {
-  line-height: 1.5em;
-  margin-bottom: 1.5em; }
+    line-height: 1.5em;
+    margin-bottom: 1.5em;
+}
 
 h1, h2, h3, h4, h5 {
-  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
-  color: #202020;
-  font-weight: normal; }
-  h1 a, h2 a, h3 a, h4 a, h5 a {
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: #202020;
+    font-weight: normal;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a {
     font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
     color: #202020 !important;
     text-decoration: none;
-    border-bottom: none; }
-    h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover {
-      color: #e0115f !important; }
+    border-bottom: none;
+}
+h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover {
+    color: #e0115f !important;
+}
 
 h1 {
   border-bottom: 1px solid #eeeeee;
@@ -85,121 +88,22 @@ pre {
   border-left: 3px double #bbbbbb;
   padding: 0.5em; }
 
-#header {
-  overflow: auto; }
-  #header #logo {
-    -webkit-border-radius: 12px 0 0;
-    -moz-border-radius: 12px 0 0;
-    background-color: #e0115f;
+
+#header #logo {
+    text-align: center;
+}
+#header #logo a {
+    font-size: 5em;
+    padding: 0 0.2em;
+    border: none;
+    background-color: #e09db5;
     color: white;
-    float: left;
-    font-size: 30px;
-    font-family: baskerville, palatino, "palatino linotype", georgia, serif;
-    padding: 0 0.3em;
-    bottom-margin: 0.7em; }
-    #header #logo a {
-      font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
-      color: white;
-      background-color: #e0115f;
-      border: none;
-      font-family: baskerville, palatino, "palatino linotype", georgia, serif;
-      text-decoration: none; }
-      #header #logo a:hover {
-        border-bottom: solid 1px white;
-        text-decoration: none; }
-  #header #nav {
-    float: right;
-    margin-top: 10px;
-    text-align: right; }
-    #header #nav ul li {
-      display: inline; }
-  #header .byline {
-    color: #606060; }
+}
 
-#other-articles {
-  margin-top: 4em; }
-  #other-articles ul {
-    padding: 0;
-    list-style-type: none; }
-  #other-articles h3 {
-    margin: 0 0 0.5em; }
-  #other-articles .newer {
-    text-align: right;
-    float: right; }
-  #other-articles .older {
-    float: left; }
 
-#taglist {
-  font-size: 0.8em;
-  margin-top: 3em;
-  text-align: right; }
-
-#sticky {
-  margin-bottom: 3.2em; }
-  #sticky .body {
-    margin: auto;
-    text-align: center; }
-    #sticky .body p {
-      margin: 0;
-      line-height: 4em; }
-
-.archives .excerpt, .tag-page .excerpt {
-  font-size: 90%;
-  margin: 0; }
-  .archives .excerpt h2, .tag-page .excerpt h2 {
-    margin-top: 0; }
-.archives ul, .tag-page ul {
-  list-style-type: none;
-  padding-left: 0px; }
-
-.article, .excerpt, .featured {
-  margin-bottom: 2.5em; }
-
-table.colophon td:first-of-type {
-  width: 175px; }
-
-.article h1, .featured h1 {
-  margin-bottom: 0.25em; }
-
-.clear {
-  clear: both; }
-
-.excerpt {
-  margin-bottom: 1.5em; }
-  .excerpt h2 {
-    margin-bottom: 0.5em; }
-  .excerpt p {
-    margin-bottom: 0.5em; }
-
-.meta {
-  font-size: 13px; }
-  .meta ul {
-    margin: 0px;
-    padding-left: 0; }
-    .meta ul li {
-      color: #606060;
-      display: inline; }
-
-.passive {
-  color: #606060; }
-
-a.tag {
-  color: #202020 !important;
-  padding: 0 0.1em 0; }
-  a.tag:hover {
-    color: #e0115f !important; }
-
-.tags {
-  text-transform: lowercase; }
-
-.tags-page ul {
-  padding: 0;
-  list-style-type: none; }
-
-.screencast {
-  text-align: center;
-  border: 3px double #bbbbbb;
-  padding-top: 30px;
-  div-padding: 0;
-  div-margin-bottom: 0;
-  div-font-size: 0.5em !important; }
+.topic h2 {
+    margin-bottom: 0.5em;
+}
+.topic p {
+    color: #606060;
+}

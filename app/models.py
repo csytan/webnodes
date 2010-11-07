@@ -7,6 +7,17 @@ import uuid
 from google.appengine.ext import db
 
 
+
+### Functions ###
+def prefetch_refprop(entities, prop):
+    ref_keys = [prop.get_value_for_datastore(x) for x in entities]
+    ref_entities = dict((x.key(), x) for x in db.get(set(ref_keys)))
+    for entity, ref_key in zip(entities, ref_keys):
+        prop.__set__(entity, ref_entities[ref_key])
+    return entities
+
+
+### Models ###
 class BaseModel(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
@@ -96,17 +107,46 @@ class User(BaseModel):
 
 
 class Topic(BaseModel):
+    author = db.ReferenceProperty(User, collection_name='topics')
     title = db.StringProperty(indexed=False)
-    body = db.TextProperty(default='')
-    author = db.ReferenceProperty(User)
+    link = db.StringProperty()
+    text = db.TextProperty(default='')
     votes = db.IntegerProperty(default=1)
     score = db.FloatProperty()
     
-    def update_score(self, vote, gravity=1.8):
+    @classmethod
+    def topics(cls):
+        topics = cls.all().order('-updated').fetch(100)
+        prefetch_refprop(topics, cls.author)
+        return topics
+    
+    def update_score(self, gravity=1.8):
         """Adapted from http://amix.dk/blog/post/19574"""
         now = datetime.datetime.utcnow()
-        date = datetime.datetime.utcfromtimestamp(self.created)
-        hour_age = (now - date).seconds / 60.0
-        self.score = (self.votes + vote - 1) / pow(hour_age + 2, gravity)
-        
+        hour_age = (now - self.created).seconds / 60.0
+        self.score = (self.votes - 1) / pow(hour_age + 2, gravity)
     
+    def replies(self):
+        """Fetches the topic's comments & sets each comment's 'replies' attribute"""
+        keys = {}
+        comments = self.comment_set.order('-created').fetch(1000)
+        for comment in comments:
+            keys[str(comment.key())] = comment
+            comment.replies = []
+        for comment in comments:
+            parent_key = Comment.reply_to.get_value_for_datastore(comment)
+            parent = keys.get(str(parent_key))
+            if parent:
+                parent.replies.append(comment)
+        replies = [c for c in comments if not c.reply_to]
+        prefetch_refprop(replies, Comment.author)
+        return replies
+
+
+class Comment(BaseModel):
+    author = db.ReferenceProperty(User, required=True, collection_name='comments')
+    topic = db.ReferenceProperty(required=True)
+    text = db.TextProperty()
+    reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
+
+

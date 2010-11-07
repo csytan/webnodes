@@ -12,7 +12,8 @@ settings = {
 }
 application = tornado.wsgi.WSGIApplication([
     (r'/', views.Index),
-    (r'/(.+)', views.Topic)
+    (r'/submit', views.Submit),
+    (r'/topics/(\d+)', views.Topic)
 ], **settings)
 
 

@@ -41,7 +41,8 @@ class BaseHandler(tornado.web.RequestHandler):
         
     def get_error_html(self, status_code, **kwargs):
         if status_code in (404, 500): # 503 and 403
-            return self.render_string(str(status_code) + '.html')
+            pass
+            #return self.render_string(str(status_code) + '.html')
         return super(BaseHandler, self).get_error_html(status_code, **kwargs)
         
     ### Template helpers ###
@@ -63,7 +64,6 @@ class BaseHandler(tornado.web.RequestHandler):
         return html.replace('<a href=', '<a rel="nofollow" href=').replace('LINEBREAK', '<br>')
 
 
-
 class NotFound404(BaseHandler):
     def get(self):
         raise tornado.web.HTTPError(404)
@@ -73,8 +73,25 @@ class Index(BaseHandler):
     def get(self):
         topics = models.Topic.all().order('-score')
         self.render('index.html', topics=topics)
+
+
+class Submit(BaseHandler):
+    def get(self):
+        self.render('submit.html')
         
-        
+    def post(self):
+        title = self.get_argument('title', None)
+        link = self.get_argument('link', None)
+        text = self.get_argument('text', None)
+        topic = models.Topic(title=title,
+            author=self.current_user,
+            link=link,
+            text=text)
+        topic.update_score()
+        topic.put()
+        self.redirect('/topics/' + str(topic.id))
+
+
 class Topic(BaseHandler):
     def get(self, id):
         topic = models.Topic.get_by_id(int(id))
