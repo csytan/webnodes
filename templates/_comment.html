@@ -1,12 +1,15 @@
 {% for comment in comments %}
     <div class="comment">
+        <p class="topic_info">
+            {% if comment.points == 1 %}
+                1 point
+            {% else %}
+                {{ comment.points }} points
+            {% end %}
+            by anonymous
+            {{ locale.format_date(comment.created) }}
+        </p>
         <p class="comment_body">{{ handler.markdown(comment.text) }}</p>
-        <span class="time">{{ locale.format_date(comment.updated, shorter=True) }}</span>
-        {% if comment.author %}
-            by <a class="author" href="">{{ comment.author_name }}</a>,
-        {% else %}
-            by <span class="author">{{ comment.author_name }}</span>,
-        {% end %}
         <a id="{{ comment.id }}" class="reply">reply</a>
         <div class="divider"></div>
         {{ handler.render_comments(comment.replies) }}

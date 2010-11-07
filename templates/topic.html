@@ -21,9 +21,6 @@
 {% block style %}
     <style>
         h1 { margin-bottom: 0.5em; }
-        #topic_body {
-            border-bottom: 1px solid #EEE;
-        }
         #reply_box {
             display: none;
         }
@@ -63,6 +60,8 @@
         <br>
         <input type="submit" value="Add Comment">
     </form>
+    <br>
+    <br>
     <form id="reply_box" action="" method="post">
         {{ xsrf_form_html() }}
         <input type="hidden" id="reply_to" name="reply_to">

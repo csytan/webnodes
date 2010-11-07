@@ -148,5 +148,6 @@ class Comment(BaseModel):
     topic = db.ReferenceProperty(required=True)
     text = db.TextProperty()
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
+    points = db.IntegerProperty(default=1)
 
 
