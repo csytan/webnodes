@@ -108,23 +108,22 @@ class User(BaseModel):
 
 class Topic(BaseModel):
     author = db.ReferenceProperty(User, collection_name='topics')
+    author_name = db.StringProperty(indexed=False)
     title = db.StringProperty(indexed=False)
     link = db.StringProperty()
     text = db.TextProperty(default='')
-    votes = db.IntegerProperty(default=1)
+    points = db.IntegerProperty(default=1)
     score = db.FloatProperty()
-    
-    @classmethod
-    def topics(cls):
-        topics = cls.all().order('-updated').fetch(100)
-        prefetch_refprop(topics, cls.author)
-        return topics
+    n_comments = db.IntegerProperty(default=0)
     
     def update_score(self, gravity=1.8):
         """Adapted from http://amix.dk/blog/post/19574"""
         now = datetime.datetime.utcnow()
         hour_age = (now - self.created).seconds / 60.0
-        self.score = (self.votes - 1) / pow(hour_age + 2, gravity)
+        self.score = (self.points - 1) / pow(hour_age + 2, gravity)
+        
+    def update_comment_count(self):
+        self.n_comments = self.comment_set.count(1000)
     
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
@@ -139,12 +138,13 @@ class Topic(BaseModel):
             if parent:
                 parent.replies.append(comment)
         replies = [c for c in comments if not c.reply_to]
-        prefetch_refprop(replies, Comment.author)
+        #prefetch_refprop(replies, Comment.author)
         return replies
 
 
 class Comment(BaseModel):
-    author = db.ReferenceProperty(User, required=True, collection_name='comments')
+    author = db.ReferenceProperty(User, collection_name='comments')
+    author_name = db.StringProperty(indexed=False)
     topic = db.ReferenceProperty(required=True)
     text = db.TextProperty()
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')

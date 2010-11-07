@@ -7,7 +7,22 @@
             <h2>
                 <a href="{% if topic.link %}{{ topic.link }}{% else %}/topics/{{ topic.id }}{% end %}">{{ escape(topic.title) }}</a>
             </h2>
-            <p>Anonymous, 23 points, <a href="/topics/{{ topic.id }}">comments</a></p>
+            <p class="topic_info">
+                {% if topic.points == 1 %}
+                    1 point
+                {% else %}
+                    {{ topic.points }} points
+                {% end %}
+                by anonymous
+                {{ locale.format_date(topic.created) }},
+                <a href="/topics/{{ topic.id }}">
+                    {% if topic.n_comments == 1 %}
+                        1 comment
+                    {% else %}
+                        {{ topic.n_comments }} comments
+                    {% end %}
+                </a>
+            </p>
         </div>
     {% end %}
 {% end %}

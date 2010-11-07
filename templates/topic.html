@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+
+{% block script %}
+    <script>
+        (function($){
+            $('a.reply').live('click', function(){
+                $('#reply_to').val(this.id);
+                $('#reply_box')
+                    .insertAfter(this)
+                    .toggle('fast')
+                    .find('textarea')
+                    .focus();
+                return false;
+            });
+        })(jQuery);
+    </script>
+{% end %}
+
+
+{% block content %}
+    <h1>{{ escape(topic.title) }}</h1>
+    <p class="topic_info">
+        {% if topic.points == 1 %}
+            1 point
+        {% else %}
+            {{ topic.points }} points
+        {% end %}
+        by anonymous
+        {{ locale.format_date(topic.created) }}
+    </p>
+    <div class="topic_body">
+        {{ topic.text }}
+    </div>
+    
+    <form id="reply_box" action="" method="post">
+        {{ xsrf_form_html() }}
+        <input type="hidden" id="reply_to" name="reply_to">
+        <textarea name="text"></textarea>
+        <input type="submit" value="Add Comment">
+    </form>
+    
+    {{ handler.render_comments(topic.replies()) }}
+{% end %}
+

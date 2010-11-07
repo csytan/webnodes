@@ -97,4 +97,23 @@ class Topic(BaseHandler):
         topic = models.Topic.get_by_id(int(id))
         self.render('topic.html', topic=topic)
         
+    def render_comments(self, comments):
+        return self.render_string('_comment.html', comments=comments)
+        
+    def post(self, id):
+        topic = models.Topic.get_by_id(int(id))
+        reply_to = self.get_argument('reply_to', None)
+        if reply_to:
+            reply_to = models.Comment.get_by_id(int(reply_to))
+            
+        comment = models.Comment(
+            author=self.current_user,
+            topic=topic,
+            reply_to=reply_to,
+            text=self.get_argument('text'))
+        comment.put()
+        topic.update_comment_count()
+        topic.put()
+        self.redirect('/topics/' + id)
+
 

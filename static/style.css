@@ -104,6 +104,6 @@ pre {
 .topic h2 {
     margin-bottom: 0.5em;
 }
-.topic p {
-    color: #606060;
+.topic_info {
+    color: #808080;
 }
