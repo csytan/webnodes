@@ -7,7 +7,7 @@
             $('a.reply').live('click', function(){
                 $('#reply_to').val(this.id);
                 $('#reply_box')
-                    .insertAfter(this)
+                    .insertAfter($(this).closest('.body'))
                     .toggle('fast')
                     .find('textarea')
                     .focus();
@@ -23,9 +23,9 @@
         #reply_box {
             display: none;
         }
-        textarea {
-            width: 600px;
-            height: 150px;
+        #reply_box textarea {
+            width: 500px;
+            height: 100px;
         }
     </style>
 {% end %}
@@ -64,24 +64,19 @@
             {% if topic.text %}
                 {{ handler.markdown(topic.text) }}
             {% end %}
+            <a class="reply">reply</a>
         </div>
     </div>
     
-    <form action="" method="post">
-        {{ xsrf_form_html() }}
-        <textarea name="text"></textarea>
-        <br>
-        <input type="submit" value="Add Comment">
-    </form>
-    <br>
-    <br>
-    <form id="reply_box" action="" method="post">
-        {{ xsrf_form_html() }}
-        <input type="hidden" id="reply_to" name="reply_to">
-        <textarea name="text"></textarea>
-        <br>
-        <input type="submit" value="Add Comment">
-    </form>
+    <div id="reply_box" class="comment">
+        <form action="" method="post">
+            {{ xsrf_form_html() }}
+            <input type="hidden" id="reply_to" name="reply_to">
+            <textarea name="text"></textarea>
+            <br>
+            <input type="submit" value="Add Comment">
+        </form>
+    </div>
     
     {{ handler.render_comments(topic.replies()) }}
 {% end %}

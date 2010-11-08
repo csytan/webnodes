@@ -14,7 +14,7 @@ body {
 }
 
 a { color: #41a3c2; }
-a:hover { color: #000; }
+a:hover { color: #e0115f; }
 
 p { margin-bottom: 1.2em; }
 
@@ -27,12 +27,9 @@ h1, h2, h3, h4, h5 {
 }
 h1 a, h2 a, h3 a, h4 a, h5 a {
     font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
-    color: #202020 !important;
+    color: #202020;
     text-decoration: none;
     border-bottom: none;
-}
-h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover {
-    color: #e0115f !important;
 }
 
 h1 {
@@ -57,8 +54,9 @@ label { display: block; font-size: 0.8em; }
     text-align: center;
 }
 #header #logo a {
+    border-radius: 5px;
     font-size: 6em;
-    padding: 0 0.2em;
+    padding: 0.1em 0.6em;
     text-decoration: none;
     background-color: #41A3C2;
     color: white;
@@ -101,7 +99,7 @@ label { display: block; font-size: 0.8em; }
     padding: 1em;
 }
 .comment .info { color: #808080; }
-.comment .gravatar { float: left; }
+.comment .gravatar { float: left; border-radius: 4px; }
 .comment .body {
     margin-left: 80px;
     margin-bottom: 1em;

@@ -22,9 +22,8 @@
                 
                 {{ locale.format_date(comment.created) }}
             </p>
-            <p class="comment_body">{{ handler.markdown(comment.text) }}</p>
+            {{ handler.markdown(comment.text) }}
             <a id="{{ comment.id }}" class="reply">reply</a>
-            <div class="divider"></div>
         </div>
         {{ handler.render_comments(comment.replies) }}
     </div>
