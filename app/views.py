@@ -1,4 +1,7 @@
+import os
 import re
+import urllib
+import urlparse
 
 from lib import markdown2
 import tornado.web
@@ -6,14 +9,33 @@ import tornado.web
 import models
 
 
+
+DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+
+
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
-        user_id = self.get_secure_cookie('user_id')
-        if user_id:
-            return models.User.get_by_id(int(user_id))
+        user_key = self.get_secure_cookie('user')
+        if user_key:
+            return models.User.get_by_key_name(user_key)
             
     def get_login_url(self):
         return '/sign_in'
+        
+    def get_current_site(self):
+        if self.request.host == 'www.webnodes.org' or \
+            'front' in self.request.arguments:
+            return
+        elif DEBUG:
+            return models.Site.get_by_key_name('asdf')
+        elif '.webnodes.org' in self.request.host:
+            subdomain = self.request.host.split('.')[0]
+            return models.Site.get_by_key_name(subdomain)
+        elif '.latest.vittyo-site.appspot.com' in self.request.host:
+            subdomain = self.request.host.split('.')[0]
+            return models.Site.get_by_key_name(subdomain)
+        else:
+            return models.Site.all().filter('domain =', self.request.host).get()
         
     def prepare(self):
         token = self.get_argument('login_token', None)
@@ -24,7 +46,7 @@ class BaseHandler(tornado.web.RequestHandler):
             self.redirect(self.request.path)
     
     def send_mail(self, subject, to, body=None, template=None,
-            sender='Vittyo.com <hello@webnodes.org>', **kwargs):
+            sender='webnodes.org <hello@webnodes.org>', **kwargs):
         if template:
             body = self.render_string(template, **kwargs)
         mail.send_mail(sender=sender, to=to, subject=subject, body=body)
@@ -71,8 +93,30 @@ class NotFound404(BaseHandler):
 
 class Index(BaseHandler):
     def get(self):
-        topics = models.Topic.all().order('-score')
+        site = self.get_current_site()
+        if site:
+            topics = site.topics.order('-score')
+        else:
+            topics = models.Topic.all()
         self.render('index.html', topics=topics)
+
+
+class NewSite(BaseHandler):
+    def get(self):
+        self.render('new_site.html')
+    
+    def post(self):
+        name = self.get_argument('name')
+        title = self.get_argument('title')
+        domain = self.get_argument('domain', None)
+        
+        if domain:
+            if not domain.startswith('http://'):
+                domain = 'http://' + domain
+            domain = urlparse.urlparse(domain).netloc
+        site = models.Site.create(
+            name=name, title=title, domain=domain)
+        self.redirect('/')
 
 
 class Submit(BaseHandler):
@@ -83,13 +127,15 @@ class Submit(BaseHandler):
         title = self.get_argument('title', None)
         link = self.get_argument('link', None)
         text = self.get_argument('text', None)
-        topic = models.Topic(title=title,
+        topic = models.Topic(
+            site=self.get_current_site(),
+            title=title,
             author=self.current_user,
             link=link,
             text=text)
         topic.update_score()
         topic.put()
-        self.redirect('/topics/' + str(topic.id))
+        self.redirect('/' + str(topic.id))
 
 
 class Topic(BaseHandler):
@@ -114,6 +160,74 @@ class Topic(BaseHandler):
         comment.put()
         topic.update_comment_count()
         topic.put()
-        self.redirect('/topics/' + id)
+        self.reload()
 
 
+class SignIn(BaseHandler):
+    def get(self):
+        self.render('sign_in.html')
+        
+    def post(self):
+        username = self.get_argument('username', None)
+        password = self.get_argument('password', None)
+        next = self.get_argument('next', '/')
+        if username and password:
+            user = models.User.get_user(
+                site=self.get_current_site(),
+                username=username,
+                password=password)
+            if user:
+                self.set_secure_cookie('user', user.key().name())
+                return self.redirect(next if next.startswith('/') else '/')
+        self.reload(message='login_error', copyargs=True)
+
+
+class SignUp(BaseHandler):
+    def get(self):
+        self.render('sign_up.html')
+        
+    def post(self):
+        username = self.get_argument('username', None)
+        email = self.get_argument('email', None)
+        password = self.get_argument('password', None)
+        next = self.get_argument('next', '/')
+        
+        if email and not models.User.email_valid(email):
+            return self.reload(message='check_email', copyargs=True)
+            
+        user = models.User.create(
+            site=self.get_current_site(),
+            username=username,
+            email=email,
+            password=password)
+        if user:
+            self.set_secure_cookie('user', user.key().name())
+        else:
+            return self.reload(message='user_exists', copyargs=True)
+        self.redirect(next if next.startswith('/') else '/')
+
+
+class SignOut(BaseHandler):
+    def get(self):
+        next = self.get_argument('next', '/')
+        self.clear_cookie('user')
+        self.redirect(next if next.startswith('/') else '/')
+
+
+class PasswordReset(BaseHandler):
+    def get(self):
+        self.render('password_reset.html', email=self.get_argument('email', ''))
+
+    def post(self):
+        email = self.get_argument('email', None)
+        message = 'not_found'
+        if email:
+            user = models.User.get_by_email(email)
+            if user:
+                self.send_mail(
+                    to=user.email,
+                    subject='Password Reset',
+                    current_user=user,
+                    template='email/password_reset.txt')
+                message = 'emailed'
+        self.reload(message=message)

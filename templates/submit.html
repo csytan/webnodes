@@ -6,26 +6,15 @@
     
     <form action="" method="post">
         {{ xsrf_form_html() }}
-        <table>
-            <tr>
-                <td>Title</td>
-                <td>
-                    <input type="text" name="title">
-                </td>
-            </tr>
-            <tr>
-                <td>Link</td>
-                <td>
-                    <input type="text" name="link">
-                </td>
-            </tr>
-            <tr>
-                <td>Text</td>
-                <td>
-                    <textarea name="text"></textarea>
-                </td>
-            </tr>
-        </table>
+        <label for="title">Title</label>
+        <input id="title" type="text" name="title">
+        
+        <label for="link">Link</label>
+        <input id="link" type="text" name="link">
+        
+        <label for="text">Text</label>
+        <textarea name="text"></textarea>
+        
         <input type="submit" value="Submit">
     </form>
 {% end %}

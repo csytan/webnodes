@@ -1,17 +1,31 @@
 {% for comment in comments %}
     <div class="comment">
-        <p class="topic_info">
-            {% if comment.points == 1 %}
-                1 point
-            {% else %}
-                {{ comment.points }} points
-            {% end %}
-            by anonymous
-            {{ locale.format_date(comment.created) }}
-        </p>
-        <p class="comment_body">{{ handler.markdown(comment.text) }}</p>
-        <a id="{{ comment.id }}" class="reply">reply</a>
-        <div class="divider"></div>
+        {% if comment.author %}
+            <img src="{{ comment.author.gravatar(50) }}" class="gravatar">
+        {% else %}
+            <img src="http://a.vimeocdn.com/portraits/defaults/d.50.jpg" class="gravatar">
+        {% end %}
+        
+        <div class="body">
+            <p class="info">
+                {% if comment.points == 1 %}
+                    1 point
+                {% else %}
+                    {{ comment.points }} points
+                {% end %}
+                
+                {% if comment.author %}
+                    by <a href="/users/{{ comment.author.name }}">{{ comment.author.name }}</a>
+                {% else %}
+                    by anonymous
+                {% end %}
+                
+                {{ locale.format_date(comment.created) }}
+            </p>
+            <p class="comment_body">{{ handler.markdown(comment.text) }}</p>
+            <a id="{{ comment.id }}" class="reply">reply</a>
+            <div class="divider"></div>
+        </div>
         {{ handler.render_comments(comment.replies) }}
     </div>
 {% end %}

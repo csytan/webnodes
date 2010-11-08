@@ -15,3 +15,15 @@ indexes:
   - name: topic
   - name: created
     direction: desc
+
+- kind: Comment
+  properties:
+  - name: topic
+  - name: score
+    direction: desc
+
+- kind: Topic
+  properties:
+  - name: site
+  - name: score
+    direction: desc

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+
+{% block script %}
+    <script>
+        $(function(){
+            $('#username').focus();
+        });
+    </script>
+{% end %}
+
+
+{% block style %}
+    <style>
+
+    </style>
+{% end %}
+
+
+{% block content %}
+    {% set message = handler.get_argument('message', None) %}
+    {% if message == 'check_password' %}
+        <div id="message" class="error">Passwords do not match. Try again.</div>
+    {% elif message == 'check_email' %}
+        <div id="message" class="error">Please check that your email is entered correctly.</div>
+    {% elif message == 'user_exists' %}
+        <div id="message" class="error">
+            You've already signed up with us. Please sign in <a href="/sign_in">here</a>.
+        </div>
+    {% end %}
+    
+    <h1>Sign Up</h1>
+    
+    <form action="" method="post">
+        {{ xsrf_form_html() }}
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="{{ handler.get_argument('username', '') }}">
+        
+        <label for="email">Email (optional)</label>
+        <input type="text" id="email" name="email" value="{{ handler.get_argument('email', '') }}">
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" value="{{ handler.get_argument('password', '') }}">
+        
+        <p>
+            {% set next = handler.get_argument('next', None) %}
+            <a href="/sign_in{% if next %}?next={{ url_escape(next) }}{% end %}">Have an account?</a>
+        </p>
+        <br>
+        <input class="button" type="submit" value="Sign Up">
+    </form>
+{% end %}
+

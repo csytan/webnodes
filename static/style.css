@@ -13,32 +13,10 @@ body {
     width: 750px;
 }
 
-a {
-    background-color: white;
-    border-bottom: solid 1px #202020;
-    color: #202020;
-    text-decoration: none;
-    margin: 2px;
-}
-a:link, a:visited {
-    color: #202020;
-}
-a:hover {
-    color: #e0115f;
-    text-decoration: none;
-    border-bottom: solid 1px #e0115f;
-}
+a { color: #41a3c2; }
+a:hover { color: #000; }
 
-code, pre {
-    font-family: Monaco, Consolas, "Lucida Console", "Courier New", Courier, monospace;
-    color: #404040;
-    font-size: 13px;
-}
-
-blockquote, div, ol, p, pre, ul {
-    line-height: 1.5em;
-    margin-bottom: 1.5em;
-}
+p { margin-bottom: 1.2em; }
 
 h1, h2, h3, h4, h5 {
     font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
@@ -58,57 +36,84 @@ h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover {
 }
 
 h1 {
-  border-bottom: 1px solid #eeeeee;
-  font-size: 1.8em;
-  padding-bottom: 6px;
-  margin-bottom: 1em; }
-
+    border-bottom: 1px solid #eeeeee;
+    font-size: 1.8em;
+    padding-bottom: 6px;
+    margin-bottom: 0.5em;
+}
 h2, h3 {
-  color: #202020;
-  margin: 1.5em 0 1em; }
+    color: #202020;
+}
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.2em; }
 
-h2 {
-  font-size: 1.3em; }
-
-h3 {
-  font-size: 1.1em; }
-
-ol, ul {
-  padding-left: 30px; }
-  ol li, ul li {
-    line-height: 1.5em; }
-
-ul {
-  list-style-type: circle; }
-
-ol {
-  list-style-type: decimal; }
-
-pre {
-  background-color: #f8f8f8;
-  border-left: 3px double #bbbbbb;
-  padding: 0.5em; }
+label { display: block; font-size: 0.8em; }
 
 
+#header {
+    margin-bottom: 3.5em;
+}
 #header #logo {
     text-align: center;
 }
 #header #logo a {
-    font-size: 5em;
+    font-size: 6em;
     padding: 0 0.2em;
-    border: none;
-    background-color: #e09db5;
+    text-decoration: none;
+    background-color: #41A3C2;
     color: white;
 }
 
+#header #nav {
+    font-size: 1.2em;
+    margin-top: 1.5em;
+    text-align: center;
+}
+#header #nav a {
+    margin: 0 10px;
+}
 
+
+#message {
+    height: 2em;
+    color: #FFF;
+    text-align: center;
+    line-height: 2em;
+    margin-bottom: 2em;
+}
+#message a {
+    color: #FFF;
+    text-decoration: underline;
+}
+#message.info { 
+    background-color: #555; 
+}
+#message.success { 
+    background-color: #77DB96; 
+}
+#message.error { 
+    background-color: #FF627D;
+}
+
+
+.comment {
+    border-top: 1px solid #EEE;
+    padding: 1em;
+}
+.comment .info { color: #808080; }
+.comment .gravatar { float: left; }
+.comment .body {
+    margin-left: 80px;
+    margin-bottom: 1em;
+}
+.comment .comment {
+    margin-left: 40px;
+}
+
+
+.topic {
+    border: none;
+}
 .topic h2 {
     margin-bottom: 0.3em;
-}
-.topic_info {
-    color: #808080;
-}
-
-.comment .comment {
-    margin-left: 20px;
 }

@@ -36,30 +36,59 @@ class BaseModel(db.Model):
         return self.key().id()
 
 
-class User(BaseModel):
-    email = db.EmailProperty()
-    password = db.StringProperty(indexed=False)
-    name = db.StringProperty()
-    url_login_token = db.StringProperty()
-    is_admin = db.BooleanProperty(default=False)
+class Site(BaseModel):
+    title = db.StringProperty(indexed=False)
+    domain = db.StringProperty()
     
     @classmethod
-    def create(cls, email, password=None):
-        email = email.strip().lower()
-        if cls.all().filter('email =', email).count(1):
-            return None
-        user = cls(email=email)
-        user.set_name()
-        if password:
+    def create(cls, name, title=None, domain=None):
+        name = name.lower()
+        assert name.isalnum()
+        def txn():
+            if cls.get_by_key_name(name):
+                return None
+            site = cls(key_name=name,
+                domain=domain,
+                title=title if title else name)
+            site.put()
+            return site
+        return db.run_in_transaction(txn)
+
+
+class User(BaseModel):
+    site = db.ReferenceProperty(Site, collection_name='users')
+    email = db.EmailProperty()
+    password = db.StringProperty(indexed=False)
+    url_login_token = db.StringProperty()
+    karma = db.IntegerProperty(default=0)
+    
+    @classmethod
+    def create(cls, site, username, password, email=None):
+        """User key_name stored as "site_key_name:username"
+        """
+        username = username.lower()
+        assert username.isalnum()
+        if email:
+            email = email.strip().lower()
+        key_name = site.key().name() + ':' + username
+        def txn():
+            if cls.get_by_key_name(key_name):
+                return None
+            user = cls(key_name=key_name, site=site, email=email)
             user.set_password(password)
-        user.put()
-        if cls.all().filter('email =', email).count(2) == 2:
-            user.delete()
-            return None
-        return user
+            user.put()
+            return user
+        return db.run_in_transaction(txn)
         
     @classmethod
-    def check_email(cls, email):
+    def get_user(cls, site, username, password=None):
+        key_name = site.key().name() + ':' + username
+        user = cls.get_by_key_name(key_name)
+        if user and user.check_password(password):
+            return user
+    
+    @staticmethod
+    def email_valid(email):
         email_re = '^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$'
         if email and re.search(email_re, email):
             return True
@@ -80,11 +109,6 @@ class User(BaseModel):
             self.url_login_token = str(uuid.uuid4()).replace('-', '')
             self.put()
         return self.url_login_token
-        
-    def set_name(self, name=None):
-        if not name:
-            name = self.email.split('@')[0]
-        self.name = cgi.escape(name)[:25]
     
     def set_password(self, raw_password):
         assert len(raw_password) > 0 and len(raw_password) <= 20
@@ -99,14 +123,19 @@ class User(BaseModel):
         algo, salt, hsh = str(self.password).split('$')
         return hsh == hashlib.sha1(salt + raw_password).hexdigest()
         
-    @property
     def gravatar(self, size=None, default='identicon'):
+        email = self.email if self.email else ''
         return 'http://www.gravatar.com/avatar.php' + \
-            '?gravatar_id=' + hashlib.md5(self.email).hexdigest() + \
+            '?gravatar_id=' + hashlib.md5(email).hexdigest() + \
             '&default=' + default + ('&size=' + str(size) if size else '')
+            
+    @property
+    def name(self):
+        return self.key().name().split(':')[1]
 
 
 class Topic(BaseModel):
+    site = db.ReferenceProperty(Site, collection_name='topics')
     author = db.ReferenceProperty(User, collection_name='topics')
     author_name = db.StringProperty(indexed=False)
     title = db.StringProperty(indexed=False)
@@ -128,7 +157,7 @@ class Topic(BaseModel):
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
         keys = {}
-        comments = self.comment_set.order('-created').fetch(1000)
+        comments = self.comment_set.order('-score').fetch(1000)
         for comment in comments:
             keys[str(comment.key())] = comment
             comment.replies = []
@@ -149,5 +178,7 @@ class Comment(BaseModel):
     text = db.TextProperty()
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
     points = db.IntegerProperty(default=1)
+    score = db.FloatProperty()
+    
 
 

@@ -8,12 +8,18 @@ from app import views
 
 settings = {
     'template_path': os.path.join(os.path.dirname(__file__), 'templates'),
-    'debug': os.environ['SERVER_SOFTWARE'].startswith('Dev')
+    'debug': views.DEBUG,
+    'cookie_secret': 'hello'
 }
 application = tornado.wsgi.WSGIApplication([
     (r'/', views.Index),
+    (r'/new_site', views.NewSite),
     (r'/submit', views.Submit),
-    (r'/topics/(\d+)', views.Topic)
+    (r'/sign_in', views.SignIn),
+    (r'/sign_up', views.SignUp),
+    (r'/sign_out', views.SignOut),
+    (r'/(\d+)', views.Topic),
+    (r'.*', views.NotFound404)
 ], **settings)
 
 
