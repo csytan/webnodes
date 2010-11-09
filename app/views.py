@@ -135,7 +135,59 @@ class Submit(BaseHandler):
             text=text)
         topic.update_score()
         topic.put()
+        
+        self.current_user.n_topics = self.current_user.topics.count()
+        self.current_user.put()
+        
         self.redirect('/' + str(topic.id))
+
+
+class Community(BaseHandler):
+    def get(self):
+        site = self.get_current_site()
+        self.render('community/community.html', users=site.users.order('-karma').fetch(10))
+
+
+class User(BaseHandler):
+    def get(self, username):
+        site = self.get_current_site()
+        user = models.User.get_user(site, username)
+        if not user:
+            raise tornado.web.HTTPError(404)
+        self.render('community/user.html', user=user)
+        
+    @tornado.web.authenticated
+    def post(self, username):
+        email = self.get_argument('email', None)
+        if email != self.current_user.email:
+            if email and not models.User.email_valid(email):
+                return self.reload(message='check_email', copyargs=True)
+            else:
+                self.current_user.email = email
+        
+        password = self.get_argument('password', None)
+        if password:
+            self.current_user.set_password(password)
+        self.current_user.put()
+        self.reload(message='updated')
+
+
+class UserTopics(BaseHandler):
+    def get(self, username):
+        site = self.get_current_site()
+        user = models.User.get_user(site, username)
+        if not user:
+            raise tornado.web.HTTPError(404)
+        self.render('community/user_topics.html', user=user)
+
+
+class UserComments(BaseHandler):
+    def get(self, username):
+        site = self.get_current_site()
+        user = models.User.get_user(site, username)
+        if not user:
+            raise tornado.web.HTTPError(404)
+        self.render('community/user_comments.html', user=user)
 
 
 class Topic(BaseHandler):
@@ -158,7 +210,11 @@ class Topic(BaseHandler):
             reply_to=reply_to,
             text=self.get_argument('text'))
         comment.put()
-        topic.update_comment_count()
+        
+        self.current_user.n_comments = self.current_user.comments.count()
+        self.current_user.put()
+        
+        topic.n_comments = topic.comments.count()
         topic.put()
         self.reload()
 
@@ -174,9 +230,8 @@ class SignIn(BaseHandler):
         if username and password:
             user = models.User.get_user(
                 site=self.get_current_site(),
-                username=username,
-                password=password)
-            if user:
+                username=username)
+            if user and user.check_password(password):
                 self.set_secure_cookie('user', user.key().name())
                 return self.redirect(next if next.startswith('/') else '/')
         self.reload(message='login_error', copyargs=True)

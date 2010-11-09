@@ -19,7 +19,7 @@
             <a href="/submit">submit</a>
             <a href="/community">community</a>
             {% if current_user %}
-                <a href="/users/{{ current_user.name }}">{{ current_user.name }}</a>
+                <a href="/community/{{ current_user.name }}">{{ current_user.name }}</a>
                 |
                 <a href="/sign_out">sign out</a>
             {% else %}

@@ -54,7 +54,7 @@
                 {% end %}
                 
                 {% if topic.author %}
-                    by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
+                    by <a href="/community/{{ topic.author.name }}">{{ topic.author.name }}</a>
                 {% else %}
                     by anonymous
                 {% end %}
@@ -69,14 +69,19 @@
     </div>
     
     <h2 style="color:#666666;">Comments</h2>
+    
     <div id="reply_box" class="comment">
-        <form action="" method="post">
-            {{ xsrf_form_html() }}
-            <input type="hidden" id="reply_to" name="reply_to">
-            <textarea name="text"></textarea>
-            <br>
-            <input type="submit" value="Add Comment">
-        </form>
+        <img src="http://a.vimeocdn.com/portraits/defaults/d.50.jpg" class="gravatar">
+        
+        <div class="body">
+            <form action="" method="post">
+                {{ xsrf_form_html() }}
+                <input type="hidden" id="reply_to" name="reply_to">
+                <textarea name="text"></textarea>
+                <br>
+                <input type="submit" value="Reply">
+            </form>
+        </div>
     </div>
     
     {{ handler.render_comments(topic.replies()) }}

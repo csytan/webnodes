@@ -1,8 +1,17 @@
-{% extends "base.html" %}
+{% extends "../base.html" %}
+
+
+{% block style %}
+    <style>
+        .comment:last-child { border: none; }
+    </style>
+{% end %}
 
 
 {% block content %}
-    {% for topic in topics %}
+    <h1>{{ user.name }}'s Topics</h1>
+    
+    {% for topic in user.topics %}
         <div class="topic_listing">
             <h2>
                 <a href="{% if topic.link %}{{ topic.link }}{% else %}/{{ topic.id }}{% end %}">{{ escape(topic.title) }}</a>
@@ -32,3 +41,4 @@
         </div>
     {% end %}
 {% end %}
+

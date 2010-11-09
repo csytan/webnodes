@@ -54,7 +54,7 @@ label { display: block; font-size: 0.8em; }
     text-align: center;
 }
 #header #logo a {
-    border-radius: 5px;
+    border-radius: 7px;
     font-size: 6em;
     padding: 0.1em 0.6em;
     text-decoration: none;
@@ -94,6 +94,11 @@ label { display: block; font-size: 0.8em; }
 }
 
 
+.topic_listing { margin-bottom: 2em; }
+
+
+.gravatar { border-radius: 4px; }
+
 .comment {
     border-top: 1px solid #EEE;
 }
@@ -101,9 +106,9 @@ label { display: block; font-size: 0.8em; }
 .comment .info { color: #808080; }
 .comment .gravatar {
     float: left;
-    border-radius: 4px;
     margin: 1em;
 }
+
 .comment .body {
     padding: 1em;
     margin-left: 80px;

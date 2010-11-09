@@ -32,3 +32,9 @@ indexes:
   - name: site
   - name: score
     direction: desc
+
+- kind: User
+  properties:
+  - name: site
+  - name: karma
+    direction: desc

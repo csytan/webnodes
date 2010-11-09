@@ -27,9 +27,7 @@ class BaseModel(db.Model):
             return self.key() == other.key()
         return False
     def __ne__(self, other):
-        if hasattr(other, 'key'):
-            return self.key() != other.key()
-        return True
+        return not self == other
         
     @property
     def id(self):
@@ -60,7 +58,9 @@ class User(BaseModel):
     email = db.EmailProperty()
     password = db.StringProperty(indexed=False)
     url_login_token = db.StringProperty()
-    karma = db.IntegerProperty(default=0)
+    karma = db.IntegerProperty(default=1)
+    n_topics = db.IntegerProperty(default=0)
+    n_comments = db.IntegerProperty(default=0)
     
     @classmethod
     def create(cls, site, username, password, email=None):
@@ -81,11 +81,9 @@ class User(BaseModel):
         return db.run_in_transaction(txn)
         
     @classmethod
-    def get_user(cls, site, username, password=None):
+    def get_user(cls, site, username):
         key_name = site.key().name() + ':' + username
-        user = cls.get_by_key_name(key_name)
-        if user and user.check_password(password):
-            return user
+        return cls.get_by_key_name(key_name)
     
     @staticmethod
     def email_valid(email):
@@ -151,13 +149,10 @@ class Topic(BaseModel):
         hour_age = (now - self.created).seconds / 60.0
         self.score = self.points / pow(hour_age + 2, gravity)
         
-    def update_comment_count(self):
-        self.n_comments = self.comment_set.count(1000)
-    
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
         keys = {}
-        comments = self.comment_set.order('-score').fetch(1000)
+        comments = self.comments.order('-score').fetch(1000)
         for comment in comments:
             keys[str(comment.key())] = comment
             comment.replies = []
@@ -174,7 +169,7 @@ class Topic(BaseModel):
 class Comment(BaseModel):
     author = db.ReferenceProperty(User, collection_name='comments')
     author_name = db.StringProperty(indexed=False)
-    topic = db.ReferenceProperty(required=True)
+    topic = db.ReferenceProperty(collection_name='comments')
     text = db.TextProperty()
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
     points = db.IntegerProperty(default=1)
