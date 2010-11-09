@@ -149,7 +149,7 @@ class Topic(BaseModel):
         """Adapted from http://amix.dk/blog/post/19574"""
         now = datetime.datetime.utcnow()
         hour_age = (now - self.created).seconds / 60.0
-        self.score = (self.points - 1) / pow(hour_age + 2, gravity)
+        self.score = self.points / pow(hour_age + 2, gravity)
         
     def update_comment_count(self):
         self.n_comments = self.comment_set.count(1000)

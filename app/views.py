@@ -31,7 +31,7 @@ class BaseHandler(tornado.web.RequestHandler):
         elif '.webnodes.org' in self.request.host:
             subdomain = self.request.host.split('.')[0]
             return models.Site.get_by_key_name(subdomain)
-        elif '.latest.vittyo-site.appspot.com' in self.request.host:
+        elif '.latest.webnodes.appspot.com' in self.request.host:
             subdomain = self.request.host.split('.')[0]
             return models.Site.get_by_key_name(subdomain)
         else:

@@ -63,7 +63,7 @@ label { display: block; font-size: 0.8em; }
 }
 
 #header #nav {
-    font-size: 1.2em;
+    font-size: 1.1em;
     margin-top: 1.5em;
     text-align: center;
 }
@@ -96,11 +96,16 @@ label { display: block; font-size: 0.8em; }
 
 .comment {
     border-top: 1px solid #EEE;
-    padding: 1em;
 }
+.comment_info,
 .comment .info { color: #808080; }
-.comment .gravatar { float: left; border-radius: 4px; }
+.comment .gravatar {
+    float: left;
+    border-radius: 4px;
+    margin: 1em;
+}
 .comment .body {
+    padding: 1em;
     margin-left: 80px;
     margin-bottom: 1em;
 }
@@ -111,6 +116,8 @@ label { display: block; font-size: 0.8em; }
 
 .topic {
     border: none;
+    margin-top: 2em;
+    padding-bottom: 3.5em;
 }
 .topic h2 {
     margin-bottom: 0.3em;

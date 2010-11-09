@@ -3,18 +3,18 @@
 
 {% block style %}
     <style>
-        .topic { margin-bottom: 2em; }
+        .topic_listing { margin-bottom: 2em; }
     </style>
 {% end %}
 
 
 {% block content %}
     {% for topic in topics %}
-        <div class="topic">
+        <div class="topic_listing">
             <h2>
                 <a href="{% if topic.link %}{{ topic.link }}{% else %}/{{ topic.id }}{% end %}">{{ escape(topic.title) }}</a>
             </h2>
-            <p class="topic_info">
+            <p class="comment_info">
                 {% if topic.points == 1 %}
                     1 point
                 {% else %}

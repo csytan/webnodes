@@ -26,4 +26,9 @@ indexes:
   properties:
   - name: site
   - name: score
+
+- kind: Topic
+  properties:
+  - name: site
+  - name: score
     direction: desc
