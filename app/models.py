@@ -10,8 +10,9 @@ from google.appengine.ext import db
 
 ### Functions ###
 def prefetch_refprop(entities, prop):
-    ref_keys = [prop.get_value_for_datastore(x) for x in entities]
-    ref_entities = dict((x.key(), x) for x in db.get(set(ref_keys)))
+    ref_keys = set(prop.get_value_for_datastore(x) for x in entities)
+    ref_keys.discard(None)
+    ref_entities = dict((x.key(), x) for x in db.get(ref_keys))
     for entity, ref_key in zip(entities, ref_keys):
         prop.__set__(entity, ref_entities[ref_key])
     return entities
@@ -51,6 +52,11 @@ class Site(BaseModel):
             site.put()
             return site
         return db.run_in_transaction(txn)
+        
+    def hot_topics(self):
+        topics = self.topics.order('-score').fetch(100)
+        prefetch_refprop(topics, Topic.author)
+        return topics
 
 
 class User(BaseModel):
@@ -59,6 +65,7 @@ class User(BaseModel):
     password = db.StringProperty(indexed=False)
     url_login_token = db.StringProperty()
     karma = db.IntegerProperty(default=1)
+    daily_karma = db.IntegerProperty(default=10)
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
     
@@ -132,25 +139,27 @@ class User(BaseModel):
         return self.key().name().split(':')[1]
 
 
-class Topic(BaseModel):
-    site = db.ReferenceProperty(Site, collection_name='topics')
-    author = db.ReferenceProperty(User, collection_name='topics')
-    author_name = db.StringProperty(indexed=False)
-    title = db.StringProperty(indexed=False)
-    link = db.StringProperty()
-    text = db.TextProperty(default='')
-    points = db.IntegerProperty(default=1)
+class Votable(BaseModel):
+    points = db.IntegerProperty(default=0)
     score = db.FloatProperty()
     up_votes = db.StringListProperty() # contains user key_names
     down_votes = db.StringListProperty() # contains user key_names
+    
+    def update_score(self, gravity=1.2):
+        """Adapted from http://amix.dk/blog/post/19574"""
+        td = datetime.datetime.now() - self.created
+        hour_age = td.days * 24 + td.seconds / 60.0 / 60.0
+        self.score = self.points / pow(hour_age + 2, gravity)
+
+
+class Topic(Votable):
+    site = db.ReferenceProperty(Site, collection_name='topics')
+    author = db.ReferenceProperty(User, collection_name='topics')
+    title = db.StringProperty(indexed=False)
+    link = db.StringProperty()
+    text = db.TextProperty(default='')
     n_comments = db.IntegerProperty(default=0)
     
-    def update_score(self, gravity=1.8):
-        """Adapted from http://amix.dk/blog/post/19574"""
-        now = datetime.datetime.utcnow()
-        hour_age = (now - self.created).seconds / 60.0
-        self.score = self.points / pow(hour_age + 2, gravity)
-        
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
         keys = {}
@@ -164,19 +173,13 @@ class Topic(BaseModel):
             if parent:
                 parent.replies.append(comment)
         replies = [c for c in comments if not c.reply_to]
-        #prefetch_refprop(replies, Comment.author)
+        prefetch_refprop(replies, Comment.author)
         return replies
 
 
-class Comment(BaseModel):
+class Comment(Votable):
     author = db.ReferenceProperty(User, collection_name='comments')
-    author_name = db.StringProperty(indexed=False)
-    topic = db.ReferenceProperty(collection_name='comments')
+    topic = db.ReferenceProperty(Topic, collection_name='comments')
     text = db.TextProperty()
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
-    points = db.IntegerProperty(default=1)
-    score = db.FloatProperty()
-    up_votes = db.StringListProperty() # contains user key_names
-    down_votes = db.StringListProperty() # contains user key_names
-
 
