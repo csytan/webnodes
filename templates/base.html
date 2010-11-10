@@ -2,7 +2,7 @@
 <html>
 <head>
     {% block title %}
-        <title>{{ current_site.title }}</title>
+        <title>{{ current_site.title if current_site else 'webnodes' }}</title>
     {% end %}
     <link type="text/css" href="/static/style.css" rel="stylesheet">
     {% block style %}{% end %}
@@ -14,7 +14,7 @@
 <body>
     <div id="header">
         <div id="logo">
-            <a href="/">{{ current_site.title }}</a>
+            <a href="/">{{ current_site.title if current_site else 'webnodes' }}</a>
         </div>
         <div id="nav">
             <a href="/submit">submit</a>
