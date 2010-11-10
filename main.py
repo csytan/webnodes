@@ -9,7 +9,8 @@ from app import views
 settings = {
     'template_path': os.path.join(os.path.dirname(__file__), 'templates'),
     'debug': views.DEBUG,
-    'cookie_secret': 'hello'
+    'cookie_secret': 'hello',
+    'login_url': '/sign_in'
 }
 application = tornado.wsgi.WSGIApplication([
     (r'/', views.Index),
@@ -19,6 +20,7 @@ application = tornado.wsgi.WSGIApplication([
     (r'/community/(.+)/topics', views.UserTopics),
     (r'/community/(.+)/comments', views.UserComments),
     (r'/community/(.+)', views.User),
+    (r'/vote', views.Vote),
     (r'/sign_in', views.SignIn),
     (r'/sign_up', views.SignUp),
     (r'/sign_out', views.SignOut),

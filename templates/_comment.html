@@ -8,15 +8,16 @@
         
         <div class="body">
             <p class="info">
-                {% if current_user %}
-                    <a class="vote_up" href="/{{ comment.id }}">+</a>
+                {% set vote_up = current_user and current_user.daily_karma > 0 %}
+                {% set vote_up = vote_up and current_user.name not in comment.up_votes %}
+                {% set vote_up = vote_up and current_user != comment.author %}
+                {% if vote_up %}
+                    <a class="vote_up" href="/vote?way=up&amp;comment_id={{ comment.id }}">+</a>
                 {% end %}
                 
-                {% if comment.points == 1 %}
-                    1 point
-                {% else %}
-                    {{ comment.points }} points
-                {% end %}
+                <span class="points">
+                    {{ comment.points }} {{ 'point' if comment.points in (1, -1) else 'points' }}
+                </span>
                 
                 {% if comment.author %}
                     by <a href="/community/{{ comment.author.name }}">{{ comment.author.name }}</a>
@@ -26,7 +27,7 @@
                 
                 {{ locale.format_date(comment.created) }}
             </p>
-            {{ handler.markdown(comment.text) }}
+            {{ markdown(comment.text) }}
             <a id="{{ comment.id }}" class="reply">reply</a>
         </div>
         {{ handler.render_comments(comment.replies) }}

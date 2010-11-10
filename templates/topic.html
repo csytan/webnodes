@@ -47,15 +47,16 @@
         {% end %}
         <div class="body">
             <p class="info">
-                {% if current_user %}
+                {% set vote_up = current_user and current_user.daily_karma > 0 %}
+                {% set vote_up = vote_up and current_user.name not in topic.up_votes %}
+                {% set vote_up = vote_up and current_user != topic.author %}
+                {% if vote_up %}
                     <a class="vote_up" href="/{{ topic.id }}">+</a>
                 {% end %}
                 
-                {% if topic.points == 1 %}
-                    1 point
-                {% else %}
-                    {{ topic.points }} points
-                {% end %}
+                <span class="points">
+                    {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
+                </span>
                 
                 {% if topic.author %}
                     by <a href="/community/{{ topic.author.name }}">{{ topic.author.name }}</a>
@@ -66,7 +67,7 @@
                 {{ locale.format_date(topic.created) }}
             </p>
             {% if topic.text %}
-                {{ handler.markdown(topic.text) }}
+                {{ markdown(topic.text) }}
             {% end %}
             <a class="reply">reply</a>
         </div>

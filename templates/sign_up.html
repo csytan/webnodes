@@ -41,11 +41,6 @@
         
         <label for="password">Password</label>
         <input type="password" id="password" name="password" value="{{ handler.get_argument('password', '') }}">
-        
-        <p>
-            {% set next = handler.get_argument('next', None) %}
-            <a href="/sign_in{% if next %}?next={{ url_escape(next) }}{% end %}">Have an account?</a>
-        </p>
         <br>
         <input class="button" type="submit" value="Sign Up">
     </form>

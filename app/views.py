@@ -1,3 +1,4 @@
+import cgi
 import os
 import re
 import urllib
@@ -19,31 +20,26 @@ class BaseHandler(tornado.web.RequestHandler):
         if user_key:
             return models.User.get_by_key_name(user_key)
             
-    def get_login_url(self):
-        return '/sign_in'
+    @property
+    def current_site(self):
+        if not hasattr(self, '_current_site'):
+            if DEBUG:
+                self._current_site = models.Site.get_by_key_name('asdf')
+            elif '.webnodes.org' in self.request.host or \
+                '.latest.webnodes.appspot.com' in self.request.host:
+                subdomain = self.request.host.split('.')[0]
+                self._current_site = models.Site.get_by_key_name(subdomain)
+            else:
+                self._current_site = models.Site.all().filter('domain =', self.request.host).get()
+        return self._current_site
         
-    def get_current_site(self):
-        if self.request.host == 'www.webnodes.org' or \
-            'front' in self.request.arguments:
-            return
-        elif DEBUG:
-            return models.Site.get_by_key_name('asdf')
-        elif '.webnodes.org' in self.request.host:
-            subdomain = self.request.host.split('.')[0]
-            return models.Site.get_by_key_name(subdomain)
-        elif '.latest.webnodes.appspot.com' in self.request.host:
-            subdomain = self.request.host.split('.')[0]
-            return models.Site.get_by_key_name(subdomain)
-        else:
-            return models.Site.all().filter('domain =', self.request.host).get()
-        
-    def prepare(self):
-        token = self.get_argument('login_token', None)
-        if token:
-            user = models.User.get_by_token(token)
-            if user:
-                self.set_secure_cookie('user_id', str(user.id), domain=self.cookie_domain)
-            self.redirect(self.request.path)
+    def render_string(self, template_name, **kwargs):
+        return super(BaseHandler, self).render_string(
+            template_name,
+            truncate=self.truncate,
+            markdown=self.markdown,
+            current_site=self.current_site,
+            **kwargs)
     
     def send_mail(self, subject, to, body=None, template=None,
             sender='webnodes.org <hello@webnodes.org>', **kwargs):
@@ -93,12 +89,7 @@ class NotFound404(BaseHandler):
 
 class Index(BaseHandler):
     def get(self):
-        site = self.get_current_site()
-        if site:
-            topics = site.topics.order('-score')
-        else:
-            topics = models.Topic.all()
-        self.render('index.html', topics=topics)
+        self.render('index.html', topics=self.current_site.hot_topics())
 
 
 class NewSite(BaseHandler):
@@ -128,7 +119,7 @@ class Submit(BaseHandler):
         link = self.get_argument('link', None)
         text = self.get_argument('text', None)
         topic = models.Topic(
-            site=self.get_current_site(),
+            site=self.current_site,
             title=title,
             author=self.current_user,
             link=link,
@@ -144,14 +135,13 @@ class Submit(BaseHandler):
 
 class Community(BaseHandler):
     def get(self):
-        site = self.get_current_site()
-        self.render('community/community.html', users=site.users.order('-karma').fetch(10))
+        self.render('community/community.html',
+            users=self.current_site.users.order('-karma').fetch(100))
 
 
 class User(BaseHandler):
     def get(self, username):
-        site = self.get_current_site()
-        user = models.User.get_user(site, username)
+        user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
         self.render('community/user.html', user=user)
@@ -174,8 +164,7 @@ class User(BaseHandler):
 
 class UserTopics(BaseHandler):
     def get(self, username):
-        site = self.get_current_site()
-        user = models.User.get_user(site, username)
+        user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
         self.render('community/user_topics.html', user=user)
@@ -183,8 +172,7 @@ class UserTopics(BaseHandler):
 
 class UserComments(BaseHandler):
     def get(self, username):
-        site = self.get_current_site()
-        user = models.User.get_user(site, username)
+        user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
         self.render('community/user_comments.html', user=user)
@@ -199,14 +187,13 @@ class Topic(BaseHandler):
         return self.render_string('_comment.html', comments=comments)
         
     def post(self, id):
-        topic = models.Topic.get_by_id(int(id))
         reply_to = self.get_argument('reply_to', None)
         if reply_to:
             reply_to = models.Comment.get_by_id(int(reply_to))
             
         comment = models.Comment(
             author=self.current_user,
-            topic=topic,
+            topic=models.Topic.get_by_id(int(id)),
             reply_to=reply_to,
             text=self.get_argument('text'))
         comment.put()
@@ -219,8 +206,55 @@ class Topic(BaseHandler):
         self.reload()
 
 
+class Vote(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        comment_id = self.get_argument('comment_id', None)
+        topic_id = self.get_argument('topic_id', None)
+        if comment_id:
+            comment = models.Comment.get_by_id(int(comment_id))
+            if comment.topic.site != self.current_site:
+                raise tornado.web.HTTPError(403)
+        elif topic_id:
+            comment = models.Topic.get_by_id(int(topic_id))
+            if comment.site != self.current_site:
+                raise tornado.web.HTTPError(403)
+        
+        if self.current_user.daily_karma > 0 and comment.author != self.current_user:
+            way = self.get_argument('way', None)
+            if way == 'up' and self.current_user.name not in comment.up_votes:
+                comment.points += 1
+                comment.up_votes.append(self.current_user.name)
+                comment.update_score()
+                comment.put()
+                self.current_user.daily_karma -= 1
+                self.current_user.put()
+                if comment.author:
+                    comment.author.karma += 1
+                    comment.author.put()
+            elif way == 'down' and self.current_user.karma >= 100 and \
+                    self.current_user.name not in comment.down_votes:
+                comment.points -= 1
+                comment.down_votes.append(self.current_user.name)
+                comment.update_score()
+                comment.put()
+                self.current_user.daily_karma -= 1
+                self.current_user.put()
+                if comment.author:
+                    comment.author.karma -= 1
+                    comment.author.put()
+        self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
+
+
 class SignIn(BaseHandler):
     def get(self):
+        next = self.get_argument('next', '/')
+        token = self.get_argument('login_token', None)
+        if token:
+            user = models.User.get_by_token(token)
+            if user:
+                self.set_secure_cookie('user_id', str(user.id))
+            return self.redirect(next if next.startswith('/') else '/')
         self.render('sign_in.html')
         
     def post(self):
@@ -229,7 +263,7 @@ class SignIn(BaseHandler):
         next = self.get_argument('next', '/')
         if username and password:
             user = models.User.get_user(
-                site=self.get_current_site(),
+                site=self.current_site,
                 username=username)
             if user and user.check_password(password):
                 self.set_secure_cookie('user', user.key().name())
@@ -251,7 +285,7 @@ class SignUp(BaseHandler):
             return self.reload(message='check_email', copyargs=True)
             
         user = models.User.create(
-            site=self.get_current_site(),
+            site=self.current_site,
             username=username,
             email=email,
             password=password)
