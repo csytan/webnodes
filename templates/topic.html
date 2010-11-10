@@ -41,12 +41,16 @@
     </h1>
     <div class="comment topic">
         {% if topic.author %}
-            <img src="{{ topic.author.gravatar(50) }}" class="gravatar">
+            <img src="{{ topic.author.gravatar(60) }}" class="gravatar">
         {% else %}
-            <img src="http://a.vimeocdn.com/portraits/defaults/d.50.jpg" class="gravatar">
+            <img src="http://a.vimeocdn.com/portraits/defaults/d.60.jpg" class="gravatar">
         {% end %}
         <div class="body">
             <p class="info">
+                {% if current_user %}
+                    <a class="vote_up" href="/{{ topic.id }}">+</a>
+                {% end %}
+                
                 {% if topic.points == 1 %}
                     1 point
                 {% else %}

@@ -127,3 +127,14 @@ label { display: block; font-size: 0.8em; }
 .topic h2 {
     margin-bottom: 0.3em;
 }
+
+a.vote_up {
+    border-radius: 4px;
+    background: #93d6ea;
+    color: white;
+    text-decoration: none;
+    padding: 0 0.3em;
+}
+a.vote_up:hover {
+    background: #41a3c2;
+}

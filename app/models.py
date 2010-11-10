@@ -141,6 +141,8 @@ class Topic(BaseModel):
     text = db.TextProperty(default='')
     points = db.IntegerProperty(default=1)
     score = db.FloatProperty()
+    up_votes = db.StringListProperty() # contains user key_names
+    down_votes = db.StringListProperty() # contains user key_names
     n_comments = db.IntegerProperty(default=0)
     
     def update_score(self, gravity=1.8):
@@ -174,6 +176,7 @@ class Comment(BaseModel):
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
     points = db.IntegerProperty(default=1)
     score = db.FloatProperty()
-    
+    up_votes = db.StringListProperty() # contains user key_names
+    down_votes = db.StringListProperty() # contains user key_names
 
 
