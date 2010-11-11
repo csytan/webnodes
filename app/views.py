@@ -203,7 +203,7 @@ class UserComments(BaseHandler):
 class Topic(BaseHandler):
     def get(self, id):
         topic = models.Topic.get_by_id(int(id))
-        self.render('topic.html', topic=topic)
+        self.render('topic.html', topic=topic, replies=topic.replies())
         
     def render_comments(self, comments):
         return self.render_string('_comment.html', comments=comments)

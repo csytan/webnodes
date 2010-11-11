@@ -7,7 +7,7 @@
         {% end %}
         
         <div class="body">
-            <p class="info">
+            <p class="comment_info">
                 {% set vote_up = current_user and current_user.daily_karma > 0 %}
                 {% set vote_up = vote_up and current_user.name not in comment.up_votes %}
                 {% set vote_up = vote_up and current_user != comment.author %}

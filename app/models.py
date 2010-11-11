@@ -173,7 +173,7 @@ class Topic(Votable):
     author = db.ReferenceProperty(User, collection_name='topics')
     title = db.StringProperty(indexed=False)
     link = db.StringProperty()
-    text = db.TextProperty(default='')
+    text = db.TextProperty()
     n_comments = db.IntegerProperty(default=0)
     
     def replies(self):

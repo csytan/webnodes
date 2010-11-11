@@ -46,7 +46,7 @@
             <img src="http://a.vimeocdn.com/portraits/defaults/d.60.jpg" class="gravatar">
         {% end %}
         <div class="body">
-            <p class="info">
+            <p class="comment_info">
                 {% set vote_up = current_user and current_user.daily_karma > 0 %}
                 {% set vote_up = vote_up and current_user.name not in topic.up_votes %}
                 {% set vote_up = vote_up and current_user != topic.author %}
@@ -75,8 +75,6 @@
         </div>
     </div>
     
-    <h2 style="color:#666666;">Comments</h2>
-    
     <div id="reply_box" class="comment">
         <img src="http://a.vimeocdn.com/portraits/defaults/d.50.jpg" class="gravatar">
         
@@ -91,6 +89,9 @@
         </div>
     </div>
     
-    {{ handler.render_comments(topic.replies()) }}
+    {% if replies %}
+        <h2 style="color:#666666;">Comments</h2>
+        {{ handler.render_comments(replies) }}
+    {% end %}
 {% end %}
 
