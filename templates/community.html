@@ -1,4 +1,4 @@
-{% extends "../base.html" %}
+{% extends "base.html" %}
 
 
 {% block style %}
@@ -12,19 +12,25 @@
 
 {% block content %}
     <h1>Community</h1>
+    <form action="{{ 1 }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"><br>
+        <input type="submit" name="submit" value="Submit">
+    </form>
+    
+    {{ markdown(current_site.about) }}
     
     {% for user in users %}
         <div class="user">
             <img src="{{ user.gravatar(100) }}" class="gravatar">
             <div class="body">
                 <h2>
-                    <a href="/community/{{ user.name }}">{{ user.name }}</a>
+                    <a href="/users/{{ user.name }}">{{ user.name }}</a>
                 </h2>
                 {{ user.karma }} karma
                 <br>
-                {{ user.n_topics }} <a href="/community/{{ user.name }}/topics">topics</a>
+                {{ user.n_topics }} <a href="/users/{{ user.name }}/topics">topics</a>
                 <br>
-                {{ user.n_comments }} <a href="/community/{{ user.name }}/comments">comments</a>
+                {{ user.n_comments }} <a href="/users/{{ user.name }}/comments">comments</a>
             </div>
             <div style="clear:both"></div>
         </div>

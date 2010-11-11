@@ -21,6 +21,8 @@
     {% set message = handler.get_argument('message', None) %}
     {% if message == 'login_error' %}
         <div id="message" class="error">Incorrect username or password</div>
+    {% elif message == 'vote' %}
+        <div id="message" class="success">Sign in to vote on stuff!</div>
     {% end %}
     
     <h1>Sign In</h1>
@@ -29,16 +31,16 @@
         {{ xsrf_form_html() }}
         <label for="username">Username</label>
         <input type="text" id="username" name="username" tabindex="1" value="{{ handler.get_argument('username', '') }}">
-        
+        <br>
         <label for="password">Password</label>
         <input type="password" id="password" name="password" tabindex="2" value="{{ handler.get_argument('password', '') }}">
-        
+        <br>
+        <br>
         <p>
             <a href="/password_reset">Forgot password</a> •  
             {% set next = handler.get_argument('next', None) %}
             <a href="/sign_up{% if next %}?next={{ url_escape(next) }}{% end %}">Create an account</a>
         </p>
-        <br>
         <input class="button" type="submit" value="Sign In">
     </form>
 {% end %}

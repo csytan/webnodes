@@ -4,6 +4,9 @@ import re
 import urllib
 import urlparse
 
+from google.appengine.api import images
+from google.appengine.ext import blobstore
+
 from lib import markdown2
 import tornado.web
 
@@ -89,7 +92,22 @@ class NotFound404(BaseHandler):
 
 class Index(BaseHandler):
     def get(self):
-        self.render('index.html', topics=self.current_site.hot_topics())
+        page = self.get_argument('page', '')
+        page = abs(int(page)) if page.isdigit() else 0
+        topics = self.current_site.hot_topics(page=page)
+        next_page = page + 1 if len(topics) == 10 else None
+        self.render('index.html', topics=topics, next_page=next_page)
+
+
+class BlobstoreUpload(BaseHandler):
+    def post(self):
+        import logging
+        key = re.findall(r'blob-key="(.+?)"', self.request.body)[0]
+        #logging.error(key)
+        #blob_info = blobstore.BlobInfo.get(key)
+        #logging.error(blob_info)
+        logging.error(self.request.arguments)
+        return self.redirect('/')
 
 
 class NewSite(BaseHandler):
@@ -127,16 +145,20 @@ class Submit(BaseHandler):
         topic.update_score()
         topic.put()
         
-        self.current_user.n_topics = self.current_user.topics.count()
-        self.current_user.put()
+        if self.current_user:
+            self.current_user.n_topics = self.current_user.topics.count()
+            self.current_user.put()
         
         self.redirect('/' + str(topic.id))
 
 
 class Community(BaseHandler):
     def get(self):
-        self.render('community/community.html',
+        self.render('community.html',
             users=self.current_site.users.order('-karma').fetch(100))
+            
+        redirect = '/upload?' + urllib.urlencode({'next': '/?bonkers!!'})
+        upload_url = blobstore.create_upload_url(redirect)
 
 
 class User(BaseHandler):
@@ -144,7 +166,7 @@ class User(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('community/user.html', user=user)
+        self.render('users/user.html', user=user)
         
     @tornado.web.authenticated
     def post(self, username):
@@ -167,7 +189,7 @@ class UserTopics(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('community/user_topics.html', user=user)
+        self.render('users/topics.html', user=user)
 
 
 class UserComments(BaseHandler):
@@ -175,7 +197,7 @@ class UserComments(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('community/user_comments.html', user=user)
+        self.render('users/comments.html', user=user)
 
 
 class Topic(BaseHandler):
@@ -187,19 +209,24 @@ class Topic(BaseHandler):
         return self.render_string('_comment.html', comments=comments)
         
     def post(self, id):
+        topic = models.Topic.get_by_id(int(id))
+        if not topic:
+            raise tornado.web.HTTPError(403)
+        
         reply_to = self.get_argument('reply_to', None)
         if reply_to:
             reply_to = models.Comment.get_by_id(int(reply_to))
             
         comment = models.Comment(
             author=self.current_user,
-            topic=models.Topic.get_by_id(int(id)),
+            topic=topic,
             reply_to=reply_to,
             text=self.get_argument('text'))
         comment.put()
         
-        self.current_user.n_comments = self.current_user.comments.count()
-        self.current_user.put()
+        if self.current_user:
+            self.current_user.n_comments = self.current_user.comments.count()
+            self.current_user.put()
         
         topic.n_comments = topic.comments.count()
         topic.put()

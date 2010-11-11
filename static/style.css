@@ -3,13 +3,14 @@ html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pr
 
 
 html {
-    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
-    color: #404040;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    color: #3a3a3a;
+    line-height: 140%;
 }
 
 body {
-    font-size: 16px;
-    margin: 4em auto;
+    margin: 7em auto;
     width: 750px;
 }
 
@@ -19,17 +20,12 @@ a:hover { color: #e0115f; }
 p { margin-bottom: 1.2em; }
 
 h1, h2, h3, h4, h5 {
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
-    font-weight: bold;
     color: #202020;
     line-height: 1.4em;
-    font-weight: normal;
 }
 h1 a, h2 a, h3 a, h4 a, h5 a {
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
     color: #202020;
     text-decoration: none;
-    border-bottom: none;
 }
 
 h1 {
@@ -64,7 +60,7 @@ label { display: block; font-size: 0.8em; }
 
 #header #nav {
     font-size: 1.1em;
-    margin-top: 1.5em;
+    margin-top: 2.5em;
     text-align: center;
 }
 #header #nav a {
@@ -101,16 +97,17 @@ label { display: block; font-size: 0.8em; }
 
 .comment {
     border-top: 1px solid #EEE;
+    padding: 2em 0;
 }
 .comment_info,
-.comment .info { color: #808080; }
+.comment .info { color: #6d6c6c; }
 .comment .gravatar {
     float: left;
-    margin: 1em;
+    margin: 0 1em;
 }
 
 .comment .body {
-    padding: 1em;
+    padding: 0 2em;
     margin-left: 80px;
     margin-bottom: 1em;
 }
@@ -121,12 +118,9 @@ label { display: block; font-size: 0.8em; }
 
 .topic {
     border: none;
-    margin-top: 2em;
     padding-bottom: 3.5em;
 }
-.topic h2 {
-    margin-bottom: 0.3em;
-}
+
 
 a.vote_up {
     border-radius: 4px;

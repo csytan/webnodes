@@ -1,6 +1,7 @@
 import cgi
 import datetime
 import hashlib
+import math
 import re
 import uuid
 
@@ -38,6 +39,7 @@ class BaseModel(db.Model):
 class Site(BaseModel):
     title = db.StringProperty(indexed=False)
     domain = db.StringProperty()
+    about = db.TextProperty(default='')
     
     @classmethod
     def create(cls, name, title=None, domain=None):
@@ -53,8 +55,8 @@ class Site(BaseModel):
             return site
         return db.run_in_transaction(txn)
         
-    def hot_topics(self):
-        topics = self.topics.order('-score').fetch(100)
+    def hot_topics(self, page=0):
+        topics = self.topics.order('-score').fetch(10, offset=page*10)
         prefetch_refprop(topics, Topic.author)
         return topics
 
@@ -68,6 +70,7 @@ class User(BaseModel):
     daily_karma = db.IntegerProperty(default=10)
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
+    is_admin = db.BooleanProperty(default=False)
     
     @classmethod
     def create(cls, site, username, password, email=None):
@@ -137,19 +140,32 @@ class User(BaseModel):
     @property
     def name(self):
         return self.key().name().split(':')[1]
+        
+    @property
+    def can_downvote(self):
+        return self.is_admin or self.karma >= 100
+        
+    @property
+    def can_remove_topics(self):
+        return self.is_admin or self.karma >= 200
 
 
 class Votable(BaseModel):
-    points = db.IntegerProperty(default=0)
+    points = db.IntegerProperty(default=1)
     score = db.FloatProperty()
     up_votes = db.StringListProperty() # contains user key_names
     down_votes = db.StringListProperty() # contains user key_names
     
-    def update_score(self, gravity=1.2):
-        """Adapted from http://amix.dk/blog/post/19574"""
-        td = datetime.datetime.now() - self.created
-        hour_age = td.days * 24 + td.seconds / 60.0 / 60.0
-        self.score = self.points / pow(hour_age + 2, gravity)
+    def update_score(self):
+        """Adapted from reddit's algorithm
+        http://code.reddit.com/browser/r2/r2/lib/db/sorts.py?rev=4778b17e939e119417cc5ec25b82c4e9a65621b2
+        """
+        td = self.created - datetime.datetime(1970, 1, 1)
+        epoch_seconds = td.days * 86400 + td.seconds + (float(td.microseconds) / 1000000)
+        order = math.log(max(abs(self.points), 1), 10)
+        sign = 1 if self.points > 0 else -1 if self.points < 0 else 0
+        seconds = epoch_seconds - 1134028003
+        self.score = round(order + sign * seconds / 45000, 7)
 
 
 class Topic(Votable):

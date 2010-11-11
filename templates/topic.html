@@ -52,6 +52,8 @@
                 {% set vote_up = vote_up and current_user != topic.author %}
                 {% if vote_up %}
                     <a class="vote_up" href="/{{ topic.id }}">+</a>
+                {% elif not current_user %}
+                    <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
                 {% end %}
                 
                 <span class="points">
@@ -59,7 +61,7 @@
                 </span>
                 
                 {% if topic.author %}
-                    by <a href="/community/{{ topic.author.name }}">{{ topic.author.name }}</a>
+                    by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
                 {% else %}
                     by anonymous
                 {% end %}
