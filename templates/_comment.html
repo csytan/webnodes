@@ -27,7 +27,7 @@
                     by anonymous
                 {% end %}
                 
-                {{ locale.format_date(comment.created) }}
+                {{ relative_date(comment.created) }}
             </p>
             {{ markdown(comment.text) }}
             <a id="{{ comment.id }}" class="reply">reply</a>

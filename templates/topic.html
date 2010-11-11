@@ -66,7 +66,7 @@
                     by anonymous
                 {% end %}
                 
-                {{ locale.format_date(topic.created) }}
+                {{ relative_date(topic.created) }}
             </p>
             {% if topic.text %}
                 {{ markdown(topic.text) }}

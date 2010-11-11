@@ -1,4 +1,5 @@
 import cgi
+import datetime
 import os
 import re
 import urllib
@@ -41,6 +42,7 @@ class BaseHandler(tornado.web.RequestHandler):
             template_name,
             truncate=self.truncate,
             markdown=self.markdown,
+            relative_date=self.relative_date,
             current_site=self.current_site,
             **kwargs)
     
@@ -83,6 +85,24 @@ class BaseHandler(tornado.web.RequestHandler):
         value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1<\2>', value)
         html = markdown2.markdown(value, safe_mode='escape')
         return html.replace('<a href=', '<a rel="nofollow" href=').replace('LINEBREAK', '<br>')
+        
+    @staticmethod
+    def relative_date(date):
+        td = datetime.datetime.now() - date
+        if td.days == 1:
+            return '1 day ago'
+        elif td.days:
+            return str(td.days) + ' days ago'
+        elif td.seconds / 60 / 60 == 1:
+            return '1 hour ago'
+        elif td.seconds > 60 * 60:
+            return str(td.seconds / 60 / 60) + ' hours ago'
+        elif td.seconds / 60 == 1:
+            return '1 minute ago'
+        elif td.seconds > 60:
+            return str(td.seconds / 60) + ' minutes ago'
+        else:
+            return str(td.seconds) + ' seconds ago'
 
 
 class NotFound404(BaseHandler):
