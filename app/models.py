@@ -10,9 +10,9 @@ from google.appengine.ext import db
 
 ### Functions ###
 def prefetch_refprop(entities, prop):
-    ref_keys = set(prop.get_value_for_datastore(x) for x in entities)
-    ref_keys.discard(None)
-    ref_entities = dict((x.key(), x) for x in db.get(ref_keys))
+    ref_keys = [prop.get_value_for_datastore(x) for x in entities]
+    ref_keys = [k for k in ref_keys if k is not None]
+    ref_entities = dict((x.key(), x) for x in db.get(set(ref_keys)))
     for entity, ref_key in zip(entities, ref_keys):
         prop.__set__(entity, ref_entities[ref_key])
     return entities
