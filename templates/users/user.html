@@ -33,7 +33,7 @@
     <div id="info">
         <img src="{{ user.gravatar(100) }}" class="gravatar">
         <div class="body">
-            Joined {{ locale.format_date(user.created) }}
+            Joined {{ relative_date(user.created) }}
             <br>
             {{ user.karma }} karma
             <br>
