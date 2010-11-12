@@ -21,13 +21,13 @@
 
 
 {% block content %}
-    <h1>Profile: {{ user.name }}</h1>
+    <h1>{{ user.name.capitalize() }}'s Profile</h1>
     
     {% set message = handler.get_argument('message', None) %}
     {% if message == 'updated' %}
-        <p id="message" class="success">{{ _('Account updated') }}</p>
+        <p id="message" class="success">Account updated</p>
     {% elif message == 'check_email' %}
-        <p id="message" class="error">{{ _('Please check that your email address is correct') }}</p>
+        <p id="message" class="error">Please check that your email address is correct</p>
     {% end %}
     
     <div id="info">

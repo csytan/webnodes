@@ -27,7 +27,8 @@
             <a class="item" href="/community">community</a>
             {% if current_user %}
                 <span class="item">
-                    <a href="/users/{{ current_user.name }}">{{ current_user.name }} ({{ current_user.karma }})</a>
+                    <a href="/users/{{ current_user.name }}">{{ current_user.name }}</a>
+                    <span class="karma" style="color: #6d6c6c; font-size: 0.9em">• {{ current_user.karma }}</span>
                      &nbsp;|&nbsp;
                     <a href="/sign_out">sign out</a>
                 </span>
