@@ -20,6 +20,8 @@
 
 {% block style %}
     <style>
+        .topic { padding-bottom: 3.5em; }
+        .topic .body { padding: 1em 0; }
         #reply_box {
             display: none;
         }
@@ -59,15 +61,17 @@
             
             {{ relative_date(topic.created) }}
         </p>
-        {% if vimeo_id %}
-            <iframe src="http://player.vimeo.com/video/{{ vimeo_id }}" width="750" height="421" frameborder="0"></iframe>
-        {% elif youtube_id %}
-            <iframe src="http://www.youtube.com/embed/{{ youtube_id }}?hd=1" width="750" height="421" frameborder="0"></iframe>
-        {% end %}
-        
-        {% if topic.text %}
-            {{ markdown(topic.text) }}
-        {% end %}
+        <div class="body">
+            {% if vimeo_id %}
+                <iframe src="http://player.vimeo.com/video/{{ vimeo_id }}" width="700" height="394" frameborder="0"></iframe>
+            {% elif youtube_id %}
+                <iframe src="http://www.youtube.com/embed/{{ youtube_id }}?hd=1" width="700" height="394" frameborder="0"></iframe>
+            {% end %}
+            
+            {% if topic.text %}
+                {{ markdown(topic.text) }}
+            {% end %}
+        </div>
         <a class="reply">reply</a>
     </div>
     

@@ -27,7 +27,9 @@
                 {{ relative_date(topic.created) }}
                 &nbsp;|&nbsp;
                 <a href="/{{ topic.id }}">
-                    {% if topic.n_comments == 1 %}
+                    {% if not topic.n_comments %}
+                        discuss
+                    {% elif topic.n_comments == 1 %}
                         1 comment
                     {% else %}
                         {{ topic.n_comments }} comments

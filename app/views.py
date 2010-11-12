@@ -146,6 +146,10 @@ class Submit(BaseHandler):
         title = self.get_argument('title', None)
         link = self.get_argument('link', None)
         text = self.get_argument('text', None)
+        
+        if link and not link.startswith('http'):
+            link = 'http://' + link
+        
         topic = models.Topic(
             site=self.current_site,
             title=title,

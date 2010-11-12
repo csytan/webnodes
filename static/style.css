@@ -11,7 +11,7 @@ html {
 
 body {
     margin: 5em auto;
-    width: 750px;
+    width: 700px;
 }
 
 a { color: #41a3c2; }
@@ -86,6 +86,8 @@ textarea {
     color: #FFF;
     text-align: center;
     line-height: 2em;
+    width: 400px;
+    margin: auto;
     margin-bottom: 2em;
 }
 #message a {
@@ -125,12 +127,6 @@ textarea {
 }
 .comment .comment {
     margin-left: 40px;
-}
-.comment .reply { display: block; }
-
-
-.topic {
-    padding-bottom: 3.5em;
 }
 
 
