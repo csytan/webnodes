@@ -39,40 +39,36 @@
             {{ escape(topic.title) }}
         {% end %}
     </h1>
-    <div class="comment topic">
-        {% if topic.author %}
-            <img src="{{ topic.author.gravatar(60) }}" class="gravatar">
-        {% else %}
-            <img src="http://www.gravatar.com/avatar/0?d=mm&amp;s=60" class="gravatar">
-        {% end %}
-        <div class="body">
-            <p class="comment_info">
-                {% set vote_up = current_user and current_user.daily_karma > 0 %}
-                {% set vote_up = vote_up and current_user.name not in topic.up_votes %}
-                {% set vote_up = vote_up and current_user != topic.author %}
-                {% if vote_up %}
-                    <a class="vote_up" href="/{{ topic.id }}">+</a>
-                {% elif not current_user %}
-                    <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
-                {% end %}
-                
-                <span class="points">
-                    {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
-                </span>
-                
-                {% if topic.author %}
-                    by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
-                {% else %}
-                    by anonymous
-                {% end %}
-                
-                {{ relative_date(topic.created) }}
-            </p>
-            {% if topic.text %}
-                {{ markdown(topic.text) }}
+    <div class="topic" style="border:none;">
+        <p class="comment_info">
+            {% if not current_user %}
+                <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+            {% elif topic.can_vote_up(current_user) %}
+                <a class="vote_up" href="/{{ topic.id }}">+</a>
             {% end %}
-            <a class="reply">reply</a>
-        </div>
+            
+            <span class="points">
+                {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
+            </span>
+            
+            {% if topic.author %}
+                by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
+            {% else %}
+                by anonymous
+            {% end %}
+            
+            {{ relative_date(topic.created) }}
+        </p>
+        {% if vimeo_id %}
+            <iframe src="http://player.vimeo.com/video/{{ vimeo_id }}" width="750" height="421" frameborder="0"></iframe>
+        {% elif youtube_id %}
+            <iframe src="http://www.youtube.com/embed/{{ youtube_id }}?hd=1" width="750" height="421" frameborder="0"></iframe>
+        {% end %}
+        
+        {% if topic.text %}
+            {{ markdown(topic.text) }}
+        {% end %}
+        <a class="reply">reply</a>
     </div>
     
     <div id="reply_box" class="comment">
@@ -82,7 +78,6 @@
                 {{ xsrf_form_html() }}
                 <input type="hidden" id="reply_to" name="reply_to">
                 <textarea name="text"></textarea>
-                <br>
                 <input type="submit" value="Reply">
             </form>
         </div>

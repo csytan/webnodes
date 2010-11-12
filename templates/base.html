@@ -5,6 +5,11 @@
         <title>{{ current_site.title if current_site else 'webnodes' }}</title>
     {% end %}
     <link type="text/css" href="/static/style.css" rel="stylesheet">
+    <!--[if IE 6]>
+    <style>
+        #background { display: none; }
+     </style>
+     <![endif]-->
     {% block style %}{% end %}
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/script.js"></script>
@@ -12,6 +17,7 @@
 </head>
 
 <body>
+    <img id="background" src="/static/bg.jpg">
     <div id="header">
         <div id="logo">
             <a href="/">{{ current_site.title if current_site else 'webnodes' }}</a>

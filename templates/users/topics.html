@@ -2,8 +2,8 @@
 
 
 {% block content %}
-    <h1>{{ user.name }}'s Topics</h1>
-    
+    <h1>{{ user.name.capitalize() }}'s Topics</h1>
+    <br>
     {% for topic in user.topics %}
         <div class="topic_listing">
             <h2>

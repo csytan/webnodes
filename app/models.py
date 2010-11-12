@@ -168,6 +168,14 @@ class Votable(BaseModel):
         sign = 1 if self.points > 0 else -1 if self.points < 0 else 0
         seconds = epoch_seconds - 1134028003
         self.score = round(order + sign * seconds / 45000, 7)
+        
+    def can_vote_up(self, user):
+        if user and \
+            user.daily_karma > 0 and \
+            user.name not in self.up_votes and \
+            user != self.author:
+            return True
+        return False
 
 
 class Topic(Votable):

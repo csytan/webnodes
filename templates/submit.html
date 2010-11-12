@@ -1,20 +1,28 @@
 {% extends "base.html" %}
 
 
+{% block style %}
+    <style>
+        #title, #link { width: 400px; }
+        textarea {
+            height: 150px;
+            width: 500px;
+        }
+    </style>
+{% end %}
+
+
 {% block content %}
     <h1>Submit Article</h1>
-    
+    <br>
     <form action="" method="post">
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
         <input id="title" type="text" name="title">
-        
         <label for="link">Link</label>
         <input id="link" type="text" name="link">
-        
         <label for="text">Text</label>
         <textarea name="text"></textarea>
-        
-        <input type="submit" value="Submit">
+        <input type="submit" value="Do it!">
     </form>
 {% end %}

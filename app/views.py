@@ -209,7 +209,13 @@ class UserComments(BaseHandler):
 class Topic(BaseHandler):
     def get(self, id):
         topic = models.Topic.get_by_id(int(id))
-        self.render('topic.html', topic=topic, replies=topic.replies())
+        vimeo_re = re.findall('http://vimeo.com/(\d+)', topic.link or ' ')
+        vimeo_id = vimeo_re[0] if vimeo_re else None
+        youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', topic.link or ' ')
+        youtube_id = youtube_re[0] if youtube_re else None
+        
+        self.render('topic.html', topic=topic, vimeo_id=vimeo_id,
+            youtube_id=youtube_id, replies=topic.replies())
         
     def render_comments(self, comments):
         return self.render_string('_comment.html', comments=comments)

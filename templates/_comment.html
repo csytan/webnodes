@@ -8,13 +8,10 @@
         
         <div class="body">
             <p class="comment_info">
-                {% set vote_up = current_user and current_user.daily_karma > 0 %}
-                {% set vote_up = vote_up and current_user.name not in comment.up_votes %}
-                {% set vote_up = vote_up and current_user != comment.author %}
-                {% if vote_up %}
-                    <a class="vote_up" href="/vote?way=up&amp;comment_id={{ comment.id }}">+</a>
-                {% elif not current_user %}
+                {% if not current_user %}
                     <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+                {% elif comment.can_vote_up(current_user) %}
+                    <a class="vote_up" href="/vote?way=up&amp;comment_id={{ comment.id }}">+</a>
                 {% end %}
                 
                 <span class="points">

@@ -12,7 +12,7 @@
 
 {% block style %}
     <style>
-
+        #username, #email, #password { width: 200px; }
     </style>
 {% end %}
 
@@ -30,7 +30,7 @@
     {% end %}
     
     <h1>Sign Up</h1>
-    
+    <br>
     <form action="" method="post">
         {{ xsrf_form_html() }}
         <label for="username">Username</label>
@@ -41,8 +41,8 @@
         
         <label for="password">Password</label>
         <input type="password" id="password" name="password" value="{{ handler.get_argument('password', '') }}">
-        <br>
-        <input class="button" type="submit" value="Sign Up">
+        
+        <input class="button" type="submit" value="Sign me up capt'n!">
     </form>
 {% end %}
 

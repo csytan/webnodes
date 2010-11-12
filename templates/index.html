@@ -8,13 +8,10 @@
                 <a href="{% if topic.link %}{{ topic.link }}{% else %}/{{ topic.id }}{% end %}">{{ escape(topic.title) }}</a>
             </h2>
             <p class="comment_info">
-                {% set vote_up = current_user and current_user.daily_karma > 0 %}
-                {% set vote_up = vote_up and current_user.name not in topic.up_votes %}
-                {% set vote_up = vote_up and current_user != topic.author %}
-                {% if vote_up %}
-                    <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.id }}">+</a>
-                {% elif not current_user %}
+                {% if not current_user %}
                     <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+                {% elif topic.can_vote_up(current_user) %}
+                    <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.id }}">+</a>
                 {% end %}
                 
                 <span class="points">
