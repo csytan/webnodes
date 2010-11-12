@@ -15,10 +15,6 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
 
-- url: /upload
-  script: main.py
-  login: admin
-
 - url: /.*
   script: main.py
 

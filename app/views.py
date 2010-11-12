@@ -1,12 +1,13 @@
 import cgi
 import datetime
+import logging
 import os
 import re
 import urllib
 import urlparse
 
-from google.appengine.api import images
 from google.appengine.ext import blobstore
+from google.appengine.ext import db
 
 from lib import markdown2
 import tornado.web
@@ -119,17 +120,6 @@ class Index(BaseHandler):
         self.render('index.html', topics=topics, next_page=next_page)
 
 
-class BlobstoreUpload(BaseHandler):
-    def post(self):
-        import logging
-        key = re.findall(r'blob-key="(.+?)"', self.request.body)[0]
-        #logging.error(key)
-        #blob_info = blobstore.BlobInfo.get(key)
-        #logging.error(blob_info)
-        logging.error(self.request.arguments)
-        return self.redirect('/')
-
-
 class NewSite(BaseHandler):
     def get(self):
         self.render('new_site.html')
@@ -168,7 +158,6 @@ class Submit(BaseHandler):
         if self.current_user:
             self.current_user.n_topics = self.current_user.topics.count()
             self.current_user.put()
-        
         self.redirect('/' + str(topic.id))
 
 
@@ -176,9 +165,6 @@ class Community(BaseHandler):
     def get(self):
         self.render('community.html',
             users=self.current_site.users.order('-karma').fetch(100))
-            
-        redirect = '/upload?' + urllib.urlencode({'next': '/?bonkers!!'})
-        upload_url = blobstore.create_upload_url(redirect)
 
 
 class User(BaseHandler):

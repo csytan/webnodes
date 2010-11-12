@@ -58,7 +58,7 @@ label { display: block; font-size: 0.8em; }
     margin-top: 2.5em;
     text-align: center;
 }
-#header #nav a {
+#header #nav .item {
     margin: 0 10px;
 }
 

@@ -5,6 +5,8 @@ import math
 import re
 import uuid
 
+from google.appengine.api import images
+from google.appengine.ext import blobstore
 from google.appengine.ext import db
 
 
@@ -132,12 +134,11 @@ class User(BaseModel):
         algo, salt, hsh = str(self.password).split('$')
         return hsh == hashlib.sha1(salt + raw_password).hexdigest()
         
-    def gravatar(self, size=None, default='identicon'):
-        email = self.email if self.email else ''
-        return 'http://www.gravatar.com/avatar.php' + \
-            '?gravatar_id=' + hashlib.md5(email).hexdigest() + \
-            '&default=' + default + ('&size=' + str(size) if size else '')
-            
+    def gravatar(self, size=None):
+        hash = hashlib.md5(self.email).hexdigest() if self.email else '0'
+        return 'http://www.gravatar.com/avatar/' + hash + \
+                '?d=mm' + ('&s=' + str(size) if size else '')
+        
     @property
     def name(self):
         return self.key().name().split(':')[1]

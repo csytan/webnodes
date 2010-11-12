@@ -17,14 +17,16 @@
             <a href="/">{{ current_site.title if current_site else 'webnodes' }}</a>
         </div>
         <div id="nav">
-            <a href="/submit">submit</a>
-            <a href="/community">community</a>
+            <a class="item" href="/submit">submit</a>
+            <a class="item" href="/community">community</a>
             {% if current_user %}
-                <a href="/users/{{ current_user.name }}">{{ current_user.name }}</a>
-                |
-                <a href="/sign_out">sign out</a>
+                <span class="item">
+                    <a href="/users/{{ current_user.name }}">{{ current_user.name }} ({{ current_user.karma }})</a>
+                     &nbsp;|&nbsp;
+                    <a href="/sign_out">sign out</a>
+                </span>
             {% else %}
-                <a href="/sign_in">sign in</a>
+                <a class="item" href="/sign_in">sign in</a>
             {% end %}
         </div>
     </div>

@@ -43,7 +43,7 @@
         {% if topic.author %}
             <img src="{{ topic.author.gravatar(60) }}" class="gravatar">
         {% else %}
-            <img src="http://a.vimeocdn.com/portraits/defaults/d.60.jpg" class="gravatar">
+            <img src="http://www.gravatar.com/avatar/0?d=mm&amp;s=60" class="gravatar">
         {% end %}
         <div class="body">
             <p class="comment_info">
@@ -76,8 +76,7 @@
     </div>
     
     <div id="reply_box" class="comment">
-        <img src="http://a.vimeocdn.com/portraits/defaults/d.50.jpg" class="gravatar">
-        
+        <img src="http://www.gravatar.com/avatar/0?d=mm&amp;s=60" class="gravatar">
         <div class="body">
             <form action="" method="post">
                 {{ xsrf_form_html() }}

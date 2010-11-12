@@ -1,23 +1,12 @@
 {% extends "../base.html" %}
 
 
-{% block style %}
-    <style>
-        .comment:last-child { border: none; }
-    </style>
-{% end %}
-
-
 {% block content %}
     <h1>{{ user.name }}'s Comments</h1>
     
     {% for comment in user.comments %}
         <div class="comment">
-            {% if comment.author %}
-                <img src="{{ comment.author.gravatar(50) }}" class="gravatar">
-            {% else %}
-                <img src="http://a.vimeocdn.com/portraits/defaults/d.50.jpg" class="gravatar">
-            {% end %}
+            <img src="{{ user.gravatar(50) }}" class="gravatar">
             
             <div class="body">
                 <p class="info">
