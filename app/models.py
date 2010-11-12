@@ -3,6 +3,7 @@ import datetime
 import hashlib
 import math
 import re
+import urlparse
 import uuid
 
 from google.appengine.api import images
@@ -185,6 +186,11 @@ class Topic(Votable):
     link = db.StringProperty()
     text = db.TextProperty()
     n_comments = db.IntegerProperty(default=0)
+    
+    @property
+    def link_domain(self):
+        netloc = urlparse.urlparse(self.link).netloc
+        return netloc.replace('www.', '', 1) if netloc.startswith('www.') else ''
     
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""

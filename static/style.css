@@ -106,7 +106,10 @@ textarea {
 
 
 .topic_listing { margin-bottom: 2em; }
-
+.topic_listing .domain {
+    font-size: 0.8em;
+    color: #6d6c6c;
+}
 
 .gravatar { border-radius: 4px; }
 
