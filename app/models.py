@@ -190,7 +190,7 @@ class Topic(Votable):
     @property
     def link_domain(self):
         netloc = urlparse.urlparse(self.link).netloc
-        return netloc.replace('www.', '', 1) if netloc.startswith('www.') else ''
+        return netloc.replace('www.', '', 1) if netloc.startswith('www.') else netloc
     
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
