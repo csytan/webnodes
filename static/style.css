@@ -117,7 +117,10 @@ textarea {
     border-top: 1px solid #EEE;
     padding: 2em 0;
 }
-.comment_info { color: #6d6c6c; }
+.comment_info {
+    color: #6d6c6c; 
+    font-weight: 200;
+}
 .comment .gravatar {
     float: left;
     margin: 0 1em;
