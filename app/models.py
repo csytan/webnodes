@@ -43,6 +43,7 @@ class BaseModel(db.Model):
 class Site(BaseModel):
     title = db.StringProperty(indexed=False)
     domain = db.StringProperty()
+    tagline = db.StringProperty(indexed=False, default='')
     about = db.TextProperty(default='')
     
     @classmethod
@@ -74,6 +75,7 @@ class User(BaseModel):
     daily_karma = db.IntegerProperty(default=10)
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
+    n_messages = db.IntegerProperty(default=0)
     is_admin = db.BooleanProperty(default=False)
     
     @classmethod
@@ -151,6 +153,12 @@ class User(BaseModel):
     @property
     def can_remove_topics(self):
         return self.is_admin or self.karma >= 200
+
+
+class Message(BaseModel):
+    to = db.ReferenceProperty(User, collection_name='messages')
+    text = db.TextProperty()
+    read = db.BooleanProperty(default=False)
 
 
 class Votable(BaseModel):

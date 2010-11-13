@@ -18,6 +18,7 @@ application = tornado.wsgi.WSGIApplication([
     (r'/submit', views.Submit),
     (r'/vote', views.Vote),
     (r'/community', views.Community),
+    (r'/community/edit', views.CommunityEdit),
     (r'/sign_in', views.SignIn),
     (r'/sign_up', views.SignUp),
     (r'/sign_out', views.SignOut),

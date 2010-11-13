@@ -171,6 +171,17 @@ class Community(BaseHandler):
             users=self.current_site.users.order('-karma').fetch(100))
 
 
+class CommunityEdit(BaseHandler):
+    def get(self):
+        self.render('community_edit.html')
+        
+    def post(self):
+        self.current_site.title = self.get_argument('title')
+        self.current_site.tagline = self.get_argument('tagline')
+        self.current_site.put()
+        self.reload(message='updated')
+
+
 class User(BaseHandler):
     def get(self, username):
         user = models.User.get_user(self.current_site, username)
