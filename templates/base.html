@@ -2,7 +2,9 @@
 <html>
 <head>
     {% block title %}
-        <title>{{ current_site.title if current_site else 'webnodes' }}</title>
+        {% if current_site %}
+            <title>{{ escape(current_site.title) }} | {{ escape(current_site.tagline) }}</title>
+        {% end %}
     {% end %}
     <link type="text/css" href="/static/style.css" rel="stylesheet">
     <!--[if IE 6]>
@@ -18,38 +20,45 @@
 
 <body>
     <img id="background" src="/static/bg.jpg">
-    <div id="header">
-        <div id="logo">
-            <a href="/">{{ current_site.title if current_site else 'webnodes' }}</a>
+    <div id="body">
+        <div id="main">
+            <div id="header">
+                <div id="logo">
+                    {% if current_site %}
+                        <a href="/">{{ escape(current_site.title) }}</a>
+                    {% end %}
+                </div>
+                <div id="nav">
+                    <a class="item" href="/submit">submit</a>
+                    <a class="item" href="/community">community</a>
+                    {% if current_user %}
+                        <span class="item">
+                            <span class="messages">{{ current_user.n_messages }}</span>
+                            <a href="/users/{{ current_user.name }}">{{ current_user.name }}</a>
+                            <span class="karma" style="color: #6d6c6c; font-size: 0.9em">• {{ current_user.karma }}</span>
+                             &nbsp;|&nbsp;
+                            <a href="/sign_out">sign out</a>
+                        </span>
+                    {% else %}
+                        <a class="item" href="/sign_in">sign in</a>
+                    {% end %}
+                </div>
+            </div>
+            <div id="content">
+                {% block content %}{% end %}
+            </div>
+            <div id="footer">
+                <script type="text/javascript">
+                var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+                document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                <script type="text/javascript">
+                try {
+                var pageTracker = _gat._getTracker("UA-3228291-1");
+                pageTracker._trackPageview();
+                } catch(err) {}</script>
+            </div>
         </div>
-        <div id="nav">
-            <a class="item" href="/submit">submit</a>
-            <a class="item" href="/community">community</a>
-            {% if current_user %}
-                <span class="item">
-                    <a href="/users/{{ current_user.name }}">{{ current_user.name }}</a>
-                    <span class="karma" style="color: #6d6c6c; font-size: 0.9em">• {{ current_user.karma }}</span>
-                     &nbsp;|&nbsp;
-                    <a href="/sign_out">sign out</a>
-                </span>
-            {% else %}
-                <a class="item" href="/sign_in">sign in</a>
-            {% end %}
-        </div>
-    </div>
-    <div id="content">
-        {% block content %}{% end %}
-    </div>
-    <div id="footer">
-        <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-        </script>
-        <script type="text/javascript">
-        try {
-        var pageTracker = _gat._getTracker("UA-3228291-1");
-        pageTracker._trackPageview();
-        } catch(err) {}</script>
     </div>
 </body>
 
