@@ -43,6 +43,7 @@ class BaseModel(db.Model):
 class Site(BaseModel):
     title = db.StringProperty(indexed=False)
     domain = db.StringProperty()
+    favicon = db.StringProperty() # blob_key
     tagline = db.StringProperty(indexed=False, default='')
     about = db.TextProperty(default='')
     

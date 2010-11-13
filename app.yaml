@@ -14,6 +14,9 @@ handlers:
 - url: /admin/.*
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
+  
+- url: /files/.+
+  script: app/blobstore.py
 
 - url: /.*
   script: main.py

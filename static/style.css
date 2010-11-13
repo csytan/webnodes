@@ -64,11 +64,11 @@ textarea {
     text-align: center;
 }
 #header #logo a {
-    font-size: 4em;
+    font-size: 3.5em;
     padding: 0.1em 0.6em;
     line-height: 1;
     text-decoration: none;
-    background-color: #41A3C2;
+    background-color: #419ab5;
     color: white;
     border-radius: 7px;
     -webkit-border-radius: 7px;
@@ -86,6 +86,21 @@ textarea {
 }
 #header #nav .item {
     margin: 0 10px;
+}
+#header #nav a.messages {
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    background: #67b6cf;
+    color: white;
+    text-decoration: none;
+    padding: 0 0.3em;
+}
+#header #nav a.messages:hover {
+    background: #e0115f;
+}
+#header #nav .karma {
+    color: #6d6c6c;
 }
 
 
@@ -147,6 +162,8 @@ textarea {
 
 a.vote_up {
     border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
     background: #93d6ea;
     color: white;
     text-decoration: none;

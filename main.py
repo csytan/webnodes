@@ -10,7 +10,8 @@ settings = {
     'template_path': os.path.join(os.path.dirname(__file__), 'templates'),
     'debug': views.DEBUG,
     'cookie_secret': 'hello',
-    'login_url': '/sign_in'
+    'login_url': '/sign_in',
+    'xsrf_cookies': True,
 }
 application = tornado.wsgi.WSGIApplication([
     (r'/', views.Index),

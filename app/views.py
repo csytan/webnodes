@@ -173,9 +173,14 @@ class Community(BaseHandler):
 
 class CommunityEdit(BaseHandler):
     def get(self):
-        self.render('community_edit.html')
+        self.render('community_edit.html',
+            upload_url=blobstore.create_upload_url('/community/edit'))
         
     def post(self):
+        blob_key = re.findall(r'blob-key="*([^;"\s]+)', self.request.body)
+        if blob_key:
+            blob_info = blobstore.BlobInfo.get(blob_key[0])
+            self.current_site.favicon = str(blob_info.key())
         self.current_site.title = self.get_argument('title')
         self.current_site.tagline = self.get_argument('tagline')
         self.current_site.put()

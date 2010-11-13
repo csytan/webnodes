@@ -13,6 +13,9 @@
         </style>
     <![endif]-->
     {% block style %}{% end %}
+    {% if current_site and current_site.favicon %}
+        <link rel="shortcut icon" href="/files/{{ current_site.favicon }}">
+    {% end %}
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/script.js"></script>
     {% block script %}{% end %}
@@ -33,9 +36,9 @@
                     <a class="item" href="/community">community</a>
                     {% if current_user %}
                         <span class="item">
-                            <span class="messages">{{ current_user.n_messages }}</span>
-                            <a href="/users/{{ current_user.name }}">{{ current_user.name }}</a>
-                            <span class="karma" style="color: #6d6c6c; font-size: 0.9em">• {{ current_user.karma }}</span>
+                            <a class="messages" href="/inbox" title="inbox">{{ current_user.n_messages }}</a>
+                            <a href="/users/{{ current_user.name }}">{{ current_user.name }} ({{ current_user.karma }})</a>
+                            <span class="karma" title="karma"></span>
                              &nbsp;|&nbsp;
                             <a href="/sign_out">sign out</a>
                         </span>
