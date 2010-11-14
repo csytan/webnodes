@@ -23,13 +23,6 @@
 {% block content %}
     <h1>{{ user.name.capitalize() }}'s Profile</h1>
     
-    {% set message = handler.get_argument('message', None) %}
-    {% if message == 'updated' %}
-        <p id="message" class="success">Account updated</p>
-    {% elif message == 'check_email' %}
-        <p id="message" class="error">Please check that your email address is correct</p>
-    {% end %}
-    
     <div id="info">
         <img src="{{ user.gravatar(100) }}" class="gravatar">
         <div class="body">
@@ -43,36 +36,4 @@
         </div>
         <div style="clear:both"></div>
     </div>
-    
-    {% if current_user == user %}
-        <form action="" method="post">
-            {{ xsrf_form_html() }}
-            <table id="edit_account">
-                <tr>
-                    <td>Email</td>
-                    <td>
-                        <input id="email" type="text" name="email" value="{{ current_user.email if current_user.email else '' }}">
-                    </td>
-                </tr>
-                <tr class="password">
-                    <td>Change Password</td>
-                    <td>
-                        <input id="password" type="password" name="password">
-                    </td>
-                </tr>
-                <tr>
-                    <td>Picture</td>
-                    <td>
-                        {% if user.email %}
-                            Change your avatar at <a href="http://gravatar.com">gravatar.com</a>
-                        {% else %}
-                            Enter your email to enable <a href="http://gravatar.com">gravatars</a>
-                        {% end %}
-                    </td>
-                </tr>
-            </table>
-            <br>
-            <input type="submit" value="Update">
-        </form>
-    {% end %}
 {% end %}

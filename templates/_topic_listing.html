@@ -1,0 +1,39 @@
+<div class="topic_listing">
+    <h2>
+        {% if topic.link %}
+            <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
+            <span class="domain">({{ topic.link_domain }})</span>
+        {% else %}
+            <a href="/{{ topic.id }}">{{ escape(topic.title) }}</a>
+        {% end %}
+    </h2>
+    <p class="comment_info">
+        {% if not current_user %}
+            <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+        {% elif topic.can_vote_up(current_user) %}
+            <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.id }}">+</a>
+        {% end %}
+        
+        <span class="points">
+            {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
+        </span>
+        
+        {% if topic.author %}
+            by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
+        {% else %}
+            by anonymous
+        {% end %}
+        
+        {{ relative_date(topic.created) }}
+        &nbsp;|&nbsp;
+        <a href="/{{ topic.id }}">
+            {% if not topic.n_comments %}
+                discuss
+            {% elif topic.n_comments == 1 %}
+                1 comment
+            {% else %}
+                {{ topic.n_comments }} comments
+            {% end %}
+        </a>
+    </p>
+</div>

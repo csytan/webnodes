@@ -22,10 +22,11 @@
                         by anonymous
                     {% end %}
                     
-                    {{ locale.format_date(comment.created) }}
+                    {{ relative_date(comment.created) }}
+                    |
+                    <a href="/{{ comment.topic.id }}#c{{ comment.id }}">link</a>
                 </p>
                 {{ handler.markdown(comment.text) }}
-                <a href="/{{ comment.topic.id }}">topic</a>
             </div>
         </div>
     {% end %}

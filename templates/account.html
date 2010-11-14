@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+
+{% block style %}
+    <style>
+        .gravatar { float: left; }
+        #info {
+            padding: 1em;
+            margin-bottom: 1em;
+        }
+        #info .body {
+            margin-left: 120px;
+            font-size: 1.1em;
+        }
+        
+        #edit_account td {
+            padding: 0.5em;
+        }
+    </style>
+{% end %}
+
+
+{% block content %}
+    <h1>My Account</h1>
+    
+    {% set message = handler.get_argument('message', None) %}
+    {% if message == 'updated' %}
+        <p id="message" class="success">Account updated</p>
+    {% elif message == 'check_email' %}
+        <p id="message" class="error">Please check that your email address is correct</p>
+    {% end %}
+    
+    <div id="info">
+        <img src="{{ current_user.gravatar(100) }}" class="gravatar">
+        <div class="body">
+            <a href="/users/{{ current_user.name }}">Profile</a>
+            <br>
+            {{ current_user.karma }} karma
+            <br>
+            {{ current_user.n_topics }} <a href="/users/{{ current_user.name }}/topics">topics</a>
+            <br>
+            {{ current_user.n_comments }} <a href="/users/{{ current_user.name }}/comments">comments</a>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    
+    <form action="/account" method="post">
+        {{ xsrf_form_html() }}
+        <table id="edit_account">
+            <tr>
+                <td>Email</td>
+                <td>
+                    <input id="email" type="text" name="email" value="{{ current_user.email if current_user.email else '' }}">
+                </td>
+            </tr>
+            <tr class="password">
+                <td>Change Password</td>
+                <td>
+                    <input id="password" type="password" name="password">
+                </td>
+            </tr>
+            <tr>
+                <td>Avatar</td>
+                <td>
+                    {% if current_user.email %}
+                        Change your avatar at <a href="http://gravatar.com">gravatar.com</a>
+                    {% else %}
+                        Enter your email to enable <a href="http://gravatar.com">gravatars</a>
+                    {% end %}
+                </td>
+            </tr>
+        </table>
+        <br>
+        <input type="submit" value="Update">
+    </form>
+{% end %}

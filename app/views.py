@@ -187,15 +187,13 @@ class CommunityEdit(BaseHandler):
         self.reload(message='updated')
 
 
-class User(BaseHandler):
-    def get(self, username):
-        user = models.User.get_user(self.current_site, username)
-        if not user:
-            raise tornado.web.HTTPError(404)
-        self.render('users/user.html', user=user)
+class Account(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        self.render('account.html')
         
     @tornado.web.authenticated
-    def post(self, username):
+    def post(self):
         email = self.get_argument('email', None)
         if email != self.current_user.email:
             if email and not models.User.email_valid(email):
@@ -221,6 +219,14 @@ class Inbox(BaseHandler):
             self.current_user.n_messages = n_messages
         messages = self.current_user.messages.order('-created').fetch(100)
         self.render('inbox/inbox.html', messages=messages)
+
+
+class UserProfile(BaseHandler):
+    def get(self, username):
+        user = models.User.get_user(self.current_site, username)
+        if not user:
+            raise tornado.web.HTTPError(404)
+        self.render('users/user.html', user=user)
 
 
 class UserTopics(BaseHandler):

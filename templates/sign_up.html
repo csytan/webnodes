@@ -31,7 +31,7 @@
     
     <h1>Sign Up</h1>
     <br>
-    <form action="" method="post">
+    <form action="/sign_up" method="post">
         {{ xsrf_form_html() }}
         <label for="username">Username</label>
         <input type="text" id="username" name="username" value="{{ handler.get_argument('username', '') }}">

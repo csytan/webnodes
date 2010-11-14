@@ -27,7 +27,7 @@
     
     <h1>Sign In</h1>
     <br>
-    <form action="" method="post">
+    <form action="/sign_in" method="post">
         {{ xsrf_form_html() }}
         <label for="username">Username</label>
         <input type="text" id="username" name="username" tabindex="1" value="{{ handler.get_argument('username', '') }}">
