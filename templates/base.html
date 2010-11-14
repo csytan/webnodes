@@ -16,7 +16,7 @@
     {% if current_site and current_site.favicon %}
         <link rel="shortcut icon" href="/files/{{ current_site.favicon }}">
     {% end %}
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
     <script type="text/javascript" src="/static/script.js"></script>
     {% block script %}{% end %}
 </head>
@@ -36,9 +36,13 @@
                     <a class="item" href="/community">community</a>
                     {% if current_user %}
                         <span class="item">
-                            <a class="messages" href="/inbox" title="inbox">{{ current_user.n_messages }}</a>
-                            <a href="/users/{{ current_user.name }}">{{ current_user.name }} ({{ current_user.karma }})</a>
-                            <span class="karma" title="karma"></span>
+                            {% if current_user.n_messages %}
+                                <a href="/inbox">inbox ({{ current_user.n_messages }})</a>
+                            {% else %}
+                                <a href="/inbox">inbox</a>
+                            {% end %}
+                            &nbsp;|&nbsp;
+                            <a href="/users/{{ current_user.name }}">{{ current_user.name }} ☯ {{ current_user.karma }}</a>
                              &nbsp;|&nbsp;
                             <a href="/sign_out">sign out</a>
                         </span>

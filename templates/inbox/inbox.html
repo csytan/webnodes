@@ -1,0 +1,17 @@
+{% extends "../base.html" %}
+
+
+{% block style %}
+    <style>
+        
+    </style>
+{% end %}
+
+
+{% block content %}
+    <h1>Inbox</h1>
+    
+    {% for message in messages %}
+        <div class="inbox_message">{{ message.html }}</div>
+    {% end %}
+{% end %}

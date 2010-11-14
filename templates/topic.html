@@ -5,7 +5,7 @@
     <script>
         (function($){
             $('a.reply').live('click', function(){
-                $('#reply_to').val(this.id);
+                $('#reply_to').val($(this).data('id'));
                 $('#reply_box')
                     .insertAfter($(this).closest('.body'))
                     .toggle('fast')
@@ -36,7 +36,7 @@
         {% if topic.link %}
             <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
         {% else %}
-            {{ escape(topic.title) }}
+            <a href="/{{ topic.id }}">{{ escape(topic.title) }}</a>
         {% end %}
     </h1>
     <div class="topic" style="border:none;">

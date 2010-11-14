@@ -12,6 +12,7 @@ body {
 a { color: #41a3c2; }
 a:hover { color: #e0115f; }
 
+b { font-weight: bold; }
 p { margin-bottom: 1.2em; }
 
 h1, h2, h3, h4, h5 {
@@ -86,7 +87,7 @@ textarea {
 #header #nav .item {
     margin: 0 10px;
 }
-#header #nav a.messages {
+#header #nav a.inbox {
     border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -95,7 +96,7 @@ textarea {
     text-decoration: none;
     padding: 0 0.3em;
 }
-#header #nav a.messages:hover {
+#header #nav a.inbox:hover {
     background: #e0115f;
 }
 #header #nav .karma {

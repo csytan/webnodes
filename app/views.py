@@ -24,7 +24,7 @@ class BaseHandler(tornado.web.RequestHandler):
         user_key = self.get_secure_cookie('user')
         if user_key:
             return models.User.get_by_key_name(user_key)
-            
+        
     @property
     def current_site(self):
         if not hasattr(self, '_current_site'):
@@ -210,6 +210,19 @@ class User(BaseHandler):
         self.reload(message='updated')
 
 
+class Inbox(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        if self.current_user:
+            n_messages = self.current_user.n_messages
+            self.current_user.n_messages = 0
+            self.current_user.put()
+            # reset for rendering but don't save
+            self.current_user.n_messages = n_messages
+        messages = self.current_user.messages.order('-created').fetch(100)
+        self.render('inbox/inbox.html', messages=messages)
+
+
 class UserTopics(BaseHandler):
     def get(self, username):
         user = models.User.get_user(self.current_site, username)
@@ -242,8 +255,7 @@ class Topic(BaseHandler):
         
     def post(self, id):
         topic = models.Topic.get_by_id(int(id))
-        if not topic:
-            raise tornado.web.HTTPError(403)
+        if not topic: raise tornado.web.HTTPError(404)
         
         reply_to = self.get_argument('reply_to', None)
         if reply_to:
@@ -254,15 +266,20 @@ class Topic(BaseHandler):
             topic=topic,
             reply_to=reply_to,
             text=self.get_argument('text'))
-        comment.put()
-        
+        topic.n_comments += 1
         if self.current_user:
-            self.current_user.n_comments = self.current_user.comments.count()
-            self.current_user.put()
+            self.current_user.n_comments += 1
+        db.put([topic, comment, self.current_user] if self.current_user else [topic, comment])
         
-        topic.n_comments = topic.comments.count()
-        topic.put()
-        self.reload()
+        if (reply_to and reply_to.author) or (topic.author and topic.n_comments < 20):
+            parent_author = reply_to.author if reply_to else topic.author
+            message = models.Message(
+                to=parent_author,
+                html=self.render_string('inbox/comment_reply.html', comment=comment))
+            parent_author.n_messages += 1
+            db.put([message, parent_author])
+            
+        self.redirect(self.request.path + '#c' + str(comment.id))
 
 
 class Vote(BaseHandler):
@@ -349,6 +366,10 @@ class SignUp(BaseHandler):
             email=email,
             password=password)
         if user:
+            message = models.Message(
+                to=user,
+                html=self.render_string('inbox/welcome.html', current_user=user))
+            message.put()
             self.set_secure_cookie('user', user.key().name())
         else:
             return self.reload(message='user_exists', copyargs=True)

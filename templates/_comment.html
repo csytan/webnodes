@@ -1,5 +1,5 @@
 {% for comment in comments %}
-    <div class="comment">
+    <div class="comment" id="c{{ comment.id }}">
         {% if comment.author %}
             <img src="{{ comment.author.gravatar(60) }}" class="gravatar">
         {% else %}
@@ -25,9 +25,11 @@
                 {% end %}
                 
                 {{ relative_date(comment.created) }}
+                |
+                <a href="#c{{ comment.id }}">link</a>
             </p>
             {{ markdown(comment.text) }}
-            <a id="{{ comment.id }}" class="reply">reply</a>
+            <a data-id="{{ comment.id }}" class="reply">reply</a>
         </div>
         {{ handler.render_comments(comment.replies) }}
     </div>

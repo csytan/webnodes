@@ -76,7 +76,7 @@ class User(BaseModel):
     daily_karma = db.IntegerProperty(default=10)
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
-    n_messages = db.IntegerProperty(default=0)
+    n_messages = db.IntegerProperty(default=1) # 1 welcome msg on sign up
     is_admin = db.BooleanProperty(default=False)
     
     @classmethod
@@ -158,8 +158,7 @@ class User(BaseModel):
 
 class Message(BaseModel):
     to = db.ReferenceProperty(User, collection_name='messages')
-    text = db.TextProperty()
-    read = db.BooleanProperty(default=False)
+    html = db.TextProperty()
 
 
 class Votable(BaseModel):
