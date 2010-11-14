@@ -76,7 +76,7 @@ class User(BaseModel):
     daily_karma = db.IntegerProperty(default=10)
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
-    n_messages = db.IntegerProperty(default=1) # 1 welcome msg on sign up
+    n_messages = db.IntegerProperty(default=0)
     is_admin = db.BooleanProperty(default=False)
     
     @classmethod

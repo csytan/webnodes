@@ -355,7 +355,6 @@ class SignUp(BaseHandler):
         username = self.get_argument('username', None)
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
-        next = self.get_argument('next', '/')
         
         if email and not models.User.email_valid(email):
             return self.reload(message='check_email', copyargs=True)
@@ -371,7 +370,7 @@ class SignUp(BaseHandler):
             self.set_secure_cookie('user', user.key().name())
         else:
             return self.reload(message='user_exists', copyargs=True)
-        self.redirect(next if next.startswith('/') else '/')
+        self.redirect('/inbox')
 
 
 class SignOut(BaseHandler):
