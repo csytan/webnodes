@@ -65,16 +65,18 @@
             {% elif youtube_id %}
                 <iframe src="http://www.youtube.com/embed/{{ youtube_id }}?hd=1" width="700" height="394" frameborder="0"></iframe>
             {% end %}
-            
             {% if topic.text %}
                 {{ markdown(topic.text) }}
             {% end %}
-            
-            <a class="reply">reply</a>
+            {% if replies %}
+                <a class="reply">reply</a>
+            {% end %}
         </div>
     </div>
     
-    <div id="reply_box" class="comment">
+    <h2 style="color:#666666;">Comments</h2>
+    
+    <div id="reply_box" class="comment" {% if not replies %}style="display:block;"{% end %}>
         {% if current_user %}
             <img src="{{ current_user.gravatar(60) }}" class="gravatar">
         {% else %}
@@ -90,9 +92,6 @@
         </div>
     </div>
     
-    {% if replies %}
-        <h2 style="color:#666666;">Comments</h2>
-        {{ handler.render_comments(replies) }}
-    {% end %}
+    {{ handler.render_comments(replies) }}
 {% end %}
 
