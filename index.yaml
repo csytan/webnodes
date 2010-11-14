@@ -13,12 +13,6 @@ indexes:
 - kind: Comment
   properties:
   - name: topic
-  - name: created
-    direction: desc
-
-- kind: Comment
-  properties:
-  - name: topic
   - name: score
     direction: desc
 
@@ -27,11 +21,6 @@ indexes:
   - name: to
   - name: created
     direction: desc
-
-- kind: Topic
-  properties:
-  - name: site
-  - name: score
 
 - kind: Topic
   properties:
