@@ -158,7 +158,8 @@ class User(BaseModel):
 
 class Message(BaseModel):
     to = db.ReferenceProperty(User, collection_name='messages')
-    html = db.TextProperty()
+    type = db.StringProperty(choices=['welcome', 'comment_reply'])
+    comment = db.ReferenceProperty()
 
 
 class Votable(BaseModel):

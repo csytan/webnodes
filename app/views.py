@@ -211,14 +211,10 @@ class Account(BaseHandler):
 class Inbox(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        if self.current_user:
-            n_messages = self.current_user.n_messages
-            self.current_user.n_messages = 0
-            self.current_user.put()
-            # reset for rendering but don't save
-            self.current_user.n_messages = n_messages
-        messages = self.current_user.messages.order('-created').fetch(100)
-        self.render('inbox/inbox.html', messages=messages)
+        self.current_user.n_messages = 0
+        self.current_user.put()
+        self.render('inbox.html',
+            messages=self.current_user.messages.order('-created').fetch(20))
 
 
 class UserProfile(BaseHandler):
@@ -279,9 +275,7 @@ class Topic(BaseHandler):
         
         if (reply_to and reply_to.author) or (topic.author and topic.n_comments < 20):
             parent_author = reply_to.author if reply_to else topic.author
-            message = models.Message(
-                to=parent_author,
-                html=self.render_string('inbox/comment_reply.html', comment=comment))
+            message = models.Message(to=parent_author, type='comment_reply', comment=comment)
             parent_author.n_messages += 1
             db.put([message, parent_author])
             
@@ -372,9 +366,7 @@ class SignUp(BaseHandler):
             email=email,
             password=password)
         if user:
-            message = models.Message(
-                to=user,
-                html=self.render_string('inbox/welcome.html', current_user=user))
+            message = models.Message(to=user, type='welcome')
             message.put()
             self.set_secure_cookie('user', user.key().name())
         else:
