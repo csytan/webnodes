@@ -79,13 +79,12 @@ textarea {
     text-decoration: none;
     background-color: #419ab5;
     color: white;
-    border-radius: 7px;
-    -webkit-border-radius: 7px;
-    -moz-border-radius: 7px;
+    border: 1px solid #3a8aa3;
+    border-left: 5px solid #3a8aa3;
     box-shadow: 0px 0px 40px #dddddd;
     -webkit-box-shadow: 0px 0px 40px #dddddd;
     -moz-box-shadow: 0px 0px 40px #dddddd;
-    text-shadow: rgba(0, 0, 0, 0.15) 1px 1px 0px;
+    text-shadow: rgba(0, 0, 0, 0.2) 1px 1px 0px;
 }
 
 #header #nav {
