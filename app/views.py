@@ -217,8 +217,8 @@ class TopicEdit(BaseHandler):
         topic = models.Topic.get_by_id(int(id))
         if topic.can_edit(self.current_user):
             topic.title = self.get_argument('title')
-            topic.link = self.get_argument('link')
-            topic.text = self.get_argument('text')
+            topic.link = self.get_argument('link', '')
+            topic.text = self.get_argument('text', '')
             topic.put()
         self.redirect('/' + id)
 
@@ -232,7 +232,7 @@ class CommentEdit(BaseHandler):
     def post(self, id):
         comment = models.Comment.get_by_id(int(id))
         if comment.can_edit(self.current_user):
-            comment.text = self.get_argument('text')
+            comment.text = self.get_argument('text', '')
             comment.put()
         self.redirect('/' + str(comment.topic.id) + '#c' + id)
 
