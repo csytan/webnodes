@@ -168,7 +168,7 @@ class Submit(BaseHandler):
 class Topic(BaseHandler):
     def get(self, id):
         topic = models.Topic.get_by_id(int(id))
-        vimeo_re = re.findall('http://vimeo.com/(\d+)', topic.link or ' ')
+        vimeo_re = re.findall('http://(?:www\.)?vimeo.com/(\d+)', topic.link or ' ')
         vimeo_id = vimeo_re[0] if vimeo_re else None
         youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', topic.link or ' ')
         youtube_id = youtube_re[0] if youtube_re else None
