@@ -143,9 +143,9 @@ class Submit(BaseHandler):
         self.render('submit.html')
         
     def post(self):
-        title = self.get_argument('title', None)
-        link = self.get_argument('link', None)
-        text = self.get_argument('text', None)
+        title = self.get_argument('title', '')
+        link = self.get_argument('link', '')
+        text = self.get_argument('text', '')
         
         if link and not link.startswith('http'):
             link = 'http://' + link
@@ -163,6 +163,143 @@ class Submit(BaseHandler):
             self.current_user.n_topics = self.current_user.topics.count()
             self.current_user.put()
         self.redirect('/' + str(topic.id))
+
+
+class Topic(BaseHandler):
+    def get(self, id):
+        topic = models.Topic.get_by_id(int(id))
+        vimeo_re = re.findall('http://vimeo.com/(\d+)', topic.link or ' ')
+        vimeo_id = vimeo_re[0] if vimeo_re else None
+        youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', topic.link or ' ')
+        youtube_id = youtube_re[0] if youtube_re else None
+        
+        self.render('topic.html', topic=topic, vimeo_id=vimeo_id,
+            youtube_id=youtube_id, replies=topic.replies())
+            
+    def render_comments(self, comments):
+        return self.render_string('_comment.html', comments=comments)
+        
+    def post(self, id):
+        topic = models.Topic.get_by_id(int(id))
+        if not topic: raise tornado.web.HTTPError(404)
+        
+        reply_to = self.get_argument('reply_to', None)
+        if reply_to:
+            reply_to = models.Comment.get_by_id(int(reply_to))
+            
+        comment = models.Comment(
+            author=self.current_user,
+            topic=topic,
+            reply_to=reply_to,
+            text=self.get_argument('text'))
+        topic.n_comments += 1
+        if self.current_user:
+            self.current_user.n_comments += 1
+        db.put([topic, comment, self.current_user] if self.current_user else [topic, comment])
+        
+        if (reply_to and reply_to.author) or (topic.author and topic.n_comments < 20):
+            parent_author = reply_to.author if reply_to else topic.author
+            if parent_author != comment.author:
+                message = models.Message(to=parent_author, type='comment_reply', comment=comment)
+                parent_author.n_messages += 1
+                db.put([message, parent_author])
+                
+        self.redirect(self.request.path + '#c' + str(comment.id))
+
+
+class TopicEdit(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, id):
+        self.render('topic_edit.html', topic=models.Topic.get_by_id(int(id)))
+        
+    @tornado.web.authenticated
+    def post(self, id):
+        topic = models.Topic.get_by_id(int(id))
+        if topic.can_edit(self.current_user):
+            topic.title = self.get_argument('title')
+            topic.link = self.get_argument('link')
+            topic.text = self.get_argument('text')
+            topic.put()
+        self.redirect('/' + id)
+
+
+class CommentEdit(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, id):
+        self.render('comment_edit.html', comment=models.Comment.get_by_id(int(id)))
+        
+    @tornado.web.authenticated
+    def post(self, id):
+        comment = models.Comment.get_by_id(int(id))
+        if comment.can_edit(self.current_user):
+            comment.text = self.get_argument('text')
+            comment.put()
+        self.redirect('/' + str(comment.topic.id) + '#c' + id)
+
+
+class Vote(BaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        comment_id = self.get_argument('comment_id', None)
+        topic_id = self.get_argument('topic_id', None)
+        if comment_id:
+            comment = models.Comment.get_by_id(int(comment_id))
+            if comment.topic.site != self.current_site:
+                raise tornado.web.HTTPError(403)
+        elif topic_id:
+            comment = models.Topic.get_by_id(int(topic_id))
+            if comment.site != self.current_site:
+                raise tornado.web.HTTPError(403)
+
+        if self.current_user.daily_karma > 0 and comment.author != self.current_user:
+            way = self.get_argument('way', None)
+            if way == 'up' and self.current_user.name not in comment.up_votes:
+                comment.points += 1
+                comment.up_votes.append(self.current_user.name)
+                comment.update_score()
+                comment.put()
+                self.current_user.daily_karma -= 1
+                self.current_user.put()
+                if comment.author:
+                    comment.author.karma += 1
+                    comment.author.put()
+            elif way == 'down' and self.current_user.karma >= 100 and \
+                    self.current_user.name not in comment.down_votes:
+                comment.points -= 1
+                comment.down_votes.append(self.current_user.name)
+                comment.update_score()
+                comment.put()
+                self.current_user.daily_karma -= 1
+                self.current_user.put()
+                if comment.author:
+                    comment.author.karma -= 1
+                    comment.author.put()
+        self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
+
+
+class SignIn(BaseHandler):
+    def get(self):
+        next = self.get_argument('next', '/')
+        token = self.get_argument('login_token', None)
+        if token:
+            user = models.User.get_by_token(token)
+            if user:
+                self.set_secure_cookie('user_id', str(user.id))
+            return self.redirect(next if next.startswith('/') else '/')
+        self.render('sign_in.html')
+
+    def post(self):
+        username = self.get_argument('username', None)
+        password = self.get_argument('password', None)
+        next = self.get_argument('next', '/')
+        if username and password:
+            user = models.User.get_user(
+                site=self.current_site,
+                username=username)
+            if user and user.check_password(password):
+                self.set_secure_cookie('user', user.key().name())
+                return self.redirect(next if next.startswith('/') else '/')
+        self.reload(message='login_error', copyargs=True)
 
 
 class Community(BaseHandler):
@@ -239,112 +376,6 @@ class UserComments(BaseHandler):
         if not user:
             raise tornado.web.HTTPError(404)
         self.render('users/comments.html', user=user)
-
-
-class Topic(BaseHandler):
-    def get(self, id):
-        topic = models.Topic.get_by_id(int(id))
-        vimeo_re = re.findall('http://vimeo.com/(\d+)', topic.link or ' ')
-        vimeo_id = vimeo_re[0] if vimeo_re else None
-        youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', topic.link or ' ')
-        youtube_id = youtube_re[0] if youtube_re else None
-        
-        self.render('topic.html', topic=topic, vimeo_id=vimeo_id,
-            youtube_id=youtube_id, replies=topic.replies())
-        
-    def render_comments(self, comments):
-        return self.render_string('_comment.html', comments=comments)
-        
-    def post(self, id):
-        topic = models.Topic.get_by_id(int(id))
-        if not topic: raise tornado.web.HTTPError(404)
-        
-        reply_to = self.get_argument('reply_to', None)
-        if reply_to:
-            reply_to = models.Comment.get_by_id(int(reply_to))
-            
-        comment = models.Comment(
-            author=self.current_user,
-            topic=topic,
-            reply_to=reply_to,
-            text=self.get_argument('text'))
-        topic.n_comments += 1
-        if self.current_user:
-            self.current_user.n_comments += 1
-        db.put([topic, comment, self.current_user] if self.current_user else [topic, comment])
-        
-        if (reply_to and reply_to.author) or (topic.author and topic.n_comments < 20):
-            parent_author = reply_to.author if reply_to else topic.author
-            message = models.Message(to=parent_author, type='comment_reply', comment=comment)
-            parent_author.n_messages += 1
-            db.put([message, parent_author])
-            
-        self.redirect(self.request.path + '#c' + str(comment.id))
-
-
-class Vote(BaseHandler):
-    @tornado.web.authenticated
-    def post(self):
-        comment_id = self.get_argument('comment_id', None)
-        topic_id = self.get_argument('topic_id', None)
-        if comment_id:
-            comment = models.Comment.get_by_id(int(comment_id))
-            if comment.topic.site != self.current_site:
-                raise tornado.web.HTTPError(403)
-        elif topic_id:
-            comment = models.Topic.get_by_id(int(topic_id))
-            if comment.site != self.current_site:
-                raise tornado.web.HTTPError(403)
-        
-        if self.current_user.daily_karma > 0 and comment.author != self.current_user:
-            way = self.get_argument('way', None)
-            if way == 'up' and self.current_user.name not in comment.up_votes:
-                comment.points += 1
-                comment.up_votes.append(self.current_user.name)
-                comment.update_score()
-                comment.put()
-                self.current_user.daily_karma -= 1
-                self.current_user.put()
-                if comment.author:
-                    comment.author.karma += 1
-                    comment.author.put()
-            elif way == 'down' and self.current_user.karma >= 100 and \
-                    self.current_user.name not in comment.down_votes:
-                comment.points -= 1
-                comment.down_votes.append(self.current_user.name)
-                comment.update_score()
-                comment.put()
-                self.current_user.daily_karma -= 1
-                self.current_user.put()
-                if comment.author:
-                    comment.author.karma -= 1
-                    comment.author.put()
-        self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
-
-
-class SignIn(BaseHandler):
-    def get(self):
-        next = self.get_argument('next', '/')
-        token = self.get_argument('login_token', None)
-        if token:
-            user = models.User.get_by_token(token)
-            if user:
-                self.set_secure_cookie('user_id', str(user.id))
-            return self.redirect(next if next.startswith('/') else '/')
-        self.render('sign_in.html')
-        
-    def post(self):
-        username = self.get_argument('username', None)
-        password = self.get_argument('password', None)
-        next = self.get_argument('next', '/')
-        if username and password:
-            user = models.User.get_user(
-                site=self.current_site,
-                username=username)
-            if user and user.check_password(password):
-                self.set_secure_cookie('user', user.key().name())
-                return self.redirect(next if next.startswith('/') else '/')
-        self.reload(message='login_error', copyargs=True)
 
 
 class SignUp(BaseHandler):

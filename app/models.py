@@ -186,6 +186,13 @@ class Votable(BaseModel):
             user != self.author:
             return True
         return False
+        
+    def can_edit(self, user):
+        td = datetime.datetime.now() - self.created
+        if user == self.author and \
+            not td.days and td.seconds < 60 * 10:
+            return True
+        return False
 
 
 class Topic(Votable):

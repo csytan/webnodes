@@ -13,6 +13,7 @@ a { color: #41a3c2; }
 a:hover { color: #e0115f; }
 
 b { font-weight: bold; }
+em { font-style: italic; }
 p { margin-bottom: 1.2em; }
 
 h1, h2, h3, h4, h5 {
@@ -32,6 +33,13 @@ h2 { font-size: 1.5em; }
 h3 { font-size: 1.2em; }
 
 label { color: #6d6c6c; }
+blockquote, pre, code {
+    color: #404040;
+    background-color: #F8F8F8;
+    border-left: 4px solid #BBB;
+    padding: 1em;
+}
+
 
 input[type="text"],
 input[type="password"],

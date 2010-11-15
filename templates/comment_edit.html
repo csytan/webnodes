@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+
+{% block style %}
+    <style>
+        textarea {
+            height: 150px;
+            width: 500px;
+        }
+    </style>
+{% end %}
+
+
+{% block script %}
+    <script>
+        jQuery(function($){
+            $('#text').focus();
+        });
+    </script>
+{% end %}
+
+
+{% block content %}
+    <h1>Edit Comment</h1>
+    <br>
+    <form action="" method="post">
+        {{ xsrf_form_html() }}
+        <textarea id="text" name="text" tabindex="1">{{ escape(comment.text) }}</textarea>
+        <input type="submit" value="Do it!" tabindex="2">
+    </form>
+{% end %}
+

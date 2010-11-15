@@ -22,18 +22,18 @@
 
 
 {% block content %}
-    <h1>Submit a Topic</h1>
+    <h1>Edit Topic</h1>
     <br>
     <form action="" method="post">
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
-        <input id="title" type="text" name="title" tabindex="1">
+        <input id="title" type="text" name="title" tabindex="1" value="{{ escape(topic.title) }}">
         <label for="link">Link</label>
-        <input id="link" type="text" name="link" tabindex="2">
+        <input id="link" type="text" name="link" tabindex="2" value="{{ escape(topic.link) }}">
         <label for="text">
             Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
         </label>
-        <textarea name="text" tabindex="3"></textarea>
+        <textarea name="text" tabindex="3">{{ escape(topic.text) }}</textarea>
         <input type="submit" value="Do it!" tabindex="4">
     </form>
 {% end %}
