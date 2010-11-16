@@ -77,6 +77,7 @@ class User(BaseModel):
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
     n_messages = db.IntegerProperty(default=0)
+    about = db.TextProperty(default='')
     is_admin = db.BooleanProperty(default=False)
     
     @classmethod

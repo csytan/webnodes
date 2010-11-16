@@ -15,9 +15,7 @@
         }
         #info .body {
             margin-left: 120px;
-            font-size: 1.1em;
         }
-        
         #edit_account td {
             padding: 0.5em;
         }
@@ -41,4 +39,9 @@
         </div>
         <div style="clear:both"></div>
     </div>
+    
+    {% if user.about %}
+        <h2>About</h2>
+        {{ markdown(user.about) }}
+    {% end %}
 {% end %}

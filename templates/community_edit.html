@@ -3,7 +3,8 @@
 
 {% block style %}
     <style>
-
+        #title, #tagline { width: 350px; }
+        #about { height: 200px; width: 550px;}
     </style>
 {% end %}
 
@@ -18,8 +19,10 @@
     
     <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
         {{ xsrf_form_html() }}
-        <input type="file" name="file">
-        <input type="submit" value="Update that shit!">
+        <label for="favicon">Favicon</label>
+        <br>
+        <input id="favicon" type="file" name="file">
+        <input type="submit" value="Upload">
     </form>
     
     <form action="/community/edit" method="post">
@@ -28,6 +31,8 @@
         <input type="text" id="title" name="title" value="{{ escape(current_site.title) }}">
         <label for="tagline">Tagline</label>
         <input type="text" id="tagline" name="tagline" value="{{ escape(current_site.tagline) }}">
-        <input type="submit" value="Update that shit!">
+        <label for="about">About</label>
+        <textarea id="about" name="about">{{ escape(current_site.about) }}</textarea>
+        <input type="submit" value="Update!">
     </form>
 {% end %}

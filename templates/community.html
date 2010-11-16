@@ -17,23 +17,6 @@
 
 {% block content %}
     <h1>Community</h1>
-    
+    <br>
     {{ markdown(current_site.about) }}
-    
-    {% for user in users %}
-        <div class="user">
-            <img src="{{ user.gravatar(100) }}" class="gravatar">
-            <div class="body">
-                <h2>
-                    <a href="/users/{{ user.name }}">{{ user.name }}</a>
-                </h2>
-                {{ user.karma }} karma
-                <br>
-                {{ user.n_topics }} <a href="/users/{{ user.name }}/topics">topics</a>
-                <br>
-                {{ user.n_comments }} <a href="/users/{{ user.name }}/comments">comments</a>
-            </div>
-            <div style="clear:both"></div>
-        </div>
-    {% end %}
 {% end %}

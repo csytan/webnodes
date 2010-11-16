@@ -15,12 +15,10 @@
         }
         #info .body {
             margin-left: 120px;
-            font-size: 1.1em;
         }
         
-        #edit_account td {
-            padding: 0.5em;
-        }
+        #password, #email { width: 250px; }
+        #about { width: 500px; height: 150px; }
     </style>
 {% end %}
 
@@ -49,33 +47,15 @@
         <div style="clear:both"></div>
     </div>
     
+    <h2>Settings</h2>
     <form action="/account" method="post">
         {{ xsrf_form_html() }}
-        <table id="edit_account">
-            <tr>
-                <td>Email</td>
-                <td>
-                    <input id="email" type="text" name="email" value="{{ current_user.email if current_user.email else '' }}">
-                </td>
-            </tr>
-            <tr class="password">
-                <td>Change Password</td>
-                <td>
-                    <input id="password" type="password" name="password">
-                </td>
-            </tr>
-            <tr>
-                <td>Avatar</td>
-                <td>
-                    {% if current_user.email %}
-                        Change your avatar at <a href="http://gravatar.com">gravatar.com</a>
-                    {% else %}
-                        Enter your email to enable <a href="http://gravatar.com">gravatars</a>
-                    {% end %}
-                </td>
-            </tr>
-        </table>
-        <br>
+        <label for="email">Email (<a href="http://gravatar.com">gravatar</a>)</label>
+        <input id="email" type="text" name="email" value="{{ current_user.email if current_user.email else '' }}">
+        <label class="password">Change Password</label>
+        <input id="password" type="password" name="password">
+        <label for="about">About</label>
+        <textarea id="about"></textarea>
         <input type="submit" value="Update">
     </form>
 {% end %}

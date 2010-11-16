@@ -139,9 +139,11 @@ class NewSite(BaseHandler):
 
 
 class Submit(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
         self.render('submit.html')
         
+    @tornado.web.authenticated
     def post(self):
         title = self.get_argument('title', '')
         link = self.get_argument('link', '')
@@ -159,9 +161,8 @@ class Submit(BaseHandler):
         topic.update_score()
         topic.put()
         
-        if self.current_user:
-            self.current_user.n_topics = self.current_user.topics.count()
-            self.current_user.put()
+        self.current_user.n_topics = self.current_user.topics.count()
+        self.current_user.put()
         self.redirect('/' + str(topic.id))
 
 
@@ -304,8 +305,7 @@ class SignIn(BaseHandler):
 
 class Community(BaseHandler):
     def get(self):
-        self.render('community.html',
-            users=self.current_site.users.order('-karma').fetch(100))
+        self.render('community.html')
 
 
 class CommunityEdit(BaseHandler):
@@ -317,9 +317,13 @@ class CommunityEdit(BaseHandler):
         blob_key = re.findall(r'blob-key="*([^;"\s]+)', self.request.body)
         if blob_key:
             blob_info = blobstore.BlobInfo.get(blob_key[0])
+            if self.current_site.favicon:
+                self.current_site.favicon.delete()
             self.current_site.favicon = str(blob_info.key())
-        self.current_site.title = self.get_argument('title')
-        self.current_site.tagline = self.get_argument('tagline')
+        else:
+            self.current_site.title = self.get_argument('title', '')
+            self.current_site.tagline = self.get_argument('tagline', '')
+            self.current_site.about = self.get_argument('about', '')
         self.current_site.put()
         self.reload(message='updated')
 
