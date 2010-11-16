@@ -24,14 +24,14 @@
 
 
 {% block content %}
-    <h1>My Account</h1>
-    
     {% set message = handler.get_argument('message', None) %}
     {% if message == 'updated' %}
         <p id="message" class="success">Account updated</p>
     {% elif message == 'check_email' %}
         <p id="message" class="error">Please check that your email address is correct</p>
     {% end %}
+    
+    <h1>My Account</h1>
     
     <div id="info">
         <img src="{{ current_user.gravatar(100) }}" class="gravatar">

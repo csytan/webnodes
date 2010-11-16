@@ -122,15 +122,9 @@ textarea {
     color: #FFF;
     text-decoration: underline;
 }
-#message.info { 
-    background-color: #555; 
-}
-#message.success { 
-    background-color: #77DB96; 
-}
-#message.error { 
-    background-color: #FF627D;
-}
+#message.info { background-color: #555; }
+#message.success { background-color: #77DB96; }
+#message.error { background-color: #FF627D; }
 
 
 .topic_listing { margin-bottom: 1.5em; }

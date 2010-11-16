@@ -318,10 +318,10 @@ class Account(BaseHandler):
                 return self.reload(message='check_email', copyargs=True)
             else:
                 self.current_user.email = email
-        
         password = self.get_argument('password', None)
         if password:
             self.current_user.set_password(password)
+        self.current_user.about = self.get_argument('about', '')
         self.current_user.put()
         self.reload(message='updated')
 
