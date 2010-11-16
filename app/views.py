@@ -251,7 +251,7 @@ class Vote(BaseHandler):
             comment = models.Topic.get_by_id(int(topic_id))
             if comment.site != self.current_site:
                 raise tornado.web.HTTPError(403)
-
+                
         if self.current_user.daily_karma > 0 and comment.author != self.current_user:
             way = self.get_argument('way', None)
             if way == 'up' and self.current_user.name not in comment.up_votes:
@@ -278,41 +278,18 @@ class Vote(BaseHandler):
         self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
 
 
-class SignIn(BaseHandler):
-    def get(self):
-        next = self.get_argument('next', '/')
-        token = self.get_argument('login_token', None)
-        if token:
-            user = models.User.get_by_token(token)
-            if user:
-                self.set_secure_cookie('user_id', str(user.id))
-            return self.redirect(next if next.startswith('/') else '/')
-        self.render('sign_in.html')
-
-    def post(self):
-        username = self.get_argument('username', None)
-        password = self.get_argument('password', None)
-        next = self.get_argument('next', '/')
-        if username and password:
-            user = models.User.get_user(
-                site=self.current_site,
-                username=username)
-            if user and user.check_password(password):
-                self.set_secure_cookie('user', user.key().name())
-                return self.redirect(next if next.startswith('/') else '/')
-        self.reload(message='login_error', copyargs=True)
-
-
 class Community(BaseHandler):
     def get(self):
         self.render('community.html')
 
 
 class CommunityEdit(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
         self.render('community_edit.html',
             upload_url=blobstore.create_upload_url('/community/edit'))
         
+    @tornado.web.authenticated
     def post(self):
         blob_key = re.findall(r'blob-key="*([^;"\s]+)', self.request.body)
         if blob_key:
@@ -380,6 +357,31 @@ class UserComments(BaseHandler):
         if not user:
             raise tornado.web.HTTPError(404)
         self.render('users/comments.html', user=user)
+
+
+class SignIn(BaseHandler):
+    def get(self):
+        next = self.get_argument('next', '/')
+        token = self.get_argument('login_token', None)
+        if token:
+            user = models.User.get_by_token(token)
+            if user:
+                self.set_secure_cookie('user_id', str(user.id))
+            return self.redirect(next if next.startswith('/') else '/')
+        self.render('sign_in.html')
+        
+    def post(self):
+        username = self.get_argument('username', None)
+        password = self.get_argument('password', None)
+        next = self.get_argument('next', '/')
+        if username and password:
+            user = models.User.get_user(
+                site=self.current_site,
+                username=username)
+            if user and user.check_password(password):
+                self.set_secure_cookie('user', user.key().name())
+                return self.redirect(next if next.startswith('/') else '/')
+        self.reload(message='login_error', copyargs=True)
 
 
 class SignUp(BaseHandler):

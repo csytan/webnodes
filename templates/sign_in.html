@@ -38,11 +38,11 @@
         <input type="text" id="username" name="username" tabindex="1" value="{{ handler.get_argument('username', '') }}">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" tabindex="2" value="{{ handler.get_argument('password', '') }}">
+        <input type="hidden" name="next" value="{{ handler.get_argument('next', '/') }}">
         <p>
             <a href="/password_reset">Forgot password</a> 
             &nbsp;|&nbsp;
-            {% set next = handler.get_argument('next', None) %}
-            <a href="/sign_up{% if next %}?next={{ url_escape(next) }}{% end %}">Create an account</a>
+            <a href="/sign_up">Create an account</a>
         </p>
         <input class="button" type="submit" value="Let me in!">
     </form>

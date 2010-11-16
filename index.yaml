@@ -28,3 +28,8 @@ indexes:
   - name: score
     direction: desc
 
+- kind: User
+  properties:
+  - name: site
+  - name: karma
+    direction: desc
