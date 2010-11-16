@@ -1,6 +1,11 @@
 {% extends "../base.html" %}
 
 
+{% block title %}
+    <title>{{ escape(current_site.title) }} | {{ user.name.capitalize() }}'s Topics</title>
+{% end %}
+
+
 {% block content %}
     <h1>{{ user.name.capitalize() }}'s Topics</h1>
     <br>

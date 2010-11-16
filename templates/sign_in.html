@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 
+{% block title %}
+    <title>{{ escape(current_site.title) }} | Sign In</title>
+{% end %}
+
+
 {% block script %}
     <script>
         $(function(){

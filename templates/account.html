@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 
+{% block title %}
+    <title>{{ escape(current_site.title) }} | My Account</title>
+{% end %}
+
+
 {% block style %}
     <style>
         .gravatar { float: left; }

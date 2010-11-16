@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 
+{% block title %}
+    <title>{{ escape(current_site.title) }} | Edit Topic</title>
+{% end %}
+
+
 {% block style %}
     <style>
         #title, #link { width: 400px; }

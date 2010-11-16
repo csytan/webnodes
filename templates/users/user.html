@@ -1,6 +1,11 @@
 {% extends "../base.html" %}
 
 
+{% block title %}
+    <title>{{ escape(current_site.title) }} | {{ user.name.capitalize() }}'s Profile</title>
+{% end %}
+
+
 {% block style %}
     <style>
         .gravatar { float: left; }
