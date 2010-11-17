@@ -198,13 +198,12 @@ class Topic(BaseHandler):
             self.current_user.n_comments += 1
         db.put([topic, comment, self.current_user] if self.current_user else [topic, comment])
         
-        if (reply_to and reply_to.author) or (topic.author and topic.n_comments < 20):
-            parent_author = reply_to.author if reply_to else topic.author
-            if parent_author and parent_author != comment.author:
-                message = models.Message(to=parent_author, type='comment_reply', comment=comment)
-                parent_author.n_messages += 1
-                db.put([message, parent_author])
-                
+        parent_author = reply_to.author if reply_to else topic.author
+        if parent_author and parent_author != comment.author:
+            message = models.Message(to=parent_author, type='comment_reply', comment=comment)
+            parent_author.n_messages += 1
+            db.put([message, parent_author])
+            
         self.redirect(self.request.path + '#c' + str(comment.id))
 
 
