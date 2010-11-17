@@ -200,7 +200,7 @@ class Topic(BaseHandler):
         
         if (reply_to and reply_to.author) or (topic.author and topic.n_comments < 20):
             parent_author = reply_to.author if reply_to else topic.author
-            if parent_author != comment.author:
+            if parent_author and parent_author != comment.author:
                 message = models.Message(to=parent_author, type='comment_reply', comment=comment)
                 parent_author.n_messages += 1
                 db.put([message, parent_author])
@@ -395,6 +395,9 @@ class SignUp(BaseHandler):
         
         if email and not models.User.email_valid(email):
             return self.reload(message='check_email', copyargs=True)
+            
+        if username and not username.isalnum():
+            return self.reload(message='check_username', copyargs=True)
             
         user = models.User.create(
             site=self.current_site,

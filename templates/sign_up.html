@@ -26,6 +26,8 @@
     {% set message = handler.get_argument('message', None) %}
     {% if message == 'check_password' %}
         <div id="message" class="error">Passwords do not match. Try again.</div>
+    {% elif message == 'check_username' %}
+        <div id="message" class="error">Usernames must be alphanumeric, no spaces either!</div>
     {% elif message == 'check_email' %}
         <div id="message" class="error">Please check that your email is entered correctly.</div>
     {% elif message == 'user_exists' %}
@@ -38,7 +40,7 @@
     <br>
     <form action="/sign_up" method="post">
         {{ xsrf_form_html() }}
-        <label for="username">Username</label>
+        <label for="username">Username (alphanumeric)</label>
         <input type="text" id="username" name="username" value="{{ handler.get_argument('username', '') }}">
         
         <label for="email">Email (optional)</label>
