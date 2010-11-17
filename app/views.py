@@ -252,11 +252,14 @@ class Vote(BaseHandler):
             if comment.site != self.current_site:
                 raise tornado.web.HTTPError(403)
                 
-        if self.current_user.daily_karma > 0 and comment.author != self.current_user:
+        if self.current_user.is_admin or \
+                (self.current_user.daily_karma > 0 and comment.author != self.current_user):
             way = self.get_argument('way', None)
-            if way == 'up' and self.current_user.name not in comment.up_votes:
+            if way == 'up' and self.current_user.is_admin or \
+                    self.current_user.name not in comment.up_votes:
                 comment.points += 1
-                comment.up_votes.append(self.current_user.name)
+                if self.current_user.name not in comment.up_votes:
+                    comment.up_votes.append(self.current_user.name)
                 comment.update_score()
                 comment.put()
                 self.current_user.daily_karma -= 1
@@ -264,13 +267,16 @@ class Vote(BaseHandler):
                 if comment.author:
                     comment.author.karma += 1
                     comment.author.put()
-            elif way == 'down' and self.current_user.karma >= 100 and \
-                    self.current_user.name not in comment.down_votes:
+            elif way == 'down' and self.current_user.is_admin or \
+                    (self.current_user.karma >= 100 and \
+                    self.current_user.name not in comment.down_votes):
                 comment.points -= 1
-                comment.down_votes.append(self.current_user.name)
+                if self.current_user.name not in comment.down_votes:
+                    comment.down_votes.append(self.current_user.name)
                 comment.update_score()
                 comment.put()
                 self.current_user.daily_karma -= 1
+                self.current_user.karma -= 1
                 self.current_user.put()
                 if comment.author:
                     comment.author.karma -= 1

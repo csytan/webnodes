@@ -180,9 +180,20 @@ class Votable(BaseModel):
         self.score = round(order + sign * seconds / 45000, 7)
         
     def can_vote_up(self, user):
-        if user and \
+        if (user and user.is_admin) or \
+            user and \
             user.daily_karma > 0 and \
             user.name not in self.up_votes and \
+            user != self.author:
+            return True
+        return False
+        
+    def can_vote_down(self, user):
+        if (user and user.is_admin) or \
+            user and \
+            user.karma >= 100 and \
+            user.daily_karma > 0 and \
+            user.name not in self.down_votes and \
             user != self.author:
             return True
         return False
