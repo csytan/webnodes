@@ -86,8 +86,7 @@ class User(BaseModel):
         """
         username = username.lower()
         assert username.isalnum()
-        if email:
-            email = email.strip().lower()
+        email = email.strip().lower() if email else None
         key_name = site.key().name() + ':' + username
         def txn():
             if cls.get_by_key_name(key_name):

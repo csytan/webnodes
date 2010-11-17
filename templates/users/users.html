@@ -1,0 +1,37 @@
+{% extends "../base.html" %}
+
+
+{% block title %}
+    <title>{{ escape(current_site.title) }} | New Users</title>
+{% end %}
+
+
+{% block style %}
+    <style>
+        .user { margin-top: 2em; }
+        .user .gravatar { float: left; }
+        .user .body { margin-left: 120px; }
+    </style>
+{% end %}
+
+
+{% block content %}
+    <h1>New Users</h1>
+    
+    {% for user in users %}
+        <div class="user">
+            <img src="{{ user.gravatar(100) }}" class="gravatar">
+            <div class="body">
+                <h2>
+                    <a href="/users/{{ user.name }}">{{ user.name }}</a>
+                </h2>
+                {{ user.karma }} karma
+                <br>
+                {{ user.n_topics }} <a href="/users/{{ user.name }}/topics">topics</a>
+                <br>
+                {{ user.n_comments }} <a href="/users/{{ user.name }}/comments">comments</a>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+    {% end %}
+{% end %}

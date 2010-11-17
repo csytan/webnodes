@@ -335,12 +335,17 @@ class Inbox(BaseHandler):
             messages=self.current_user.messages.order('-created').fetch(20))
 
 
+class Users(BaseHandler):
+    def get(self):
+        self.render('users/users.html', users=self.current_site.users.fetch(100))
+
+
 class UserProfile(BaseHandler):
     def get(self, username):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('users/user.html', user=user)
+        self.render('users/profile.html', user=user)
 
 
 class UserTopics(BaseHandler):
