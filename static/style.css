@@ -37,6 +37,7 @@ blockquote, pre, code {
     border-left: 4px solid #BBB;
     padding: 1em;
 }
+img { max-width: 100%; }
 
 
 input[type="text"],
