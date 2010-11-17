@@ -62,7 +62,7 @@ class Site(BaseModel):
         return db.run_in_transaction(txn)
         
     def hot_topics(self, page=0):
-        topics = self.topics.order('-score').fetch(10, offset=page*10)
+        topics = self.topics.order('-score').fetch(20, offset=page*20)
         prefetch_refprop(topics, Topic.author)
         return topics
 
