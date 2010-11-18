@@ -155,7 +155,7 @@ class Submit(BaseHandler):
             link = 'http://' + link
         
         topic = models.Topic.create(
-            key_name=slug,
+            name=slug,
             site=self.current_site,
             title=title,
             author=self.current_user,
@@ -166,7 +166,7 @@ class Submit(BaseHandler):
         
         self.current_user.n_topics = self.current_user.topics.count()
         self.current_user.put()
-        self.redirect('/' + topic.key_name)
+        self.redirect('/' + topic.name)
         
     @staticmethod
     def slugify(value):
@@ -182,8 +182,8 @@ class Submit(BaseHandler):
 
 
 class Topic(BaseHandler):
-    def get(self, key_name):
-        topic = models.Topic.get_by_key_name(key_name)
+    def get(self, name):
+        topic = models.Topic.get_topic(self.current_site, name)
         if not topic:
             raise tornado.web.HTTPError(404)
         self.render('topic.html', topic=topic, replies=topic.replies())
@@ -191,8 +191,8 @@ class Topic(BaseHandler):
     def render_comments(self, comments):
         return self.render_string('_comment.html', comments=comments)
         
-    def post(self, key_name):
-        topic = models.Topic.get_by_key_name(key_name)
+    def post(self, name):
+        topic = models.Topic.get_topic(self.current_site, name)
         if not topic: raise tornado.web.HTTPError(404)
         
         reply_to = self.get_argument('reply_to', None)
@@ -221,11 +221,12 @@ class Topic(BaseHandler):
 class TopicEdit(BaseHandler):
     @tornado.web.authenticated
     def get(self, key_name):
-        self.render('topic_edit.html', topic=models.Topic.get_by_key_name(key_name))
+        topic = models.Topic.get_topic(self.current_site, name)
+        self.render('topic_edit.html', topic=topic)
         
     @tornado.web.authenticated
     def post(self, key_name):
-        topic = models.Topic.get_by_key_name(key_name)
+        topic = models.Topic.get_topic(self.current_site, name)
         if topic.can_edit(self.current_user):
             topic.title = self.get_argument('title')
             topic.link = self.get_argument('link', '')
@@ -245,7 +246,7 @@ class CommentEdit(BaseHandler):
         if comment.can_edit(self.current_user):
             comment.text = self.get_argument('text', '')
             comment.put()
-        self.redirect('/' + topic.key_name + '#c' + id)
+        self.redirect('/' + topic.name + '#c' + id)
 
 
 class Vote(BaseHandler):
@@ -258,7 +259,7 @@ class Vote(BaseHandler):
             if comment.topic.site != self.current_site:
                 raise tornado.web.HTTPError(403)
         elif topic_id:
-            comment = models.Topic.get_by_key_name(topic_id)
+            topic = models.Topic.get_topic(self.current_site, topic_id)
             if comment.site != self.current_site:
                 raise tornado.web.HTTPError(403)
                 
@@ -395,7 +396,7 @@ class SignIn(BaseHandler):
                 site=self.current_site,
                 username=username)
             if user and user.check_password(password):
-                self.set_secure_cookie('user', user.key().name())
+                self.set_secure_cookie('user', user.key_name)
                 return self.redirect(next if next.startswith('/') else '/')
         self.reload(message='login_error', copyargs=True)
 
@@ -423,7 +424,7 @@ class SignUp(BaseHandler):
         if user:
             message = models.Message(to=user, type='welcome')
             message.put()
-            self.set_secure_cookie('user', user.key().name())
+            self.set_secure_cookie('user', user.key_name)
         else:
             return self.reload(message='user_exists', copyargs=True)
         self.redirect('/inbox')

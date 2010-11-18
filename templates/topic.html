@@ -42,7 +42,7 @@
         {% if topic.link and not topic.vimeo_id and not topic.youtube_id %}
             <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
         {% else %}
-            <a href="/{{ topic.key_name }}">{{ escape(topic.title) }}</a>
+            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
         {% end %}
     </h1>
     <div class="topic" style="border:none;">
@@ -50,10 +50,10 @@
             {% if not current_user %}
                 <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
             {% elif topic.can_vote_up(current_user) %}
-                <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.key_name }}">+</a>
+                <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
             {% end %}
             {% if topic.can_vote_down(current_user) %}
-                <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.key_name }}">-</a>
+                <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
             {% end %}
             
             <span class="points">
@@ -69,7 +69,7 @@
             {{ relative_date(topic.created) }}
             
             {% if topic.can_edit(current_user) %}
-                | <a href="/{{ topic.key_name }}/edit">edit</a>
+                | <a href="/{{ topic.name }}/edit">edit</a>
             {% end %}
         </p>
         <div class="body">

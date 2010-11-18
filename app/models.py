@@ -92,7 +92,7 @@ class User(BaseModel):
         username = username.lower()
         assert username.isalnum()
         email = email.strip().lower() if email else None
-        key_name = site.key().name() + ':' + username
+        key_name = site.key_name + ':' + username
         def txn():
             if cls.get_by_key_name(key_name):
                 return None
@@ -104,7 +104,7 @@ class User(BaseModel):
         
     @classmethod
     def get_user(cls, site, username):
-        key_name = site.key().name() + ':' + username
+        key_name = site.key_name + ':' + username
         return cls.get_by_key_name(key_name)
     
     @staticmethod
@@ -150,7 +150,7 @@ class User(BaseModel):
         
     @property
     def name(self):
-        return self.key().name().split(':')[1]
+        return self.key_name.split(':')[1]
         
     @property
     def can_downvote(self):
@@ -221,15 +221,21 @@ class Topic(Votable):
     n_comments = db.IntegerProperty(default=0)
     
     @classmethod
-    def create(cls, key_name, **kwargs):
+    def create(cls, site, name, **kwargs):
+        key_name = site.key_name + ':' + name[:100]
         def txn():
             if cls.get_by_key_name(key_name):
                 return None
-            topic = cls(key_name=key_name, **kwargs)
+            topic = cls(key_name=key_name, site=site, **kwargs)
             topic.update_score()
             topic.put()
             return topic
         return db.run_in_transaction(txn)
+    
+    @classmethod
+    def get_topic(cls, site, name):
+        key_name = site.key_name + ':' + name
+        return cls.get_by_key_name(key_name)
     
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
@@ -257,9 +263,12 @@ class Topic(Votable):
         edit.put()
     
     @property
+    def name(self):
+        return self.key_name.split(':')[1]
+    
+    @property
     def link_domain(self):
-        link = self.link or ''
-        netloc = urlparse.urlparse(link).netloc
+        netloc = urlparse.urlparse(self.link).netloc
         return netloc.replace('www.', '', 1) if netloc.startswith('www.') else netloc
         
     @property

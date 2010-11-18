@@ -8,7 +8,7 @@
 
 {% block style %}
     <style>
-        #title, #link { width: 400px; }
+        #title, #link { width: 550px; }
         textarea {
             height: 200px;
             width: 550px;
@@ -17,6 +17,7 @@
             display: inline; 
             width: 300px;
         }
+        .slug { font-size: 0.9em; color: grey; }
     </style>
 {% end %}
 
@@ -24,7 +25,7 @@
 {% block script %}
     <script>
         function slugify(val) {
-            return val.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
+            return val.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase().substr(0, 60);
         }
         
         jQuery(function($){
@@ -52,9 +53,10 @@
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
         <input id="title" type="text" name="title" value="{{ handler.get_argument('title', '') }}" tabindex="1">
-        <p>
-            http://{{ current_site.domain }}/<input id="slug" type="text" name="slug" value="{{ handler.get_argument('slug', '') }}" tabindex="2">
-        </p>
+        <span class="slug">
+            {{ current_site.domain or current_site.key_name + '.webnodes.org' }}/<input id="slug" type="text" name="slug" value="{{ handler.get_argument('slug', '') }}" tabindex="2">
+        </span>
+        <br>
         <label for="link">Link</label>
         <input id="link" type="text" name="link" value="{{ handler.get_argument('link', '') }}" tabindex="3">
         <label for="text">
