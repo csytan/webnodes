@@ -43,6 +43,7 @@ img { max-width: 100%; }
 input[type="text"],
 input[type="password"],
 textarea {
+    color: inherit;
     padding: 0.2em;
     display: block;
     margin-bottom: 0.5em;

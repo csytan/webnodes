@@ -246,7 +246,7 @@ class CommentEdit(BaseHandler):
         if comment.can_edit(self.current_user):
             comment.text = self.get_argument('text', '')
             comment.put()
-        self.redirect('/' + topic.name + '#c' + id)
+        self.redirect('/' + comment.topic.name + '#c' + id)
 
 
 class Vote(BaseHandler):
