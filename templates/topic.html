@@ -39,7 +39,7 @@
 
 {% block content %}
     <h1>
-        {% if topic.link %}
+        {% if topic.link and not topic.vimeo_id and not topic.youtube_id %}
             <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
         {% else %}
             <a href="/{{ topic.key_name }}">{{ escape(topic.title) }}</a>
@@ -73,10 +73,10 @@
             {% end %}
         </p>
         <div class="body">
-            {% if vimeo_id %}
-                <iframe src="http://player.vimeo.com/video/{{ vimeo_id }}" width="700" height="394" frameborder="0"></iframe>
-            {% elif youtube_id %}
-                <iframe src="http://www.youtube.com/embed/{{ youtube_id }}?hd=1" width="700" height="394" frameborder="0"></iframe>
+            {% if topic.vimeo_id %}
+                <iframe src="http://player.vimeo.com/video/{{ topic.vimeo_id }}" width="700" height="394" frameborder="0"></iframe>
+            {% elif topic.youtube_id %}
+                <iframe src="http://www.youtube.com/embed/{{ topic.youtube_id }}?hd=1" width="700" height="394" frameborder="0"></iframe>
             {% end %}
             {% if topic.text %}
                 {{ markdown(topic.text) }}

@@ -10,8 +10,12 @@
     <style>
         #title, #link { width: 400px; }
         textarea {
-            height: 150px;
-            width: 500px;
+            height: 200px;
+            width: 550px;
+        }
+        #slug {
+            display: inline; 
+            width: 300px;
         }
     </style>
 {% end %}
@@ -19,8 +23,20 @@
 
 {% block script %}
     <script>
+        function slugify(val) {
+            return val.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
+        }
+        
         jQuery(function($){
-            $('#title').focus();
+            $('#title').focus()
+                .keyup(function(){
+                    $('#slug').val(slugify(this.value));
+                });
+            $('#slug').keyup(function(){
+                var slug = slugify(this.value);
+                if (this.value != slug)
+                    this.value = slug;
+            });
         });
     </script>
 {% end %}
@@ -35,16 +51,16 @@
     <form action="" method="post">
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
-        <input id="title" type="text" name="title" tabindex="1">
+        <input id="title" type="text" name="title" value="{{ handler.get_argument('title', '') }}" tabindex="1">
         <p>
-            http://{{ current_site.domain }}/<input style="display:inline" type="text" name="url_title">
+            http://{{ current_site.domain }}/<input id="slug" type="text" name="slug" value="{{ handler.get_argument('slug', '') }}" tabindex="2">
         </p>
         <label for="link">Link</label>
-        <input id="link" type="text" name="link" tabindex="2">
+        <input id="link" type="text" name="link" value="{{ handler.get_argument('link', '') }}" tabindex="3">
         <label for="text">
             Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
         </label>
-        <textarea name="text" tabindex="3"></textarea>
-        <input type="submit" value="Do it!" tabindex="4">
+        <textarea name="text" tabindex="4">{{ handler.get_argument('text', '') }}</textarea>
+        <input type="submit" value="Do it!" tabindex="5">
     </form>
 {% end %}

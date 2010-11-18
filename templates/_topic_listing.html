@@ -1,6 +1,6 @@
 <div class="topic_listing">
     <h2>
-        {% if topic.link %}
+        {% if topic.link and not topic.vimeo_id and not topic.youtube_id %}
             <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
             <span class="domain">({{ topic.link_domain }})</span>
         {% else %}

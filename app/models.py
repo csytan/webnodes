@@ -216,52 +216,20 @@ class Topic(Votable):
     author = db.ReferenceProperty(User, collection_name='topics')
     editors = db.StringListProperty()
     title = db.StringProperty(indexed=False)
-    link = db.StringProperty()
-    text = db.TextProperty()
+    link = db.StringProperty(default='')
+    text = db.TextProperty(default='')
     n_comments = db.IntegerProperty(default=0)
     
-    @staticmethod
-    def slugify(value):
-        """
-        Normalizes string, converts to lowercase, removes non-alpha characters,
-        and converts spaces to hyphens.
-        http://code.djangoproject.com/svn/django/trunk/django/template/defaultfilters.py
-        """
-        import unicodedata
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-        value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-        return re.sub('[-\s]+', '-', value)
-
     @classmethod
-    def convert_to_wiki(cls):
-        puts = []
-        topics = cls.all().fetch(1000)
-        for topic in topics:
-            if topic.key().name():
-                continue
-            t = cls(
-                key_name=cls.slugify(topic.title),
-                site=topic.site,
-                created=topic.created,
-                author=topic.author,
-                score=topic.score,
-                link=topic.link,
-                text=topic.text,
-                title=topic.title,
-                points=topic.points,
-                n_comments=topic.n_comments)
-            puts.append(t)
-            comments = topic.comments.fetch(1000)
-            for comment in comments:
-                comment.topic = t
-            puts += comments
-            db.put(puts)
-            topic.delete()
-        
-    @property
-    def link_domain(self):
-        netloc = urlparse.urlparse(self.link).netloc
-        return netloc.replace('www.', '', 1) if netloc.startswith('www.') else netloc
+    def create(cls, key_name, **kwargs):
+        def txn():
+            if cls.get_by_key_name(key_name):
+                return None
+            topic = cls(key_name=key_name, **kwargs)
+            topic.update_score()
+            topic.put()
+            return topic
+        return db.run_in_transaction(txn)
     
     def replies(self):
         """Fetches the topic's comments & sets each comment's 'replies' attribute"""
@@ -287,6 +255,22 @@ class Topic(Votable):
             link=self.link,
             text=self.text)
         edit.put()
+    
+    @property
+    def link_domain(self):
+        link = self.link or ''
+        netloc = urlparse.urlparse(link).netloc
+        return netloc.replace('www.', '', 1) if netloc.startswith('www.') else netloc
+        
+    @property
+    def vimeo_id(self):
+        vimeo_re = re.findall('http://(?:www\.)?vimeo.com/(\d+)', self.link or ' ')
+        return vimeo_re[0] if vimeo_re else None
+        
+    @property
+    def youtube_id(self):
+        youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', self.link or ' ')
+        return youtube_re[0] if youtube_re else None
 
 
 class TopicEdit(BaseModel):

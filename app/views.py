@@ -106,11 +106,6 @@ class BaseHandler(tornado.web.RequestHandler):
             return str(td.seconds) + ' seconds ago'
 
 
-class NotFound404(BaseHandler):
-    def get(self):
-        raise tornado.web.HTTPError(404)
-
-
 class Index(BaseHandler):
     def get(self):
         page = self.get_argument('page', '')
@@ -145,11 +140,13 @@ class Submit(BaseHandler):
         
     @tornado.web.authenticated
     def post(self):
-        slug = self.get_argument('title_url', None)
+        slug = self.get_argument('slug', None)
         title = self.get_argument('title', None)
         link = self.get_argument('link', None)
         text = self.get_argument('text', '')
         
+        if not slug or slug != self.slugify(slug):
+            return self.reload(message='check_slug', copyargs=True)
         if not title:
             return self.reload(message='no_title', copyargs=True)
         if not link and not text:
@@ -157,34 +154,40 @@ class Submit(BaseHandler):
         if link and not link.startswith('http'):
             link = 'http://' + link
         
-        topic = models.Topic(
+        topic = models.Topic.create(
             key_name=slug,
             site=self.current_site,
             title=title,
             author=self.current_user,
             link=link,
             text=text)
-        topic.update_score()
-        topic.put()
+        if not topic:
+            return self.reload(message='existing_topic', copyargs=True)
         
         self.current_user.n_topics = self.current_user.topics.count()
         self.current_user.put()
         self.redirect('/' + topic.key_name)
         
-
+    @staticmethod
+    def slugify(value):
+        """
+        Normalizes string, converts to lowercase, removes non-alpha characters,
+        and converts spaces to hyphens.
+        http://code.djangoproject.com/svn/django/trunk/django/template/defaultfilters.py
+        """
+        import unicodedata
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+        value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+        return re.sub('[-\s]+', '-', value)
 
 
 class Topic(BaseHandler):
     def get(self, key_name):
         topic = models.Topic.get_by_key_name(key_name)
-        vimeo_re = re.findall('http://(?:www\.)?vimeo.com/(\d+)', topic.link or ' ')
-        vimeo_id = vimeo_re[0] if vimeo_re else None
-        youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', topic.link or ' ')
-        youtube_id = youtube_re[0] if youtube_re else None
+        if not topic:
+            raise tornado.web.HTTPError(404)
+        self.render('topic.html', topic=topic, replies=topic.replies())
         
-        self.render('topic.html', topic=topic, vimeo_id=vimeo_id,
-            youtube_id=youtube_id, replies=topic.replies())
-            
     def render_comments(self, comments):
         return self.render_string('_comment.html', comments=comments)
         
@@ -217,18 +220,18 @@ class Topic(BaseHandler):
 
 class TopicEdit(BaseHandler):
     @tornado.web.authenticated
-    def get(self, id):
-        self.render('topic_edit.html', topic=models.Topic.get_by_id(int(id)))
+    def get(self, key_name):
+        self.render('topic_edit.html', topic=models.Topic.get_by_key_name(key_name))
         
     @tornado.web.authenticated
-    def post(self, id):
-        topic = models.Topic.get_by_id(int(id))
+    def post(self, key_name):
+        topic = models.Topic.get_by_key_name(key_name)
         if topic.can_edit(self.current_user):
             topic.title = self.get_argument('title')
             topic.link = self.get_argument('link', '')
             topic.text = self.get_argument('text', '')
             topic.put()
-        self.redirect('/' + id)
+        self.redirect('/' + key_name)
 
 
 class CommentEdit(BaseHandler):
@@ -291,16 +294,11 @@ class Vote(BaseHandler):
         self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
 
 
-class Community(BaseHandler):
-    def get(self):
-        self.render('community.html')
-
-
 class CommunityEdit(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         self.render('community_edit.html',
-            upload_url=blobstore.create_upload_url('/community/edit'))
+            upload_url=blobstore.create_upload_url('/community_edit'))
         
     @tornado.web.authenticated
     def post(self):
