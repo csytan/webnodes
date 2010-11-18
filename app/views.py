@@ -116,7 +116,7 @@ class Index(BaseHandler):
         page = self.get_argument('page', '')
         page = abs(int(page)) if page.isdigit() else 0
         topics = self.current_site.hot_topics(page=page)
-        next_page = page + 1 if len(topics) == 10 else None
+        next_page = page + 1 if len(topics) == 20 else None
         self.render('index.html', topics=topics, next_page=next_page)
 
 
@@ -145,14 +145,20 @@ class Submit(BaseHandler):
         
     @tornado.web.authenticated
     def post(self):
-        title = self.get_argument('title', '')
-        link = self.get_argument('link', '')
+        slug = self.get_argument('title_url', None)
+        title = self.get_argument('title', None)
+        link = self.get_argument('link', None)
         text = self.get_argument('text', '')
         
+        if not title:
+            return self.reload(message='no_title', copyargs=True)
+        if not link and not text:
+            return self.reload(message='link_or_text', copyargs=True)
         if link and not link.startswith('http'):
             link = 'http://' + link
         
         topic = models.Topic(
+            key_name=slug,
             site=self.current_site,
             title=title,
             author=self.current_user,
@@ -163,12 +169,14 @@ class Submit(BaseHandler):
         
         self.current_user.n_topics = self.current_user.topics.count()
         self.current_user.put()
-        self.redirect('/' + str(topic.id))
+        self.redirect('/' + topic.key_name)
+        
+
 
 
 class Topic(BaseHandler):
-    def get(self, id):
-        topic = models.Topic.get_by_id(int(id))
+    def get(self, key_name):
+        topic = models.Topic.get_by_key_name(key_name)
         vimeo_re = re.findall('http://(?:www\.)?vimeo.com/(\d+)', topic.link or ' ')
         vimeo_id = vimeo_re[0] if vimeo_re else None
         youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', topic.link or ' ')
@@ -180,8 +188,8 @@ class Topic(BaseHandler):
     def render_comments(self, comments):
         return self.render_string('_comment.html', comments=comments)
         
-    def post(self, id):
-        topic = models.Topic.get_by_id(int(id))
+    def post(self, key_name):
+        topic = models.Topic.get_by_key_name(key_name)
         if not topic: raise tornado.web.HTTPError(404)
         
         reply_to = self.get_argument('reply_to', None)
@@ -234,7 +242,7 @@ class CommentEdit(BaseHandler):
         if comment.can_edit(self.current_user):
             comment.text = self.get_argument('text', '')
             comment.put()
-        self.redirect('/' + str(comment.topic.id) + '#c' + id)
+        self.redirect('/' + topic.key_name + '#c' + id)
 
 
 class Vote(BaseHandler):
@@ -247,7 +255,7 @@ class Vote(BaseHandler):
             if comment.topic.site != self.current_site:
                 raise tornado.web.HTTPError(403)
         elif topic_id:
-            comment = models.Topic.get_by_id(int(topic_id))
+            comment = models.Topic.get_by_key_name(topic_id)
             if comment.site != self.current_site:
                 raise tornado.web.HTTPError(403)
                 

@@ -32,12 +32,17 @@ class BaseModel(db.Model):
         if hasattr(other, 'key'):
             return self.key() == other.key()
         return False
+        
     def __ne__(self, other):
         return not self == other
         
     @property
     def id(self):
         return self.key().id()
+        
+    @property
+    def key_name(self):
+        return self.key().name()
 
 
 class Site(BaseModel):
@@ -209,11 +214,50 @@ class Votable(BaseModel):
 class Topic(Votable):
     site = db.ReferenceProperty(Site, collection_name='topics')
     author = db.ReferenceProperty(User, collection_name='topics')
+    editors = db.StringListProperty()
     title = db.StringProperty(indexed=False)
     link = db.StringProperty()
     text = db.TextProperty()
     n_comments = db.IntegerProperty(default=0)
     
+    @staticmethod
+    def slugify(value):
+        """
+        Normalizes string, converts to lowercase, removes non-alpha characters,
+        and converts spaces to hyphens.
+        http://code.djangoproject.com/svn/django/trunk/django/template/defaultfilters.py
+        """
+        import unicodedata
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+        value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+        return re.sub('[-\s]+', '-', value)
+
+    @classmethod
+    def convert_to_wiki(cls):
+        puts = []
+        topics = cls.all().fetch(1000)
+        for topic in topics:
+            if topic.key().name():
+                continue
+            t = cls(
+                key_name=cls.slugify(topic.title),
+                site=topic.site,
+                created=topic.created,
+                author=topic.author,
+                score=topic.score,
+                link=topic.link,
+                text=topic.text,
+                title=topic.title,
+                points=topic.points,
+                n_comments=topic.n_comments)
+            puts.append(t)
+            comments = topic.comments.fetch(1000)
+            for comment in comments:
+                comment.topic = t
+            puts += comments
+            db.put(puts)
+            topic.delete()
+        
     @property
     def link_domain(self):
         netloc = urlparse.urlparse(self.link).netloc
@@ -234,6 +278,23 @@ class Topic(Votable):
         replies = [c for c in comments if not c.reply_to]
         prefetch_refprop(replies, Comment.author)
         return replies
+        
+    def save_edit(self):
+        edit = TopicEdit(
+            topic=self,
+            author=self.author,
+            title=self.title,
+            link=self.link,
+            text=self.text)
+        edit.put()
+
+
+class TopicEdit(BaseModel):
+    topic = db.ReferenceProperty(Topic, collection_name='edits')
+    author = db.ReferenceProperty(User)
+    title = db.StringProperty(indexed=False)
+    link = db.StringProperty()
+    text = db.TextProperty()
 
 
 class Comment(Votable):

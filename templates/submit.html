@@ -36,6 +36,9 @@
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
         <input id="title" type="text" name="title" tabindex="1">
+        <p>
+            http://{{ current_site.domain }}/<input style="display:inline" type="text" name="url_title">
+        </p>
         <label for="link">Link</label>
         <input id="link" type="text" name="link" tabindex="2">
         <label for="text">

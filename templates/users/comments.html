@@ -29,7 +29,7 @@
                     
                     {{ relative_date(comment.created) }}
                     |
-                    <a href="/{{ comment.topic.id }}#c{{ comment.id }}">link</a>
+                    <a href="/{{ comment.topic.key_name }}#c{{ comment.id }}">link</a>
                 </p>
                 {{ handler.markdown(comment.text) }}
             </div>
