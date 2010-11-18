@@ -44,6 +44,17 @@
 
 
 {% block content %}
+    {% set message = handler.get_argument('message', None) %}
+    {% if message == 'no_title' %}
+        <div id="message" class="error">Missing a title</div>
+    {% elif message == 'check_slug' %}
+        <div id="message" class="error">Please check that the topic URL is correct.</div>
+    {% elif message == 'link_or_text' %}
+        <div id="message" class="error">Please enter a link or some text for your topic.</div>
+    {% elif message == 'topic_exists' %}
+        <div id="message" class="error">A topic already exists with that URL. Please choose a different name.</div>
+    {% end %}
+    
     <h1>Submit a Topic</h1>
     <br>
     <p>

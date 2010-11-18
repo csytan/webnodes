@@ -145,10 +145,10 @@ class Submit(BaseHandler):
         link = self.get_argument('link', None)
         text = self.get_argument('text', '')
         
-        if not slug or slug != self.slugify(slug):
-            return self.reload(message='check_slug', copyargs=True)
         if not title:
             return self.reload(message='no_title', copyargs=True)
+        if not slug or slug != self.slugify(slug):
+            return self.reload(message='check_slug', copyargs=True)
         if not link and not text:
             return self.reload(message='link_or_text', copyargs=True)
         if link and not link.startswith('http'):
@@ -162,7 +162,7 @@ class Submit(BaseHandler):
             link=link,
             text=text)
         if not topic:
-            return self.reload(message='existing_topic', copyargs=True)
+            return self.reload(message='topic_exists', copyargs=True)
         
         self.current_user.n_topics = self.current_user.topics.count()
         self.current_user.put()
