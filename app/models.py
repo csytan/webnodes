@@ -202,13 +202,6 @@ class Votable(BaseModel):
             user != self.author:
             return True
         return False
-        
-    def can_edit(self, user):
-        td = datetime.datetime.now() - self.created
-        if user == self.author and \
-            not td.days and td.seconds < 60 * 10:
-            return True
-        return False
 
 
 class Topic(Votable):
@@ -253,6 +246,11 @@ class Topic(Votable):
         prefetch_refprop(replies, Comment.author)
         return replies
         
+    def can_edit(self, user):
+        if user == self.author or user.is_admin:
+            return True
+        return False
+        
     def save_edit(self):
         edit = TopicEdit(
             topic=self,
@@ -295,4 +293,11 @@ class Comment(Votable):
     topic = db.ReferenceProperty(Topic, collection_name='comments')
     text = db.TextProperty()
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
-
+    
+    def can_edit(self, user):
+        td = datetime.datetime.now() - self.created
+        if user == self.author and \
+            not td.days and td.seconds < 60 * 10:
+            return True
+        return False
+    

@@ -142,7 +142,7 @@ class Submit(BaseHandler):
     def post(self):
         slug = self.get_argument('slug', None)
         title = self.get_argument('title', None)
-        link = self.get_argument('link', None)
+        link = self.get_argument('link', '')
         text = self.get_argument('text', '')
         
         if not title:
@@ -232,7 +232,7 @@ class TopicEdit(BaseHandler):
             topic.link = self.get_argument('link', '')
             topic.text = self.get_argument('text', '')
             topic.put()
-        self.redirect('/' + key_name)
+        self.redirect('/' + name)
 
 
 class CommentEdit(BaseHandler):
