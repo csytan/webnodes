@@ -220,12 +220,12 @@ class Topic(BaseHandler):
 
 class TopicEdit(BaseHandler):
     @tornado.web.authenticated
-    def get(self, key_name):
+    def get(self, name):
         topic = models.Topic.get_topic(self.current_site, name)
         self.render('topic_edit.html', topic=topic)
         
     @tornado.web.authenticated
-    def post(self, key_name):
+    def post(self, name):
         topic = models.Topic.get_topic(self.current_site, name)
         if topic.can_edit(self.current_user):
             topic.title = self.get_argument('title')

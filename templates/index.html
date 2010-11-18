@@ -1,7 +1,28 @@
 {% extends "base.html" %}
 
 
+{% block style %}
+    <style>
+        #about {
+            color: #333;
+            padding: 1em;
+            font-size: 1.1em;
+            background-color: #EEE;
+            margin-bottom: 2em;
+            border-radius: 7px;
+        }
+        #about p {
+            margin-bottom: 0;
+        }
+    </style>
+{% end %}
+
+
 {% block content %}
+    <div id="about">
+        {{ markdown(current_site.about) }}
+    </div>
+    
     {% for topic in topics %}
         {% include "_topic_listing.html" %}
     {% end %}

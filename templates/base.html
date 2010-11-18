@@ -24,8 +24,8 @@
 <body>
     <img id="background" src="/static/bg.jpg">
     <div id="body">
-        <div id="main">
-            <div id="header">
+        <div id="header">
+            <div class="container">
                 <div id="logo">
                     {% if current_site %}
                         <a href="/">{{ escape(current_site.title) }}</a>
@@ -51,6 +51,10 @@
                     {% end %}
                 </div>
             </div>
+            <div style="clear:both"></div>
+        </div>
+        
+        <div id="main">
             <div id="content">
                 {% block content %}{% end %}
             </div>
