@@ -85,7 +85,7 @@ class BaseHandler(tornado.web.RequestHandler):
         value = re.sub('^http://(?:www\.)?vimeo.com/(\d+)', r'VIMEO:\1', value, re.MULTILINE)
         value = re.sub('^http://www.youtube.com/watch\?v=([^&]+)\S?', r'YOUTUBE:\1', value, re.MULTILINE)
         # automatic hyperlinks
-        #value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1\[\2\]', value)
+        value = re.sub(r'(^|\s)(http:\/\/\S+)', r'[\2](\2)', value, re.MULTILINE)
         html = markdown2.markdown(value, safe_mode='escape')
         html = re.sub(r'VIMEO:(\d+)', 
             r'<iframe src="http://player.vimeo.com/video/\1" class="vimeo" frameborder="0"></iframe>', html)
