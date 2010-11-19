@@ -27,11 +27,10 @@
 {% block script %}
     <script>
         function slugify(val) {
-            return val.replace(/\s+/g, '-')
-                .replace(/[^a-zA-Z0-9\-]/g, '')
+            return $.trim(val.replace(/[^\w\s-]/g, ''))
+                .replace(/[-\s]+/g, '-')
                 .toLowerCase()
-                .substr(0, 60)
-                .replace(/-+/g, '-');
+                .substr(0, 60);
         }
         
         jQuery(function($){
