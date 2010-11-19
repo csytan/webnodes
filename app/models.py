@@ -279,7 +279,7 @@ class Comment(Votable):
     def can_edit(self, user):
         td = datetime.datetime.now() - self.created
         if user == self.author and \
-            not td.days and td.seconds < 60 * 10:
+            not td.days and td.seconds < 60 * 20:
             return True
         return False
     
