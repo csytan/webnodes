@@ -90,7 +90,7 @@ class BaseHandler(tornado.web.RequestHandler):
         html = markdown2.markdown(value, safe_mode='escape')
         html = re.sub(r'VIMEO:(\d+)', 
             r'<iframe src="http://player.vimeo.com/video/\1" class="vimeo" frameborder="0"></iframe>', html)
-        html = re.sub(r'YOUTUBE:(\w+)', 
+        html = re.sub(r'YOUTUBE:([\w|-]+)', 
             r'<iframe src="http://www.youtube.com/embed/\1?hd=1" class="youtube" frameborder="0"></iframe>', html)
         html = html.replace('<a href=', '<a rel="nofollow" href=')
         html = html.replace('LINEBREAK', '<br>')
@@ -234,7 +234,6 @@ class TopicEdit(BaseHandler):
         topic = models.Topic.get_topic(self.current_site, name)
         if topic.can_edit(self.current_user):
             topic.title = self.get_argument('title')
-            topic.link = self.get_argument('link', '')
             topic.text = self.get_argument('text', '')
             topic.put()
         self.redirect('/' + name)

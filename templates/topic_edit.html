@@ -33,8 +33,6 @@
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
         <input id="title" type="text" name="title" tabindex="1" value="{{ escape(topic.title) }}">
-        <label for="link">Link</label>
-        <input id="link" type="text" name="link" tabindex="2" value="{{ escape(topic.link) }}">
         <label for="text">
             Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
         </label>

@@ -209,7 +209,6 @@ class Topic(Votable):
     author = db.ReferenceProperty(User, collection_name='topics')
     editors = db.StringListProperty()
     title = db.StringProperty(indexed=False)
-    link = db.StringProperty(default='')
     text = db.TextProperty(default='')
     n_comments = db.IntegerProperty(default=0)
     
@@ -256,7 +255,6 @@ class Topic(Votable):
             topic=self,
             author=self.author,
             title=self.title,
-            link=self.link,
             text=self.text)
         edit.put()
     
@@ -269,7 +267,6 @@ class TopicEdit(BaseModel):
     topic = db.ReferenceProperty(Topic, collection_name='edits')
     author = db.ReferenceProperty(User)
     title = db.StringProperty(indexed=False)
-    link = db.StringProperty()
     text = db.TextProperty()
 
 
