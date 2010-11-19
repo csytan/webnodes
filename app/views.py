@@ -231,12 +231,24 @@ class TopicEdit(BaseHandler):
     def post(self, name):
         topic = models.Topic.get_topic(self.current_site, name)
         if topic.can_edit(self.current_user):
-            topic.title = self.get_argument('title')
+            if self.current_user != topic.author and \
+                    self.current_user.name not in topic.editors:
+                topic.editors.append(self.current_user.name)
+            topic.save_edit()
+            topic.title = self.get_argument('title', '')
             topic.text = self.get_argument('text', '')
+            topic.reason = self.get_argument('reason', '')
+            topic.version += 1
             topic.put()
             self.redirect('/' + name)
         else:
             self.reload(message='need_more_karma')
+            
+
+class TopicVersions(BaseHandler):
+    def get(self, name):
+        topic = models.Topic.get_topic(self.current_site, name)
+        self.render('topic_versions.html', topic=topic, edits=topic.edits.order('-created'))
 
 
 class CommentEdit(BaseHandler):

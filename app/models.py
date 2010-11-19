@@ -211,6 +211,8 @@ class Topic(Votable):
     title = db.StringProperty(indexed=False)
     text = db.TextProperty(default='')
     n_comments = db.IntegerProperty(default=0)
+    edit_reason = db.StringProperty(indexed=False, default='')
+    version = db.IntegerProperty(default=1)
     
     @classmethod
     def create(cls, site, name, **kwargs):
@@ -246,6 +248,7 @@ class Topic(Votable):
         return replies
         
     def can_edit(self, user):
+        return True
         if user == self.author or user.karma >= 20 or user.is_admin:
             return True
         return False
@@ -253,9 +256,11 @@ class Topic(Votable):
     def save_edit(self):
         edit = TopicEdit(
             topic=self,
+            created=self.updated,
             author=self.author,
             title=self.title,
-            text=self.text)
+            text=self.text,
+            reason=self.edit_reason)
         edit.put()
     
     @property
@@ -266,8 +271,9 @@ class Topic(Votable):
 class TopicEdit(BaseModel):
     topic = db.ReferenceProperty(Topic, collection_name='edits')
     author = db.ReferenceProperty(User)
-    title = db.StringProperty(indexed=False)
-    text = db.TextProperty()
+    title = db.StringProperty(indexed=False, default='')
+    text = db.TextProperty(default='')
+    reason = db.StringProperty(indexed=False, default='')
 
 
 class Comment(Votable):

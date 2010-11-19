@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    <title>{{ escape(current_site.title) }} | {{ escape(topic.title) }} - Versions</title>
+{% end %}
+
+
+{% block style %}
+    <style>
+    </style>
+{% end %}
+
+
+{% block content %}
+    {% for edit in edits %}
+        <h2>{{ escape(edit.title) }}</h2>
+        <blockquote>{{ escape(edit.text) }}</blockquote>
+        {{ relative_date(edit.created) }}
+    {% end %}
+{% end %}

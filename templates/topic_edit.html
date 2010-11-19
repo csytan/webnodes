@@ -8,7 +8,7 @@
 
 {% block style %}
     <style>
-        #title, #link { width: 550px; }
+        #title, #reason { width: 550px; }
         textarea {
             height: 300px;
             width: 650px;
@@ -20,7 +20,7 @@
 {% block script %}
     <script>
         jQuery(function($){
-            $('#title').focus();
+            $('#reason').focus();
         });
     </script>
 {% end %}
@@ -36,6 +36,8 @@
     <br>
     <form action="" method="post">
         {{ xsrf_form_html() }}
+        <label for="reason">Reason for Edit</label>
+        <input id="reason" type="text" name="reason">
         <label for="title">Title</label>
         <input id="title" type="text" name="title" tabindex="1" value="{{ escape(topic.title) }}">
         <label for="text">

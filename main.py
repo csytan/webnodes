@@ -29,6 +29,7 @@ application = tornado.wsgi.WSGIApplication([
     (r'/users/(.+)', views.UserProfile),
     (r'/(\d+)/comment_edit', views.CommentEdit),
     (r'/(.+)/edit', views.TopicEdit),
+    (r'/(.+)/versions', views.TopicVersions),
     (r'/community_edit', views.CommunityEdit),
     (r'/(.+)', views.Topic)
 ], **settings)
