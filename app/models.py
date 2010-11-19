@@ -211,7 +211,6 @@ class Topic(Votable):
     title = db.StringProperty(indexed=False)
     text = db.TextProperty(default='')
     n_comments = db.IntegerProperty(default=0)
-    edit_reason = db.StringProperty(indexed=False, default='')
     version = db.IntegerProperty(default=1)
     
     @classmethod
@@ -253,15 +252,30 @@ class Topic(Votable):
             return True
         return False
         
-    def save_edit(self):
+    def edit(self, title, author, text, reason):
+        if self.version == 1:
+            edit = TopicEdit(
+                topic=self,
+                created=self.created,
+                author=self.author,
+                title=self.title,
+                text=self.text)
+            edit.put()
+        
+        self.title = title
+        self.text = text
+        self.version += 1
+        if author != self.author and author.name not in self.editors:
+            self.editors.append(author.name)
+        
         edit = TopicEdit(
             topic=self,
-            created=self.updated,
-            author=self.author,
-            title=self.title,
-            text=self.text,
-            reason=self.edit_reason)
+            title=title,
+            author=author,
+            text=text,
+            reason=reason)
         edit.put()
+        self.put()
     
     @property
     def name(self):

@@ -231,15 +231,11 @@ class TopicEdit(BaseHandler):
     def post(self, name):
         topic = models.Topic.get_topic(self.current_site, name)
         if topic.can_edit(self.current_user):
-            if self.current_user != topic.author and \
-                    self.current_user.name not in topic.editors:
-                topic.editors.append(self.current_user.name)
-            topic.save_edit()
-            topic.title = self.get_argument('title', '')
-            topic.text = self.get_argument('text', '')
-            topic.reason = self.get_argument('reason', '')
-            topic.version += 1
-            topic.put()
+            topic.edit(
+                title= self.get_argument('title', ''),
+                author=self.current_user,
+                text=self.get_argument('text', ''),
+                reason=self.get_argument('reason', ''))
             self.redirect('/' + name)
         else:
             self.reload(message='need_more_karma')

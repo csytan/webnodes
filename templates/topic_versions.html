@@ -8,14 +8,26 @@
 
 {% block style %}
     <style>
+        textarea {
+            height: 300px;
+            width: 100%;
+        }
     </style>
 {% end %}
 
 
 {% block content %}
     {% for edit in edits %}
-        <h2>{{ escape(edit.title) }}</h2>
-        <blockquote>{{ escape(edit.text) }}</blockquote>
+        Edited by <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
         {{ relative_date(edit.created) }}
+        <br>
+        <label for="reason">Reason for Edit</label>
+        <input id="reason" type="text" name="reason" value="{{ escape(edit.reason) }}">
+        <label for="title">Title</label>
+        <input id="title" type="text" name="title" tabindex="1" value="{{ escape(topic.title) }}">
+        <label for="text">
+            Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
+        </label>
+        <textarea name="text" tabindex="3">{{ escape(edit.text) }}</textarea>
     {% end %}
 {% end %}

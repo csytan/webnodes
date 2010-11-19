@@ -57,10 +57,8 @@
             </span>
             
             {% if topic.author %}
-                by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}
-                </a>{% for editor in topic.editors %}
-                    , <a href="/users/{{ editor }}">{{ editor }}</a>
-                {% end %}
+                by 
+                <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
             {% else %}
                 by anonymous
             {% end %}
