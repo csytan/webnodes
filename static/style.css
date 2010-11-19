@@ -121,20 +121,18 @@ textarea {
 
 
 #message {
-    color: #FFF;
-    text-align: center;
+    color: #333;
     padding: 0.5em;
+    background-color: #EEE;
+    border-radius: 7px;
+    border: 1px solid #DDD;
+    text-align: center;
     width: 500px;
     margin: auto;
     margin-bottom: 2em;
 }
-#message a {
-    color: #FFF;
-    text-decoration: underline;
-}
-#message.info { background-color: #555; }
-#message.success { background-color: #77DB96; }
-#message.error { background-color: #FF627D; }
+#message.success { background-color: #c6eac5; border: 1px solid #a5c4a4;}
+#message.error { background-color: #F8ECEF; border: 1px solid #e0bac7;}
 
 
 .topic_listing { margin-bottom: 1.5em; }
