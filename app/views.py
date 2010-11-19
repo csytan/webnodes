@@ -23,8 +23,16 @@ DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         user_key = self.get_secure_cookie('user')
-        if user_key:
-            return models.User.get_by_key_name(user_key)
+        if not user_key: return
+        user = models.User.get_by_key_name(user_key)
+        if user:
+            one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+            if user.daily_karma < 20 and \
+                (not user.karma_updated or user.karma_updated < one_day_ago):
+                user.daily_karma = 20
+                user.karma_updated = datetime.datetime.now()
+                user.put()
+            return user
         
     @property
     def current_site(self):
@@ -473,3 +481,6 @@ class PasswordReset(BaseHandler):
                     template='email/password_reset.txt')
                 message = 'emailed'
         self.reload(message=message)
+
+
+

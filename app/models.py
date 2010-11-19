@@ -79,9 +79,10 @@ class User(BaseModel):
     url_login_token = db.StringProperty()
     karma = db.IntegerProperty(default=1)
     daily_karma = db.IntegerProperty(default=10)
+    karma_updated = db.DateTimeProperty(indexed=False)
     n_topics = db.IntegerProperty(default=0)
     n_comments = db.IntegerProperty(default=0)
-    n_messages = db.IntegerProperty(default=0)
+    n_messages = db.IntegerProperty(default=0, indexed=False)
     about = db.TextProperty(default='')
     is_admin = db.BooleanProperty(default=False)
     
