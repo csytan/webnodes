@@ -161,12 +161,6 @@ class User(BaseModel):
         return self.is_admin or self.karma >= 200
 
 
-class Message(BaseModel):
-    to = db.ReferenceProperty(User, collection_name='messages')
-    type = db.StringProperty(choices=['welcome', 'comment_reply'])
-    comment = db.ReferenceProperty()
-
-
 class Votable(BaseModel):
     points = db.IntegerProperty(default=1)
     score = db.FloatProperty()
@@ -276,6 +270,7 @@ class Topic(Votable):
             reason=reason)
         edit.put()
         self.put()
+        return edit
     
     @property
     def name(self):
@@ -302,4 +297,13 @@ class Comment(Votable):
             not td.days and td.seconds < 60 * 20:
             return True
         return False
-    
+
+
+class Message(BaseModel):
+    to = db.ReferenceProperty(User, collection_name='messages')
+    type = db.StringProperty(choices=['welcome', 'comment_reply', 'topic_edit'])
+    comment = db.ReferenceProperty()
+    topic_edit = db.ReferenceProperty(collection_name='message_set2')
+
+
+
