@@ -65,7 +65,7 @@
     <p>
         First time posting? Read the <a href="/community">Community Guidelines</a>.
     </p>
-    <form action="" method="post">
+    <form action="/submit" method="post">
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
         <input id="title" type="text" name="title" value="{{ handler.get_argument('title', '') }}" tabindex="1">
