@@ -246,7 +246,7 @@ class Topic(Votable):
         return replies
         
     def can_edit(self, user):
-        if user == self.author or user.is_admin:
+        if user == self.author or user.karma >= 20 or user.is_admin:
             return True
         return False
         

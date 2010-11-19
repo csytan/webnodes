@@ -27,6 +27,11 @@
 
 
 {% block content %}
+    {% set message = handler.get_argument('message', None) %}
+    {% if message == 'need_more_karma' %}
+        <div id="message" class="error">You need at least 20 karma to edit topics. Don't worry buckeroo, you'll get there!</div>
+    {% end %}
+    
     <h1>Edit Topic</h1>
     <br>
     <form action="" method="post">

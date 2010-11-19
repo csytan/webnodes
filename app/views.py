@@ -234,7 +234,9 @@ class TopicEdit(BaseHandler):
             topic.title = self.get_argument('title')
             topic.text = self.get_argument('text', '')
             topic.put()
-        self.redirect('/' + name)
+            self.redirect('/' + name)
+        else:
+            self.reload(message='need_more_karma')
 
 
 class CommentEdit(BaseHandler):
