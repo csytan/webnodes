@@ -147,13 +147,14 @@ class Submit(BaseHandler):
         
     @tornado.web.authenticated
     def post(self):
-        slug = self.get_argument('slug', None)
-        title = self.get_argument('title', None)
+        title = self.get_argument('title', '')
+        slug = self.get_argument('slug', '')
+        slug = self.slugify(slug)
         text = self.get_argument('text', '')
         
         if not title:
             return self.reload(message='no_title', copyargs=True)
-        if not slug or slug != self.slugify(slug):
+        if not slug:
             return self.reload(message='check_slug', copyargs=True)
         if not text:
             return self.reload(message='no_text', copyargs=True)
