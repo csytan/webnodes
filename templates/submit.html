@@ -27,7 +27,11 @@
 {% block script %}
     <script>
         function slugify(val) {
-            return val.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase().substr(0, 60);
+            return val.replace(/\s+/g, '-')
+                .replace(/[^a-zA-Z0-9\-]/g, '')
+                .toLowerCase()
+                .substr(0, 60)
+                .replace(/-+/g, '-');
         }
         
         jQuery(function($){
