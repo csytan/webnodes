@@ -39,11 +39,7 @@
 
 {% block content %}
     <h1>
-        {% if topic.link and not topic.vimeo_id and not topic.youtube_id %}
-            <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
-        {% else %}
-            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
-        {% end %}
+        <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
     </h1>
     <div class="topic" style="border:none;">
         <p class="comment_info">
@@ -73,14 +69,7 @@
             {% end %}
         </p>
         <div class="body">
-            {% if topic.vimeo_id %}
-                <iframe src="http://player.vimeo.com/video/{{ topic.vimeo_id }}" width="700" height="394" frameborder="0"></iframe>
-            {% elif topic.youtube_id %}
-                <iframe src="http://www.youtube.com/embed/{{ topic.youtube_id }}?hd=1" width="700" height="394" frameborder="0"></iframe>
-            {% end %}
-            {% if topic.text %}
-                {{ markdown(topic.text) }}
-            {% end %}
+            {{ markdown(topic.text) }}
             {% if replies %}
                 <a class="reply">reply</a>
             {% end %}

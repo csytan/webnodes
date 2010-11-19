@@ -263,21 +263,6 @@ class Topic(Votable):
     @property
     def name(self):
         return self.key_name.split(':')[1]
-    
-    @property
-    def link_domain(self):
-        netloc = urlparse.urlparse(self.link).netloc
-        return netloc.replace('www.', '', 1) if netloc.startswith('www.') else netloc
-        
-    @property
-    def vimeo_id(self):
-        vimeo_re = re.findall('http://(?:www\.)?vimeo.com/(\d+)', self.link or ' ')
-        return vimeo_re[0] if vimeo_re else None
-        
-    @property
-    def youtube_id(self):
-        youtube_re = re.findall('http://www.youtube.com/watch\?v=([^&]+)', self.link or ' ')
-        return youtube_re[0] if youtube_re else None
 
 
 class TopicEdit(BaseModel):

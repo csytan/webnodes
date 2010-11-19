@@ -1,11 +1,6 @@
 <div class="topic_listing">
     <h2>
-        {% if topic.link and not topic.vimeo_id and not topic.youtube_id %}
-            <a href="{{ topic.link }}">{{ escape(topic.title) }}</a>
-            <span class="domain">({{ topic.link_domain }})</span>
-        {% else %}
-            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
-        {% end %}
+        <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
     </h2>
     <p class="comment_info">
         {% if not current_user %}

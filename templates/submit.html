@@ -8,7 +8,7 @@
 
 {% block style %}
     <style>
-        #title, #link { width: 550px; }
+        #title { width: 550px; }
         textarea {
             height: 300px;
             width: 650px;
@@ -51,8 +51,8 @@
         <div id="message" class="error">Missing a title</div>
     {% elif message == 'check_slug' %}
         <div id="message" class="error">Please check that the topic URL is correct.</div>
-    {% elif message == 'link_or_text' %}
-        <div id="message" class="error">Please enter a link or some text for your topic.</div>
+    {% elif message == 'no_text' %}
+        <div id="message" class="error">Please enter some text for your topic.</div>
     {% elif message == 'topic_exists' %}
         <div id="message" class="error">A topic already exists with that URL. Please choose a different name.</div>
     {% end %}
@@ -70,8 +70,6 @@
             {{ current_site.domain or current_site.key_name + '.webnodes.org' }}/<input id="slug" type="text" name="slug" value="{{ handler.get_argument('slug', '') }}" tabindex="2">
         </span>
         <br>
-        <label for="link">Link</label>
-        <input id="link" type="text" name="link" value="{{ handler.get_argument('link', '') }}" tabindex="3">
         <label for="text">
             Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
         </label>

@@ -82,10 +82,21 @@ class BaseHandler(tornado.web.RequestHandler):
         # real line breaks
         value = re.sub(r'(\S ?)(\r\n|\r|\n)', r'\1  \n', value)
         value = re.sub(r'\n\n\n', r'\n\n\nLINEBREAK', value)
+        
+        # vimeo and youtube embed
+        value = re.sub('http://(?:www\.)?vimeo.com/(\d+)', r'VIMEO:\1', value)
+        value = re.sub('http://www.youtube.com/watch\?v=([^&]+)', r'YOUTUBE:\1', value)
+        
         # automatic hyperlinks
         value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1<\2>', value)
         html = markdown2.markdown(value, safe_mode='escape')
-        return html.replace('<a href=', '<a rel="nofollow" href=').replace('LINEBREAK', '<br>')
+        html = re.sub(r'VIMEO:(\d+)', 
+            r'<iframe src="http://player.vimeo.com/video/\1" width="700" height="394" frameborder="0"></iframe>', html)
+        html = re.sub(r'YOUTUBE:(\w+)', 
+            r'<iframe src="http://www.youtube.com/embed/\1?hd=1" width="700" height="394" frameborder="0"></iframe>', html)
+        html = html.replace('<a href=', '<a rel="nofollow" href=')
+        html = html.replace('LINEBREAK', '<br>')
+        return html
         
     @staticmethod
     def relative_date(date):
@@ -142,24 +153,20 @@ class Submit(BaseHandler):
     def post(self):
         slug = self.get_argument('slug', None)
         title = self.get_argument('title', None)
-        link = self.get_argument('link', '')
         text = self.get_argument('text', '')
         
         if not title:
             return self.reload(message='no_title', copyargs=True)
         if not slug or slug != self.slugify(slug):
             return self.reload(message='check_slug', copyargs=True)
-        if not link and not text:
-            return self.reload(message='link_or_text', copyargs=True)
-        if link and not link.startswith('http'):
-            link = 'http://' + link
+        if not text:
+            return self.reload(message='no_text', copyargs=True)
         
         topic = models.Topic.create(
             name=slug,
             site=self.current_site,
             title=title,
             author=self.current_user,
-            link=link,
             text=text)
         if not topic:
             return self.reload(message='topic_exists', copyargs=True)
