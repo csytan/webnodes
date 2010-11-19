@@ -181,3 +181,10 @@ a.vote_up {
 a.vote_up:hover {
     background: #41a3c2;
 }
+
+
+iframe.vimeo,
+iframe.youtube {
+    width: 700px;
+    height: 394px;
+}

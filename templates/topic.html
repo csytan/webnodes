@@ -64,9 +64,7 @@
             
             {{ relative_date(topic.created) }}
             
-            {% if topic.can_edit(current_user) %}
-                | <a href="/{{ topic.name }}/edit">edit</a>
-            {% end %}
+            | <a href="/{{ topic.name }}/edit">edit</a>
         </p>
         <div class="body">
             {{ markdown(topic.text) }}

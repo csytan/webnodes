@@ -66,10 +66,9 @@
         {{ xsrf_form_html() }}
         <label for="title">Title</label>
         <input id="title" type="text" name="title" value="{{ handler.get_argument('title', '') }}" tabindex="1">
-        <span class="slug">
+        <p class="slug">
             {{ current_site.domain or current_site.key_name + '.webnodes.org' }}/<input id="slug" type="text" name="slug" value="{{ handler.get_argument('slug', '') }}" tabindex="2">
-        </span>
-        <br>
+        </p>
         <label for="text">
             Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
         </label>
