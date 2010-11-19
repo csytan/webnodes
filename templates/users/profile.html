@@ -33,6 +33,7 @@
     </div>
     
     {% if user.about %}
+        <br>
         <h2>About</h2>
         {{ markdown(user.about) }}
     {% end %}
