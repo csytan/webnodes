@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 import re
+import unicodedata
 import urllib
 import urlparse
 
@@ -148,8 +149,8 @@ class Submit(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         title = self.get_argument('title', '')
-        slug = self.get_argument('slug', '')
-        slug = self.slugify(slug)
+        slug = self.slugify(
+            self.get_argument('slug', ''))
         text = self.get_argument('text', '')
         
         if not title:
@@ -179,7 +180,6 @@ class Submit(BaseHandler):
         and converts spaces to hyphens.
         http://code.djangoproject.com/svn/django/trunk/django/template/defaultfilters.py
         """
-        import unicodedata
         value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
         value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
         return re.sub('[-\s]+', '-', value)
