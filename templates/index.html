@@ -5,7 +5,7 @@
     <style>
         #about {
             color: #333;
-            padding: 1em;
+            padding: 1.5em;
             font-size: 1.1em;
             background-color: #EEE;
             margin-bottom: 2em;
@@ -15,16 +15,18 @@
         #about p {
             margin-bottom: 0;
         }
+        #about img {
+            float: left;
+            margin-right: 1em;
+        }
     </style>
 {% end %}
 
 
 {% block content %}
-    {% if not current_user %}
-        <div id="about">
-            {{ markdown(current_site.about) }}
-        </div>
-    {% end %}
+    <div id="about">
+        {{ markdown(current_site.about) }}
+    </div>
     
     {% for topic in topics %}
         {% include "_topic_listing.html" %}
