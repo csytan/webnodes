@@ -260,13 +260,11 @@ class Vote(BaseHandler):
         topic_id = self.get_argument('topic_id', None)
         if comment_id:
             comment = models.Comment.get_by_id(int(comment_id))
-            if comment.topic.site != self.current_site:
-                raise tornado.web.HTTPError(403)
         elif topic_id:
-            topic = models.Topic.get_topic(self.current_site, topic_id)
-            if comment.site != self.current_site:
-                raise tornado.web.HTTPError(403)
-                
+            comment = models.Topic.get_topic(self.current_site, topic_id)
+        if comment.site != self.current_site:
+            raise tornado.web.HTTPError(403)
+        
         if self.current_user.is_admin or \
                 (self.current_user.daily_karma > 0 and comment.author != self.current_user):
             way = self.get_argument('way', None)
