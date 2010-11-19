@@ -81,19 +81,17 @@ class BaseHandler(tornado.web.RequestHandler):
     def markdown(value):
         # real line breaks
         value = re.sub(r'(\S ?)(\r\n|\r|\n)', r'\1  \n', value)
-        value = re.sub(r'\n\n\n', r'\n\n\nLINEBREAK', value)
         # vimeo and youtube embed
-        value = re.sub('[^\(]?http://(?:www\.)?vimeo.com/(\d+)[^\)]?', r'VIMEO:\1', value)
-        value = re.sub('[^\(]?http://www.youtube.com/watch\?v=([^&]+)\S*[^\)]?', r'YOUTUBE:\1', value)
+        value = re.sub('^http://(?:www\.)?vimeo.com/(\d+)', r'VIMEO:\1', value, re.MULTILINE)
+        value = re.sub('^http://www.youtube.com/watch\?v=([^&]+)\S?', r'YOUTUBE:\1', value, re.MULTILINE)
         # automatic hyperlinks
-        value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1<\2>', value)
+        #value = re.sub(r'(^|\s)(http:\/\/\S+)', r'\1\[\2\]', value)
         html = markdown2.markdown(value, safe_mode='escape')
         html = re.sub(r'VIMEO:(\d+)', 
             r'<iframe src="http://player.vimeo.com/video/\1" class="vimeo" frameborder="0"></iframe>', html)
         html = re.sub(r'YOUTUBE:([\w|-]+)', 
             r'<iframe src="http://www.youtube.com/embed/\1?hd=1" class="youtube" frameborder="0"></iframe>', html)
         html = html.replace('<a href=', '<a rel="nofollow" href=')
-        html = html.replace('LINEBREAK', '<br>')
         return html
         
     @staticmethod

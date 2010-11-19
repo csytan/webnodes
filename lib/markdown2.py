@@ -39,9 +39,11 @@ text-to-HTML conversion tool for web writers.
 Supported extras (see -x|--extras option below):
 * code-friendly: Disable _ and __ for em and strong.
 * code-color: Pygments-based syntax coloring of <code> sections.
-* cuddled-lists: Allow lists to be cuddled to the preceding paragraph.                           
+* cuddled-lists: Allow lists to be cuddled to the preceding paragraph.
 * footnotes: Support footnotes as in use on daringfireball.net and
   implemented in other Markdown processors (tho not in Markdown.pl v1.0.1).
+* header-ids: Adds "id" attributes to headers. The id value is a slug of
+  the header text.
 * html-classes: Takes a dict mapping html tag names (lowercase) to a
   string to use for a "class" tag attribute. Currently only supports
   "pre" and "code" tags. Add an issue if you require this for other tags.
@@ -49,6 +51,11 @@ Supported extras (see -x|--extras option below):
   blocks.
 * link-patterns: Auto-link given regex patterns in text (e.g. bug number
   references, revision number references).
+* smarty-pants: Replaces ' and " with curly quotation marks or curly 
+  apostrophes.  Replaces --, ---, ..., and . . . with en dashes, em dashes, 
+  and ellipses.
+* toc: The returned HTML string gets a new "toc_html" attribute which is
+  a Table of Contents for the document. (experimental)
 * xml: Passes one-liner processing instructions and namespaced XML tags.
 """
 
@@ -59,8 +66,8 @@ Supported extras (see -x|--extras option below):
 #   not yet sure if there implications with this. Compare 'pydoc sre'
 #   and 'perldoc perlre'.
 
-__version_info__ = (1, 0, 1, 17) # first three nums match Markdown.pl
-__version__ = '1.0.1.17'
+__version_info__ = (1, 0, 1, 18) # first three nums match Markdown.pl
+__version__ = '1.0.1.18'
 __author__ = "Trent Mick"
 
 import os
@@ -185,6 +192,7 @@ class Markdown(object):
         else:
             self.safe_mode = safe_mode
 
+        # Massaging and building the "extras" info.
         if self.extras is None:
             self.extras = {}
         elif not isinstance(self.extras, dict):
@@ -197,9 +205,15 @@ class Markdown(object):
         if "toc" in self.extras and not "header-ids" in self.extras:
             self.extras["header-ids"] = None   # "toc" implies "header-ids"
         self._instance_extras = self.extras.copy()
+        
         self.link_patterns = link_patterns
         self.use_file_vars = use_file_vars
         self._outdent_re = re.compile(r'^(\t|[ ]{1,%d})' % tab_width, re.M)
+
+        self._escape_table = g_escape_table.copy()
+        if "smarty-pants" in self.extras:
+            self._escape_table['"'] = _hash_ascii('"')
+            self._escape_table["'"] = _hash_ascii("'")
 
     def reset(self):
         self.urls = {}
@@ -741,6 +755,9 @@ class Markdown(object):
     
         text = self._do_italics_and_bold(text)
     
+        if "smarty-pants" in self.extras:
+            text = self._do_smart_punctuation(text)
+    
         # Do hard breaks:
         text = re.sub(r" {2,}\n", " <br%s\n" % self.empty_element_suffix, text)
     
@@ -781,8 +798,8 @@ class Markdown(object):
                 # character with its corresponding MD5 checksum value;
                 # this is likely overkill, but it should prevent us from
                 # colliding with the escape values by accident.
-                escaped.append(token.replace('*', g_escape_table['*'])
-                                    .replace('_', g_escape_table['_']))
+                escaped.append(token.replace('*', self._escape_table['*'])
+                                    .replace('_', self._escape_table['_']))
             else:
                 escaped.append(self._encode_backslash_escapes(token))
             is_html_markup = not is_html_markup
@@ -952,12 +969,12 @@ class Markdown(object):
                         url = url[1:-1]  # '<url>' -> 'url'
                     # We've got to encode these to avoid conflicting
                     # with italics/bold.
-                    url = url.replace('*', g_escape_table['*']) \
-                             .replace('_', g_escape_table['_'])
+                    url = url.replace('*', self._escape_table['*']) \
+                             .replace('_', self._escape_table['_'])
                     if title:
                         title_str = ' title="%s"' \
-                            % title.replace('*', g_escape_table['*']) \
-                                   .replace('_', g_escape_table['_']) \
+                            % title.replace('*', self._escape_table['*']) \
+                                   .replace('_', self._escape_table['_']) \
                                    .replace('"', '&quot;')
                     else:
                         title_str = ''
@@ -996,12 +1013,12 @@ class Markdown(object):
                         url = self.urls[link_id]
                         # We've got to encode these to avoid conflicting
                         # with italics/bold.
-                        url = url.replace('*', g_escape_table['*']) \
-                                 .replace('_', g_escape_table['_'])
+                        url = url.replace('*', self._escape_table['*']) \
+                                 .replace('_', self._escape_table['_'])
                         title = self.titles.get(link_id)
                         if title:
-                            title = title.replace('*', g_escape_table['*']) \
-                                         .replace('_', g_escape_table['_'])
+                            title = title.replace('*', self._escape_table['*']) \
+                                         .replace('_', self._escape_table['_'])
                             title_str = ' title="%s"' % title
                         else:
                             title_str = ''
@@ -1043,7 +1060,7 @@ class Markdown(object):
         Subclasses may override this for different header ids.
         """
         header_id = _slugify(text)
-        if prefix:
+        if prefix and isinstance(prefix, basestring):
             header_id = prefix + '-' + header_id
         if header_id in self._count_from_header_id:
             self._count_from_header_id[header_id] += 1
@@ -1392,13 +1409,13 @@ class Markdown(object):
             ('<', '&lt;'),
             ('>', '&gt;'),
             # Now, escape characters that are magic in Markdown:
-            ('*', g_escape_table['*']),
-            ('_', g_escape_table['_']),
-            ('{', g_escape_table['{']),
-            ('}', g_escape_table['}']),
-            ('[', g_escape_table['[']),
-            (']', g_escape_table[']']),
-            ('\\', g_escape_table['\\']),
+            ('*', self._escape_table['*']),
+            ('_', self._escape_table['_']),
+            ('{', self._escape_table['{']),
+            ('}', self._escape_table['}']),
+            ('[', self._escape_table['[']),
+            (']', self._escape_table[']']),
+            ('\\', self._escape_table['\\']),
         ]
         for before, after in replacements:
             text = text.replace(before, after)
@@ -1417,7 +1434,52 @@ class Markdown(object):
             text = self._strong_re.sub(r"<strong>\2</strong>", text)
             text = self._em_re.sub(r"<em>\2</em>", text)
         return text
-    
+
+    # "smarty-pants" extra: Very liberal in interpreting a single prime as an
+    # apostrophe; e.g. ignores the fact that "round", "bout", "twer", and
+    # "twixt" can be written without an initial apostrophe. This is fine because
+    # using scare quotes (single quotation marks) is rare.
+    _apostrophe_year_re = re.compile(r"'(\d\d)(?=(\s|,|;|\.|\?|!|$))")
+    _contractions = ["tis", "twas", "twer", "neath", "o", "n",
+        "round", "bout", "twixt", "nuff", "fraid", "sup"]
+    def _do_smart_contractions(self, text):
+        text = self._apostrophe_year_re.sub(r"&#8217;\1", text)
+        for c in self._contractions:
+            text = text.replace("'%s" % c, "&#8217;%s" % c)
+            text = text.replace("'%s" % c.capitalize(),
+                "&#8217;%s" % c.capitalize())
+        return text
+
+    # Substitute double-quotes before single-quotes.
+    _opening_single_quote_re = re.compile(r"(?<!\S)'(?=\S)")
+    _opening_double_quote_re = re.compile(r'(?<!\S)"(?=\S)')
+    _closing_single_quote_re = re.compile(r"(?<=\S)'")
+    _closing_double_quote_re = re.compile(r'(?<=\S)"(?=(\s|,|;|\.|\?|!|$))')
+    def _do_smart_punctuation(self, text):
+        """Fancifies 'single quotes', "double quotes", and apostrophes.  
+        Converts --, ---, and ... into en dashes, em dashes, and ellipses.
+        
+        Inspiration is: <http://daringfireball.net/projects/smartypants/>
+        See "test/tm-cases/smarty_pants.text" for a full discussion of the
+        support here and
+        <http://code.google.com/p/python-markdown2/issues/detail?id=42> for a
+        discussion of some diversion from the original SmartyPants.
+        """
+        if "'" in text: # guard for perf
+            text = self._do_smart_contractions(text)
+            text = self._opening_single_quote_re.sub("&#8216;", text)
+            text = self._closing_single_quote_re.sub("&#8217;", text)
+        
+        if '"' in text: # guard for perf
+            text = self._opening_double_quote_re.sub("&#8220;", text)
+            text = self._closing_double_quote_re.sub("&#8221;", text)
+
+        text = text.replace("---", "&#8212;")
+        text = text.replace("--", "&#8211;")
+        text = text.replace("...", "&#8230;")
+        text = text.replace(" . . . ", "&#8230;")
+        text = text.replace(". . .", "&#8230;")
+        return text
 
     _block_quote_re = re.compile(r'''
         (                           # Wrap whole match in \1
@@ -1538,7 +1600,7 @@ class Markdown(object):
         return text
 
     def _encode_backslash_escapes(self, text):
-        for ch, escape in g_escape_table.items():
+        for ch, escape in self._escape_table.items():
             text = text.replace("\\"+ch, escape)
         return text
 
@@ -1607,8 +1669,8 @@ class Markdown(object):
                 escaped_href = (
                     href.replace('"', '&quot;')  # b/c of attr quote
                         # To avoid markdown <em> and <strong>:
-                        .replace('*', g_escape_table['*'])
-                        .replace('_', g_escape_table['_']))
+                        .replace('*', self._escape_table['*'])
+                        .replace('_', self._escape_table['_']))
                 link = '<a href="%s">%s</a>' % (escaped_href, text[start:end])
                 hash = _hash_text(link)
                 link_from_hash[hash] = link
@@ -1619,7 +1681,7 @@ class Markdown(object):
     
     def _unescape_special_chars(self, text):
         # Swap back in all the special characters we've hidden.
-        for ch, hash in g_escape_table.items():
+        for ch, hash in self._escape_table.items():
             text = text.replace(hash, ch)
         return text
 
@@ -1686,6 +1748,7 @@ class UnicodeWithAttrs(unicode):
         return '\n'.join(lines) + '\n'
 
 
+## {{{ http://code.activestate.com/recipes/577257/ (r1)
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
 def _slugify(value):
@@ -1699,6 +1762,8 @@ def _slugify(value):
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     value = unicode(_slugify_strip_re.sub('', value).strip().lower())
     return _slugify_hyphenate_re.sub('-', value)
+## end of http://code.activestate.com/recipes/577257/ }}}
+
 
 # From http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52549
 def _curry(*args, **kwargs):
