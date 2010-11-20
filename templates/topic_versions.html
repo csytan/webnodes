@@ -8,26 +8,57 @@
 
 {% block style %}
     <style>
+
         textarea {
             height: 300px;
             width: 100%;
         }
+        
     </style>
 {% end %}
 
 
+{% block script %}
+    <script>
+        $(function() {
+            $('.edit').hide().filter(':first').show();
+            $('#versions input[type="submit"]').hide();
+            $('#edit_select').change(function(){
+                    $(this).closest('form').submit();
+                });
+        });
+    </script>
+{% end %}
+
+
 {% block content %}
-    {% for edit in edits %}
-        Edited by <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
-        {{ relative_date(edit.created) }}
-        <br>
-        <label for="reason">Reason for Edit</label>
-        <input id="reason" type="text" name="reason" value="{{ escape(edit.reason) }}">
-        <label for="title">Title</label>
-        <input id="title" type="text" name="title" tabindex="1" value="{{ escape(topic.title) }}">
-        <label for="text">
-            Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
-        </label>
-        <textarea name="text" tabindex="3">{{ escape(edit.text) }}</textarea>
-    {% end %}
+    <h1>Versions</h1>
+    <form id="versions" method="get" action="">
+        <select id="edit_select" name="v" style="width: 50%">
+            {% for e in edits %}
+                <option value="{{ e.id }}" {% if e.id == edit.id %}selected="selected"{% end %}>
+                    {{ relative_date(e.created) }} by {{ e.author.name }}
+                    {% if e.reason %}
+                        -- {{ escape(e.reason) }}
+                    {% end %}
+                </option>
+            {% end %}
+        </select>
+        <input type="submit" value="go">
+    </form>
+    <br>
+    
+    <div class="edit">
+        <h2 style="font-size: 1.8em">{{ escape(edit.title) }}</h2>
+        <p class="comment_info">
+            Edited by <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
+            {{ relative_date(edit.created) }}
+            {% if edit.reason %}
+                -- {{ escape(edit.reason) }}
+            {% end %}
+            &nbsp;|&nbsp;
+            <a href="/{{ topic.name }}/edit?v={{ edit.id }}">edit</a>
+        </p>
+        {{ markdown(edit.text) }}
+    </div>
 {% end %}

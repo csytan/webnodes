@@ -94,7 +94,7 @@ textarea {
     float: right;
 }
 #header #nav .item {
-    margin: 0 10px;
+    margin-left: 2em;
 }
 #header #nav a {
     text-decoration: none;

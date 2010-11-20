@@ -19,7 +19,6 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
     <script type="text/javascript" src="/static/script.js"></script>
     {% block script %}{% end %}
-    <meta name="google-site-verification" content="mkzAnp3hHgdAS3XrdITmrH28_5GX5zb61BIKLMwNCFI" />
 </head>
 
 <body>
@@ -33,22 +32,22 @@
                     {% end %}
                 </div>
                 <div id="nav">
-                    <a class="item" href="/submit">submit</a>
-                    <a class="item" href="/community">community</a>
+                    <a class="item" href="/submit">submit  ✎</a>
+                    <a class="item" href="/community">community ☮</a>
                     {% if current_user %}
                         <span class="item">
                             {% if current_user.n_messages %}
-                                <a href="/inbox">inbox ({{ current_user.n_messages }})</a>
+                                <a href="/inbox">inbox  ★ {{ current_user.n_messages }}</a>
                             {% else %}
                                 <a href="/inbox">inbox</a>
                             {% end %}
                             &nbsp;|&nbsp;
                             <a href="/account">{{ current_user.name }} ☯ {{ current_user.karma }}</a>
                              &nbsp;|&nbsp;
-                            <a href="/sign_out">sign out</a>
+                            <a href="/sign_out">sign out ☽</a>
                         </span>
                     {% else %}
-                        <a class="item" href="/sign_in">sign in</a>
+                        <a class="item" href="/sign_in">sign in ☼</a>
                     {% end %}
                 </div>
             </div>

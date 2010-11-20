@@ -234,7 +234,13 @@ class Topic(BaseHandler):
 class TopicEdit(BaseHandler):
     @tornado.web.authenticated
     def get(self, name):
-        topic = models.Topic.get_topic(self.current_site, name)
+        edit_id = self.get_argument('v', '')
+        if edit_id.isdigit():
+            topic = models.TopicEdit.get_by_id(int(edit_id))
+        if not topic:
+            topic = models.Topic.get_topic(self.current_site, name)
+        if not topic:
+            raise tornado.web.HTTPError(404)
         self.render('topic_edit.html', topic=topic)
         
     @tornado.web.authenticated
@@ -261,7 +267,18 @@ class TopicEdit(BaseHandler):
 class TopicVersions(BaseHandler):
     def get(self, name):
         topic = models.Topic.get_topic(self.current_site, name)
-        self.render('topic_versions.html', topic=topic, edits=topic.edits.order('-created'))
+        edits = topic.edits.order('-created').fetch(100)
+        
+        if not edits:
+            raise tornado.web.HTTPError(404)
+        edit = edits[0]
+        
+        edit_id = self.get_argument('v', '')
+        if edit_id.isdigit():
+            for e in edits:
+                if e.id == int(edit_id):
+                    edit = e
+        self.render('topic_versions.html', topic=topic, edit=edit, edits=edits)
 
 
 class CommentEdit(BaseHandler):
@@ -285,11 +302,13 @@ class Vote(BaseHandler):
         topic_id = self.get_argument('topic_id', None)
         if comment_id:
             comment = models.Comment.get_by_id(int(comment_id))
+            if comment.topic.site != self.current_site:
+                raise tornado.web.HTTPError(403)
         elif topic_id:
             comment = models.Topic.get_topic(self.current_site, topic_id)
-        if comment.site != self.current_site:
-            raise tornado.web.HTTPError(403)
-        
+            if comment.site != self.current_site:
+                raise tornado.web.HTTPError(403)
+            
         if self.current_user.is_admin or \
                 (self.current_user.daily_karma > 0 and comment.author != self.current_user):
             way = self.get_argument('way', None)
