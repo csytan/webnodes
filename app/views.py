@@ -239,7 +239,7 @@ class TopicEdit(BaseHandler):
         edit_id = self.get_argument('v', '')
         if edit_id.isdigit():
             topic = models.TopicEdit.get_by_id(int(edit_id))
-        if not topic:
+        else:
             topic = models.Topic.get_topic(self.current_site, name)
         if not topic:
             raise tornado.web.HTTPError(404)
