@@ -236,7 +236,7 @@ class Topic(Votable):
             parent_key = Comment.reply_to.get_value_for_datastore(comment)
             parent = keys.get(str(parent_key))
             if parent:
-                parent.replies.insert(0, comment)
+                parent.replies.append(comment)
         replies = [c for c in comments if not c.reply_to]
         prefetch_refprop(replies, Comment.author)
         return replies
