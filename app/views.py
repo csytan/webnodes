@@ -395,7 +395,7 @@ class Inbox(BaseHandler):
 
 class Users(BaseHandler):
     def get(self):
-        self.render('users/users.html', users=self.current_site.users.fetch(100))
+        self.render('users.html', users=self.current_site.users.fetch(100))
 
 
 class UserProfile(BaseHandler):
@@ -403,7 +403,7 @@ class UserProfile(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('users/profile.html', user=user)
+        self.render('user_profile.html', user=user)
 
 
 class UserTopics(BaseHandler):
@@ -411,7 +411,7 @@ class UserTopics(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('users/topics.html', user=user)
+        self.render('user_topics.html', user=user)
 
 
 class UserComments(BaseHandler):
@@ -419,7 +419,7 @@ class UserComments(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('users/comments.html', user=user)
+        self.render('user_comments.html', user=user)
 
 
 class SignIn(BaseHandler):

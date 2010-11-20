@@ -1,4 +1,4 @@
-{% extends "../base.html" %}
+{% extends "base.html" %}
 
 
 {% block title %}
@@ -14,7 +14,7 @@
             <img src="{{ user.gravatar(50) }}" class="gravatar">
             
             <div class="body">
-                <p class="info">
+                <p class="comment_info">
                     {% if comment.points == 1 %}
                         1 point
                     {% else %}
