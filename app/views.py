@@ -217,6 +217,8 @@ class Topic(BaseHandler):
             topic=topic,
             reply_to=reply_to,
             text=self.get_argument('text'))
+        comment.update_score()
+        
         topic.n_comments += 1
         if self.current_user:
             self.current_user.n_comments += 1
