@@ -92,7 +92,7 @@ class BaseHandler(tornado.web.RequestHandler):
         value = re.sub(r'(\S ?)(\r\n|\r|\n)', r'\1  \n', value)
         # vimeo and youtube embed
         value = re.sub('^http://(?:www\.)?vimeo.com/(\d+)', r'VIMEO:\1', value, re.MULTILINE)
-        value = re.sub('^http://www.youtube.com/watch\?v=([^&]+)\S?', r'YOUTUBE:\1', value, re.MULTILINE)
+        value = re.sub('^http://www.youtube.com/watch\?v=([^&]+)\S*', r'YOUTUBE:\1', value, re.MULTILINE)
         # automatic hyperlinks
         value = re.sub(r'(^|\s)(http:\/\/\S+)', r'[\2](\2)', value, re.MULTILINE)
         html = markdown2.markdown(value, safe_mode='escape')
