@@ -254,13 +254,14 @@ class TopicEdit(BaseHandler):
                 author=self.current_user,
                 text=self.get_argument('text', ''),
                 reason=self.get_argument('reason', ''))
-            message = models.Message(
-                to=topic.author,
-                type='topic_edit',
-                topic_edit=edit)
-            message.put()
-            topic.author.n_messages += 1
-            topic.author.put()
+            if self.current_user != topic.author:
+                message = models.Message(
+                    to=topic.author,
+                    type='topic_edit',
+                    topic_edit=edit)
+                message.put()
+                topic.author.n_messages += 1
+                topic.author.put()
             self.redirect('/' + name)
         else:
             self.reload(message='need_more_karma')
