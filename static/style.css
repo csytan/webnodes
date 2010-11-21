@@ -31,6 +31,11 @@ h2 { font-size: 1.4em; }
 h3 { font-size: 1.1em; }
 
 label { color: #6d6c6c; }
+
+ol, ul { margin: 2em; display: block; }
+ol li { list-style-type: decimal; }
+ul li { list-style-type: disc; }
+
 blockquote, pre, code {
     color: #404040;
     background-color: #F8F8F8;

@@ -24,9 +24,11 @@
 
 
 {% block content %}
-    <div id="about">
-        {{ markdown(current_site.about) }}
-    </div>
+    {% if not current_user %}
+        <div id="about">
+            {{ markdown(current_site.about) }}
+        </div>
+    {% end %}
     
     {% for topic in topics %}
         {% include "_topic_listing.html" %}
