@@ -5,7 +5,7 @@ html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pr
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 16px;
-    color: #3a3a3a;
+    color: #3d3d3d;
     line-height: 1.5em;
 }
 
@@ -19,20 +19,21 @@ p { margin-bottom: 1.2em; }
 h1, h2, h3, h4, h5 {
     color: #202020;
     line-height: 1.4em;
+    margin: 1em 0 0.5em;
 }
 h1 a, h2 a, h3 a, h4 a, h5 a {
-    color: #202020;
+    color: #303030;
     text-decoration: none;
 }
 
 h1 { font-size: 2em; }
 h2, h3 { color: #202020; }
-h2 { font-size: 1.4em; }
+h2 { font-size: 1.5em; }
 h3 { font-size: 1.1em; }
 
 label { color: #6d6c6c; }
 
-ol, ul { margin: 2em; display: block; }
+ol, ul { margin: 1em; padding-left: 0.5em; display: block; }
 ol li { list-style-type: decimal; }
 ul li { list-style-type: disc; }
 
@@ -74,7 +75,6 @@ textarea {
 #header {
     color: #275f6d;
     padding: 0.5em;
-    margin-bottom: 3em;
     background-color: #419ab5;
     border-bottom: 1px solid #3a8aa3;
     border-left: 4px solid #3a8aa3;
@@ -124,6 +124,9 @@ textarea {
     color: #6d6c6c;
 }
 
+#content {
+    padding: 2em 0;
+}
 
 #message {
     color: #333;
@@ -140,11 +143,25 @@ textarea {
 #message.error { background-color: #F8ECEF; border: 1px solid #e0bac7;}
 
 
-.topic_listing { margin-bottom: 1.5em; }
-.topic_listing .domain {
-    font-size: 0.8em;
+.topic_listing td {
+    border-top: 1px solid #eee;
+    padding: 1.5em 1em;
+}
+.topic_listing td.title {
+    width: 60%;
+}
+.topic_listing h2 {
+    margin: 0;
+}
+.topic_listing td.info,
+.topic_listing td.info2 {
+    color: #6d6c6c; 
     font-weight: 200;
-    color: #6d6c6c;
+    width: 20%;
+    
+}
+.topic_listing .info {
+    text-align: right;
 }
 
 .gravatar { border-radius: 4px; }
@@ -156,6 +173,7 @@ textarea {
 .comment_info {
     color: #6d6c6c; 
     font-weight: 200;
+    margin-bottom: 1em;
 }
 .comment .gravatar {
     float: left;
@@ -172,7 +190,8 @@ textarea {
 }
 
 
-a.vote_up {
+a.vote_up,
+a.vote_down {
     border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -184,6 +203,13 @@ a.vote_up {
 a.vote_up:hover {
     background: #41a3c2;
 }
+a.vote_down {
+    background: #e0bac7;
+}
+a.vote_down:hover {
+    background: #cca5b2;
+}
+
 
 
 iframe.vimeo,

@@ -1,34 +1,38 @@
-<div class="topic_listing">
-    <h2>
-        <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
-    </h2>
-    <p class="comment_info">
-        {% if not current_user %}
-            <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
-        {% elif topic.can_vote_up(current_user) %}
-            <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
+<tr>
+    <td class="info">
+        {% if topic.author %}
+            <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
+        {% else %}
+            anonymous
         {% end %}
-        
+        <br>
+        {{ relative_date(topic.created) }}
+    </td>
+    
+    <td class="title">
+        <h2>
+            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
+        </h2>
+    </td>
+    
+    <td class="info2">
         <span class="points">
+            {% if not current_user %}
+                <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+            {% elif topic.can_vote_up(current_user) %}
+                <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
+            {% end %}
             {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
         </span>
-        
-        {% if topic.author %}
-            by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
-        {% else %}
-            by anonymous
+        <br>
+        {% if topic.n_comments %}
+            <span>
+                {% if topic.n_comments == 1 %}
+                    1 comment
+                {% elif topic.n_comments > 1 %}
+                    {{ topic.n_comments }} comments
+                {% end %}
+            </span>
         {% end %}
-        
-        {{ relative_date(topic.created) }}
-        &nbsp;|&nbsp;
-        <a href="/{{ topic.name }}">
-            {% if not topic.n_comments %}
-                discuss
-            {% elif topic.n_comments == 1 %}
-                1 comment
-            {% else %}
-                {{ topic.n_comments }} comments
-            {% end %}
-        </a>
-    </p>
-</div>
+    </td>
+</tr>

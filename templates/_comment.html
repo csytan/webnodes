@@ -14,7 +14,7 @@
                     <a class="vote_up" href="/vote?way=up&amp;comment_id={{ comment.id }}">+</a>
                 {% end %}
                 {% if comment.can_vote_down(current_user) %}
-                    <a class="vote_down" href="/vote?way=down&amp;comment_id={{ comment.id }}">-</a>
+                    / <a class="vote_down" href="/vote?way=down&amp;comment_id={{ comment.id }}">-</a>
                 {% end %}
                 
                 <span class="points">

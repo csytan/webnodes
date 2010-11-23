@@ -3,11 +3,14 @@
 
 {% block style %}
     <style>
+        #main { width: 800px; }
         #about {
             color: #333;
             padding: 1.5em;
             font-size: 1.1em;
             background-color: #EEE;
+            width: 600px;
+            margin: auto;
             margin-bottom: 2em;
             border-radius: 7px;
             border: 1px solid #DDD;
@@ -19,6 +22,9 @@
             float: left;
             margin-right: 1em;
         }
+        #next_page {
+            font-size: 1.3em;
+        }
     </style>
 {% end %}
 
@@ -27,14 +33,21 @@
     {% if not current_user %}
         <div id="about">
             {{ markdown(current_site.about) }}
+            <div style="clear:both"></div>
         </div>
     {% end %}
     
-    {% for topic in topics %}
-        {% include "_topic_listing.html" %}
-    {% end %}
-    
-    {% if next_page %}
-        <a href="/?page={{ next_page }}">Next Page</a>
-    {% end %}
+    <table class="topic_listing">
+        {% for topic in topics %}
+            {% include "_topic_listing.html" %}
+        {% end %}
+        {% if next_page %}
+            <td class="info"></td>
+            <td class="title">
+                <a id="next_page" href="/?page={{ next_page }}">More »</a>
+            </td>
+            <td class="info2"></td></td>
+        {% end %}
+    </table>
+
 {% end %}

@@ -25,8 +25,6 @@
 
 {% block style %}
     <style>
-        .topic { padding-bottom: 2em; }
-        .topic > .body { padding: 1em 0; }
         #reply_box { display: none; }
         #reply_box .body { width: 500px; }
         #reply_box textarea {
@@ -49,7 +47,7 @@
                 <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
             {% end %}
             {% if topic.can_vote_down(current_user) %}
-                <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
+                / <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
             {% end %}
             
             <span class="points">
