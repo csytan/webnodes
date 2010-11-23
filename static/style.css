@@ -14,7 +14,7 @@ a:hover { color: #e0115f; }
 
 b, strong { font-weight: bold; }
 em { font-style: italic; }
-p { margin-bottom: 1.2em; }
+p, blockquote { margin-bottom: 1.2em; }
 
 h1, h2, h3, h4, h5 {
     color: #202020;
@@ -173,7 +173,6 @@ textarea {
 .comment_info {
     color: #6d6c6c; 
     font-weight: 200;
-    margin-bottom: 1em;
 }
 .comment .gravatar {
     float: left;
