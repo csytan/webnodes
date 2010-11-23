@@ -8,7 +8,7 @@
 
 {% block content %}
     <h1>{{ user.name.capitalize() }}'s Topics</h1>
-    <br>
+    
     <table class="topic_listing">
         {% for topic in user.topics %}
             {% include "_topic_listing.html" %}

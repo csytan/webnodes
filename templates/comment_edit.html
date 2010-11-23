@@ -27,7 +27,6 @@
 
 {% block content %}
     <h1>Edit Comment</h1>
-    <br>
     <form action="" method="post">
         {{ xsrf_form_html() }}
         <textarea id="text" name="text" tabindex="1">{{ escape(comment.text) }}</textarea>
