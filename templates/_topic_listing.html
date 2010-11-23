@@ -26,13 +26,13 @@
         </span>
         <br>
         {% if topic.n_comments %}
-            <span>
+            <a href="/{{ topic.name }}">
                 {% if topic.n_comments == 1 %}
                     1 comment
                 {% elif topic.n_comments > 1 %}
                     {{ topic.n_comments }} comments
                 {% end %}
-            </span>
+            </a>
         {% end %}
     </td>
 </tr>
