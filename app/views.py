@@ -312,35 +312,11 @@ class Vote(BaseHandler):
             if comment.site != self.current_site:
                 raise tornado.web.HTTPError(403)
             
-        if self.current_user.is_admin or \
-                (self.current_user.daily_karma > 0 and comment.author != self.current_user):
-            way = self.get_argument('way', None)
-            if way == 'up' and self.current_user.is_admin or \
-                    self.current_user.name not in comment.up_votes:
-                comment.points += 1
-                if self.current_user.name not in comment.up_votes:
-                    comment.up_votes.append(self.current_user.name)
-                comment.update_score()
-                comment.put()
-                self.current_user.daily_karma -= 1
-                self.current_user.put()
-                if comment.author:
-                    comment.author.karma += 1
-                    comment.author.put()
-            elif way == 'down' and self.current_user.is_admin or \
-                    (self.current_user.karma >= 100 and \
-                    self.current_user.name not in comment.down_votes):
-                comment.points -= 1
-                if self.current_user.name not in comment.down_votes:
-                    comment.down_votes.append(self.current_user.name)
-                comment.update_score()
-                comment.put()
-                self.current_user.daily_karma -= 1
-                self.current_user.karma -= 1
-                self.current_user.put()
-                if comment.author:
-                    comment.author.karma -= 1
-                    comment.author.put()
+        way = self.get_argument('way', None)
+        if way == 'up' and comment.can_vote_up(self.current_user):
+            comment.vote(way, self.current_user)
+        elif way == 'down' and comment.can_vote_down(self.current_user):
+            comment.vote(way, self.current_user)
         self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
 
 

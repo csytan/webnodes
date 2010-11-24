@@ -28,6 +28,36 @@
                 <br>
                 <a href="/account">Edit your Profile</a>
             </div>
+        {% elif message.type == 'topic_upvote' %}
+            {% set topic = message.topic %}
+            <div class="comment">
+                <img src="{{ message.sender.gravatar(60) }}" class="gravatar">
+                <div class="body">
+                    <p class="comment_info">
+                        <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
+                        voted for your topic
+                        {{ relative_date(message.created) }}
+                        |
+                        <a href="/{{ topic.name }}">link</a>
+                    </p>
+                    {{ markdown(truncate(topic.text, 100)) }}
+                </div>
+            </div>
+        {% elif message.type == 'comment_upvote' %}
+            {% set comment = message.comment %}
+            <div class="comment">
+                <img src="{{ message.sender.gravatar(60) }}" class="gravatar">
+                <div class="body">
+                    <p class="comment_info">
+                        <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
+                        voted for your comment
+                        {{ relative_date(message.created) }}
+                        |
+                        <a href="/{{ comment.topic.name }}#c{{ comment.id }}">link</a>
+                    </p>
+                    {{ markdown(truncate(comment.text, 100)) }}
+                </div>
+            </div>
         {% elif message.type == 'comment_reply' %}
             {% set comment = message.comment %}
             <div class="comment">

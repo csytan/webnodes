@@ -197,6 +197,36 @@ class Votable(BaseModel):
             user != self.author:
             return True
         return False
+        
+    def vote(self, way, user):
+        vote = 1 if way == 'up' else -1
+        if way == 'up':
+            self.points += 1
+            if user.name not in self.up_votes:
+                self.up_votes.append(user.name)
+            if self.author:
+                self.author.karma += 1
+        elif way == 'down':
+            self.points -= 1
+            if user.name not in self.down_votes:
+                self.down_votes.append(user.name)
+            user.karma -= 1
+            if self.author:
+                self.author.karma -= 1
+        user.daily_karma -= 1
+        self.update_score()
+        puts = [self, user]
+        if self.author:
+            message = Message(to=self.author, sender=user)
+            if isinstance(self, Comment):
+                message.type = 'comment_upvote'
+                message.comment = self
+            else:
+                message.type = 'topic_upvote'
+                message.topic = self
+            self.author.n_messages += 1
+            puts += [self.author, message]
+        db.put(puts)
 
 
 class Topic(Votable):
@@ -302,9 +332,12 @@ class Comment(Votable):
 
 class Message(BaseModel):
     to = db.ReferenceProperty(User, collection_name='messages')
-    type = db.StringProperty(choices=['welcome', 'comment_reply', 'topic_edit'])
-    comment = db.ReferenceProperty()
-    topic_edit = db.ReferenceProperty(collection_name='message_set2')
+    sender = db.ReferenceProperty(User, collection_name='sender_messages')
+    type = db.StringProperty(choices=['welcome', 'comment_upvote', 
+        'comment_reply', 'topic_upvote', 'topic_edit'])
+    comment = db.ReferenceProperty(Comment, collection_name='comment_messages')
+    topic = db.ReferenceProperty(Topic, collection_name='topic_messages')
+    topic_edit = db.ReferenceProperty(TopicEdit, collection_name='topic_edit_messages')
 
 
 
