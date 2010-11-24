@@ -14,25 +14,4 @@
             <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
         </h2>
     </td>
-    
-    <td class="info2">
-        <span class="points">
-            {% if not current_user %}
-                <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
-            {% elif topic.can_vote_up(current_user) %}
-                <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
-            {% end %}
-            {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
-        </span>
-        <br>
-        {% if topic.n_comments %}
-            <a href="/{{ topic.name }}">
-                {% if topic.n_comments == 1 %}
-                    1 comment
-                {% elif topic.n_comments > 1 %}
-                    {{ topic.n_comments }} comments
-                {% end %}
-            </a>
-        {% end %}
-    </td>
 </tr>
