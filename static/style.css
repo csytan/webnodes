@@ -141,10 +141,10 @@ textarea {
 #message.error { background-color: #F8ECEF; border: 1px solid #e0bac7;}
 
 
-.topic_listing tr {
+.topic_listing td {
     border-top: 1px solid #eee;
 }
-.topic_listing tr:first-child {
+.topic_listing tr:first-child td {
     border: none;
 }
 .topic_listing td.info {
