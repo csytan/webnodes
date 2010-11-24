@@ -313,10 +313,34 @@ class Vote(BaseHandler):
                 raise tornado.web.HTTPError(403)
             
         way = self.get_argument('way', None)
-        if way == 'up' and comment.can_vote_up(self.current_user):
-            comment.vote(way, self.current_user)
-        elif way == 'down' and comment.can_vote_down(self.current_user):
-            comment.vote(way, self.current_user)
+        user = self.current_user
+        puts = [comment, user]
+        if way == 'up' and comment.can_vote_up(user):
+            comment.points += 1
+            if user.name not in comment.up_votes:
+                comment.up_votes.append(user.name)
+            if comment.author:
+                comment.author.karma += 1
+                message = models.Message(to=comment.author, sender=user)
+                if isinstance(comment, models.Comment):
+                    message.type = 'comment_upvote'
+                    message.comment = comment
+                else:
+                    message.type = 'topic_upvote'
+                    message.topic = comment
+                comment.author.n_messages += 1
+                puts += [comment.author, message]
+        elif way == 'down' and comment.can_vote_down(user):
+            comment.points -= 1
+            if user.name not in comment.down_votes:
+                comment.down_votes.append(user.name)
+            user.karma -= 1
+            if comment.author:
+                comment.author.karma -= 1
+                user.daily_karma -= 1
+                puts.append(comment.author)
+        comment.update_score()
+        db.put(puts)
         self.write(str(comment.points) + (' point' if comment.points in (1, -1) else ' points'))
 
 
