@@ -8,7 +8,9 @@
 
 {% block style %}
     <style>
-        
+        .comment_info {
+            margin-left: 80px;
+        }
     </style>
 {% end %}
 
@@ -31,70 +33,59 @@
         {% elif message.type == 'topic_upvote' %}
             {% set topic = message.topic %}
             <div class="comment">
-                <img src="{{ message.sender.gravatar(60) }}" class="gravatar">
-                <div class="body">
-                    <p class="comment_info">
-                        <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
-                        voted for your topic
-                        {{ relative_date(message.created) }}
-                        |
-                        <a href="/{{ topic.name }}">link</a>
-                    </p>
-                    {{ markdown(truncate(topic.text, 100)) }}
-                </div>
+                <img src="{{ message.sender.gravatar(40) }}" class="gravatar">
+                <p class="comment_info">
+                    <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
+                    voted for your topic
+                    "{{ escape(topic.title) }}"
+                    {{ relative_date(message.created) }}
+                    |
+                    <a href="/{{ topic.name }}">link</a>
+                </p>
             </div>
         {% elif message.type == 'comment_upvote' %}
             {% set comment = message.comment %}
             <div class="comment">
-                <img src="{{ message.sender.gravatar(60) }}" class="gravatar">
-                <div class="body">
-                    <p class="comment_info">
-                        <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
-                        voted for your comment
-                        {{ relative_date(message.created) }}
-                        |
-                        <a href="/{{ comment.topic.name }}#c{{ comment.id }}">link</a>
-                    </p>
-                    {{ markdown(truncate(comment.text, 100)) }}
-                </div>
+                <img src="{{ message.sender.gravatar(40) }}" class="gravatar">
+                <p class="comment_info">
+                    <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
+                    voted for your comment
+                    {{ relative_date(message.created) }}
+                    |
+                    <a href="/{{ comment.topic.name }}#c{{ comment.id }}">link</a>
+                </p>
             </div>
         {% elif message.type == 'comment_reply' %}
             {% set comment = message.comment %}
             <div class="comment">
                 {% if comment.author %}
-                    <img src="{{ comment.author.gravatar(60) }}" class="gravatar">
+                    <img src="{{ comment.author.gravatar(40) }}" class="gravatar">
                 {% else %}
                     <img src="http://www.gravatar.com/avatar/0?d=mm&amp;s=60" class="gravatar">
                 {% end %}
-                
-                <div class="body">
-                    <p class="comment_info">
-                        {% if comment.author %}
-                            <a href="/users/{{ comment.author.name }}">{{ comment.author.name }}</a>
-                        {% else %}
-                            anonymous
-                        {% end %}
-                        replied to you 
-                        {{ relative_date(comment.created) }}
-                        |
-                        <a href="/{{ comment.topic.name }}#c{{ comment.id }}">link</a>
-                    </p>
-                    {{ markdown(comment.text) }}
-                </div>
+                <p class="comment_info">
+                    {% if comment.author %}
+                        <a href="/users/{{ comment.author.name }}">{{ comment.author.name }}</a>
+                    {% else %}
+                        anonymous
+                    {% end %}
+                    replied to you 
+                    {{ relative_date(comment.created) }}
+                    |
+                    <a href="/{{ comment.topic.name }}#c{{ comment.id }}">link</a>
+                </p>
             </div>
         {% elif message.type == 'topic_edit' %}
             {% set edit = message.topic_edit %}
             <div class="comment">
-                <img src="{{ edit.author.gravatar(60) }}" class="gravatar">
-                <div class="body">
-                    <p class="comment_info">
-                        <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
-                        edited your topic
-                        {{ relative_date(edit.created) }}
-                        | <a href="/{{ edit.topic.name }}">link</a>
-                    </p>
-                    {{ markdown(edit.text) }}
-                </div>
+                <img src="{{ edit.author.gravatar(40) }}" class="gravatar">
+                <p class="comment_info">
+                    <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
+                    edited your topic
+                    "{{ escape(edit.title) }}"
+                    {{ relative_date(edit.created) }}
+                    | <a href="/{{ edit.topic.name }}">link</a>
+                </p>
             </div>
         {% end %}
     {% end %}

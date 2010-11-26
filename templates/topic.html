@@ -50,19 +50,24 @@
             {% if topic.can_vote_down(current_user) %}
                 / <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
             {% end %}
-            
             <span class="points">
                 {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
             </span>
             
             {% if topic.author %}
                 by 
-                <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
+                <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
             {% else %}
                 by anonymous
             {% end %}
             
             {{ relative_date(topic.created) }}
+            
+            {% if topic.editors %}
+                | edited by 
+                {{ ', '.join(['<a href="/users/' + e + '">' + e + '</a>' for e in topic.editors]) }}
+            {% end %}
+            
             {% if topic.version > 1 %}
                 | <a href="/{{ topic.name }}/versions">version {{ topic.version }}</a>
             {% else %}
