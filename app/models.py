@@ -68,7 +68,7 @@ class Site(BaseModel):
         
     def hot_topics(self, page=0):
         topics = self.topics.order('-score').fetch(20, offset=page*20)
-        prefetch_refprop(topics, Topic.author)
+        #prefetch_refprop(topics, Topic.author)
         return topics
 
 
