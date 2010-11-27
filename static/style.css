@@ -32,7 +32,11 @@ h3 { font-size: 1.1em; font-weight: bold; }
 
 label { color: #6d6c6c; }
 
-ol, ul { margin: 1em; padding-left: 0.5em; display: block; }
+ol, ul {
+    margin: 0.5em 1em;
+    padding-left: 0.5em;
+    display: block;
+}
 ol li { list-style-type: decimal; }
 ul li { list-style-type: disc; }
 
