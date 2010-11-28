@@ -30,8 +30,12 @@
     <form action="" method="post">
         {{ xsrf_form_html() }}
         <textarea id="text" name="text" tabindex="1">{{ escape(comment.text) }}</textarea>
-        <input type="radio" name="action" value="edit" checked> Edit<br>
-        <input type="radio" name="action" value="delete"> Delete<br>
+        <input type="radio" name="action" id="edit" value="edit" checked>
+        <label for="edit">Edit</label>
+        <br>
+        <input type="radio" name="action" id="delete" value="delete">
+        <label for="delete">Delete</label>
+        <br><br>
         <input type="submit" value="Do it!" tabindex="2">
     </form>
 {% end %}

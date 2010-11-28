@@ -31,7 +31,7 @@
                 |
                 <a href="#c{{ comment.id }}">link</a>
                 {% if comment.can_edit(current_user) %}
-                    | <a href="/{{ comment.id }}/comment_edit">edit</a>
+                    | <a href="/comments/{{ comment.id }}/edit">edit</a>
                 {% end %}
             </p>
             {{ markdown(comment.text) }}
