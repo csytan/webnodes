@@ -36,6 +36,13 @@
 
 
 {% block content %}
+    {% set message = handler.get_argument('message', None) %}
+    {% if message == 'skill_test' %}
+        <div id="message" class="error">Please fill out the anti spam box to post anonymously</div>
+    {% elif message == 'comment_deleted' %}
+        <div id="message" class="success">Comment deleted</div>
+    {% end %}
+    
     <h1>
         <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
     </h1>
@@ -96,6 +103,10 @@
             <form action="" method="post">
                 {{ xsrf_form_html() }}
                 <input type="hidden" id="reply_to" name="reply_to">
+                {% if not current_user %}
+                    <label for="skill_test">1 + 4 = ? (Anti Spam)</label>
+                    <input type="text" name="skill_test" id="skill_test">
+                {% end %}
                 <textarea name="text"></textarea>
                 <a style="float:right" target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown help</a>
                 <input type="submit" value="Reply">

@@ -84,7 +84,6 @@ class User(BaseModel):
     n_comments = db.IntegerProperty(default=0)
     n_messages = db.IntegerProperty(default=0, indexed=False)
     about = db.TextProperty(default='')
-    is_admin = db.BooleanProperty(default=False)
     
     @classmethod
     def create(cls, site, username, password, email=None):
@@ -160,6 +159,10 @@ class User(BaseModel):
     @property
     def can_remove_topics(self):
         return self.is_admin or self.karma >= 200
+        
+    @property
+    def is_admin(self):
+        return self.name == 'csytan'
 
 
 class Votable(BaseModel):
@@ -293,8 +296,10 @@ class Comment(Votable):
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
     
     def can_edit(self, user):
+        if user.is_admin:
+            return True
         td = datetime.datetime.now() - self.created
-        if user == self.author and \
+        if user and user == self.author and \
             not td.days and td.seconds < 60 * 20:
             return True
         return False

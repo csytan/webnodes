@@ -206,7 +206,12 @@ class Topic(BaseHandler):
         
     def post(self, name):
         topic = models.Topic.get_topic(self.current_site, name)
-        if not topic: raise tornado.web.HTTPError(404)
+        if not topic:
+            raise tornado.web.HTTPError(404)
+        
+        if not self.current_user:
+            if self.get_argument('skill_test', None) != '5':
+                return self.reload(message='skill_test')
         
         reply_to = self.get_argument('reply_to', None)
         if reply_to:
@@ -222,11 +227,16 @@ class Topic(BaseHandler):
         topic.n_comments += 1
         if self.current_user:
             self.current_user.n_comments += 1
-        db.put([topic, comment, self.current_user] if self.current_user else [topic, comment])
+            db.put([topic, comment, self.current_user])
+        else:
+            db.put([topic, comment])
         
         parent_author = reply_to.author if reply_to else topic.author
         if parent_author and parent_author != comment.author:
-            message = models.Message(to=parent_author, type='comment_reply', comment=comment)
+            message = models.Message(
+                to=parent_author,
+                type='comment_reply',
+                comment=comment)
             parent_author.n_messages += 1
             db.put([message, parent_author])
             
@@ -292,10 +302,19 @@ class CommentEdit(BaseHandler):
     @tornado.web.authenticated
     def post(self, id):
         comment = models.Comment.get_by_id(int(id))
-        if comment.can_edit(self.current_user):
+        if not comment.can_edit(self.current_user):
+            return self.write('no sir')
+        action = self.get_argument('action', None)
+        if action == 'edit':
             comment.text = self.get_argument('text', '')
             comment.put()
-        self.redirect('/' + comment.topic.name + '#c' + id)
+            self.redirect('/' + comment.topic.name + '#c' + id)
+        elif action == 'delete':
+            delete = [comment]
+            delete.append(comment.comment_messages.get())
+            delete += models.Comment.all().filter('reply_to =', comment).fetch(1000)
+            db.delete([d for d in delete if d])
+            self.redirect('/' + comment.topic.name + '?message=comment_deleted')
 
 
 class Vote(BaseHandler):
