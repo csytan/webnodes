@@ -296,10 +296,12 @@ class Comment(Votable):
     reply_to = db.SelfReferenceProperty(collection_name='reply_to_set')
     
     def can_edit(self, user):
+        if not user:
+            return False
         if user.is_admin:
             return True
         td = datetime.datetime.now() - self.created
-        if user and user == self.author and \
+        if user == self.author and \
             not td.days and td.seconds < 60 * 20:
             return True
         return False
