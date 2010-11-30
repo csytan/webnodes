@@ -76,10 +76,10 @@ textarea {
 
 #header {
     color: #275f6d;
-    padding: 0.5em;
-    background-color: #419ab5;
-    border-bottom: 1px solid #3a8aa3;
-    border-left: 4px solid #3a8aa3;
+    padding: 0.7em;
+    background-color: #4692AB;
+    border-bottom: 1px solid #2B7993;
+    border-left: 4px solid #2B7993;
 }
 #header .container {
     max-width: 900px;
