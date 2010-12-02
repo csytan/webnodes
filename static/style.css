@@ -45,6 +45,7 @@ blockquote, pre, code {
     background-color: #F8F8F8;
     border-left: 4px solid #BBB;
     padding: 1em;
+    padding-bottom: 0.1em;
 }
 img { max-width: 100%; }
 
