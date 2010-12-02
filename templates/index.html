@@ -43,24 +43,17 @@
     <script>
         $(document).ready(function(){
             var vid_links = $('a.video');
-            var window_height = $(window).height();
             function showVideos(){
-                if (vid_links.length){
-                    var requery = false;
-                    var window_bottom = $(window).scrollTop() + (window_height * 2);
-                    vid_links.each(function(){
-                        if ($(this).offset().top < window_bottom){
-                            $(this).replaceWith(
-                                '<iframe src="' + $(this).attr('data-embed') + '" class="video" frameborder="0"></iframe>'
-                            );
-                            requery = true;
-                        } else {
-                            return false;
-                        }
-                    });
-                    if (requery)
-                        vid_links = $('a.video');
-                }
+                if (!vid_links.length) return;
+                var window_bottom = $(window).scrollTop() + $(window).height() + 500;
+                vid_links.each(function(){
+                    var link = $(this);
+                    if (link.offset().top < window_bottom){
+                        link.replaceWith(
+                            '<iframe src="' + link.attr('data-embed') + '" class="video" frameborder="0"></iframe>');
+                        vid_links = vid_links.slice(1);
+                    }
+                });
             }
             showVideos();
             $(window).scroll(showVideos);
