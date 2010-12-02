@@ -220,8 +220,7 @@ a.vote_down:hover {
 
 
 
-iframe.vimeo,
-iframe.youtube {
+iframe.video {
     width: 700px;
     height: 394px;
 }

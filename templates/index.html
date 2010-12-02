@@ -34,7 +34,38 @@
             border-bottom: 1px solid #eee;
             margin-bottom: 1.5em;
         }
+
     </style>
+{% end %}
+
+
+{% block script %}
+    <script>
+        $(document).ready(function(){
+            var vid_links = $('a.video');
+            var window_height = $(window).height();
+            function showVideos(){
+                if (vid_links.length){
+                    var requery = false;
+                    var window_bottom = $(window).scrollTop() + (window_height * 2);
+                    vid_links.each(function(){
+                        if ($(this).offset().top < window_bottom){
+                            $(this).replaceWith(
+                                '<iframe src="' + $(this).attr('data-embed') + '" class="video" frameborder="0"></iframe>'
+                            );
+                            requery = true;
+                        } else {
+                            return false;
+                        }
+                    });
+                    if (requery)
+                        vid_links = $('a.video');
+                }
+            }
+            showVideos();
+            $(window).scroll(showVideos);
+        });
+    </script>
 {% end %}
 
 
@@ -75,7 +106,7 @@
                     {{ relative_date(topic.created) }}
                 </p>
                 <div class="body">
-                    {{ markdown(topic.text) }}
+                    {{ markdown(topic.text, video_embed=False) }}
                 </div>
                 {% if topic.n_comments %}
                     <a href="/{{ topic.name }}">{{ topic.n_comments }} comments</a>
