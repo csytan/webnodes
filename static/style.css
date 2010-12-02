@@ -4,8 +4,9 @@ html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pr
 
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    color: #3d3d3d;
+    font-weight: 200;
+    font-size: 17px;
+    color: black;
     line-height: 1.5em;
 }
 
@@ -14,7 +15,7 @@ a:hover { color: #e0115f; }
 
 b, strong { font-weight: bold; }
 em { font-style: italic; }
-p, blockquote { margin-bottom: 1.2em; }
+p, blockquote { margin-bottom: 1.4em; }
 
 h1, h2, h3, h4, h5 {
     line-height: 1.4em;
@@ -90,6 +91,7 @@ textarea {
 }
 #header #logo a {
     font-size: 1.5em;
+    font-weight: normal;
     padding: 0.1em 0;
     line-height: 1;
     text-decoration: none;

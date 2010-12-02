@@ -127,7 +127,7 @@ class Index(BaseHandler):
         page = self.get_argument('page', '')
         page = abs(int(page)) if page.isdigit() else 0
         topics = self.current_site.hot_topics(page=page)
-        next_page = page + 1 if len(topics) == 20 else None
+        next_page = page + 1 if len(topics) == 10 else None
         self.render('index.html', topics=topics, next_page=next_page)
 
 
