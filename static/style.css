@@ -191,6 +191,11 @@ textarea {
 }
 
 
+.topic h1, .comment h1 { font-size: 1.5em; }
+.topic h2, .comment h2 { font-size: 1.3em; }
+.topic h3, .comment h3 { font-size: 1.1em; }
+
+
 a.vote_up,
 a.vote_down {
     border-radius: 4px;

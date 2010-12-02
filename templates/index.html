@@ -26,6 +26,12 @@
         #next_page {
             font-size: 1.3em;
         }
+        .topic_title {
+            font-size: 1.7em;
+        }
+        .topic {
+            margin-bottom: 3em;
+        }
     </style>
 {% end %}
 
@@ -38,16 +44,40 @@
         </div>
     {% end %}
     
-    <table class="topic_listing">
-        {% for topic in topics %}
-            {% include "_topic_listing.html" %}
-        {% end %}
-        {% if next_page %}
-            <td class="info"></td>
-            <td class="title">
-                <a id="next_page" href="/?page={{ next_page }}">More »</a>
-            </td>
-            <td class="info2"></td></td>
-        {% end %}
-    </table>
+    {% for topic in topics %}
+        <h2 class="topic_title">
+            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
+        </h2>
+        
+        <div class="topic" style="border:none;">
+            <p class="comment_info">
+                {% if not current_user %}
+                    <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+                {% elif topic.can_vote_up(current_user) %}
+                    <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
+                {% end %}
+                {% if topic.can_vote_down(current_user) %}
+                    / <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
+                {% end %}
+                <span class="points">
+                    {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
+                </span>
+                
+                {% if topic.author %}
+                    by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
+                {% else %}
+                    by anonymous
+                {% end %}
+                
+                {{ relative_date(topic.created) }}
+            </p>
+            <div class="body">
+                {{ markdown(topic.text) }}
+            </div>
+        </div>
+    {% end %}
+    
+    {% if next_page %}
+        <a id="next_page" href="/?page={{ next_page }}">More »</a>
+    {% end %}
 {% end %}

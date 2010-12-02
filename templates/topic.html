@@ -62,18 +62,12 @@
             </span>
             
             {% if topic.author %}
-                by 
-                <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>
+                by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
             {% else %}
                 by anonymous
             {% end %}
             
             {{ relative_date(topic.created) }}
-            
-            {% if topic.editors %}
-                | edited by 
-                {{ ', '.join(['<a href="/users/' + e + '">' + e + '</a>' for e in topic.editors]) }}
-            {% end %}
             
             {% if topic.version > 1 %}
                 | <a href="/{{ topic.name }}/versions">version {{ topic.version }}</a>
