@@ -136,6 +136,11 @@ class Index(BaseHandler):
         self.render('index.html', topics=topics, next_page=next_page)
 
 
+class Favicon(BaseHandler):
+    def get(self):
+        self.redirect('/static/' + self.current_site.name + '_favicon.ico')
+
+
 class NewSite(BaseHandler):
     def get(self):
         self.render('new_site.html')
