@@ -26,8 +26,8 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
     text-decoration: none;
 }
 
-h1 { font-size: 2em; }
-h2 { font-size: 1.5em; }
+h1 { font-size: 1.8em; }
+h2 { font-size: 1.3em; }
 h3 { font-size: 1.1em; font-weight: bold; }
 
 label { color: #6d6c6c; }
@@ -166,7 +166,7 @@ textarea {
 
 .comment {
     border-top: 1px solid #EEE;
-    padding: 2em 0;
+    padding: 1.5em 0;
 }
 .comment_info {
     color: #6d6c6c; 
@@ -177,7 +177,7 @@ textarea {
     margin: 0 1em;
 }
 .comment .body {
-    padding: 0 2em;
+    padding: 0 1em;
     margin-left: 80px;
     margin-bottom: 1em;
 }
