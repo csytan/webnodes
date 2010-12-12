@@ -65,12 +65,14 @@ class Site(BaseModel):
         return db.run_in_transaction(txn)
         
     def hot_topics(self, page=0):
-        self._hot_topics = getattr(self, '_hot_topics', {})
-        if not page in self._hot_topics:
-            topics = self.topics.order('-score').fetch(10, offset=page*10)
-            prefetch_refprop(topics, Topic.author)
-            self._hot_topics[page] = topics
-        return self._hot_topics[page]
+        topics = self.topics.order('-score').fetch(10, offset=page*10)
+        prefetch_refprop(topics, Topic.author)
+        return topics
+        
+    def sidebar_topics(self):
+        if not hasattr(self, '_sidebar_topics'):
+            self._sidebar_topics = self.topics.order('-score').fetch(30)
+        return self._sidebar_topics
 
 
 class User(BaseModel):

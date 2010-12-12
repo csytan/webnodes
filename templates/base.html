@@ -60,8 +60,8 @@
                 {% end %}
                 <br>
                 <br>
-                <h2>Recent Topics</h2>
-                {% for t in current_site.hot_topics() %}
+                <h2>Recently</h2>
+                {% for t in current_site.sidebar_topics() %}
                     <h3><a href="/{{ t.name }}">{{ escape(t.title) }}</a></h3>
                 {% end %}
                 <br>
