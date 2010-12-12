@@ -3,26 +3,6 @@
 
 {% block style %}
     <style>
-        #about {
-            color: #333;
-            padding: 1.5em;
-            font-size: 1.1em;
-            background-color: #EEE;
-            width: 550px;
-            margin: auto;
-            margin-bottom: 1.5em;
-            border-radius: 7px;
-            -moz-border-radius: 7px;
-            -webkit-border-radius: 7px;
-            border: 1px solid #DDD;
-        }
-        #about p {
-            margin-bottom: 0;
-        }
-        #about img {
-            float: left;
-            margin-right: 1em;
-        }
         #next_page {
             font-size: 1.2em;
         }
@@ -60,13 +40,6 @@
 
 
 {% block content %}
-    {% if not current_user %}
-        <div id="about">
-            {{ markdown(current_site.about) }}
-            <div style="clear:both"></div>
-        </div>
-    {% end %}
-    
     {% for topic in topics %}
         <div class="topic_listing_front">
             <h2 class="topic_title">

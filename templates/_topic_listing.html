@@ -1,4 +1,10 @@
 <tr>
+
+    <td class="title">
+        <h2>
+            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
+        </h2>
+    </td>
     <td class="info">
         {% if not current_user %}
             <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
@@ -13,10 +19,5 @@
         </span>
         <br>
         {{ relative_date(topic.created) }}
-    </td>
-    <td class="title">
-        <h2>
-            <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
-        </h2>
     </td>
 </tr>

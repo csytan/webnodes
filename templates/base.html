@@ -25,51 +25,57 @@
     <img id="background" src="/static/bg.jpg">
     <div id="body">
         <div id="header">
-            <div class="container">
-                <div id="logo">
-                    {% if current_site %}
-                        <a href="/">{{ escape(current_site.title) }}</a>
-                    {% end %}
-                </div>
-                <div id="nav">
-                    <a class="item" href="/submit">submit  ✎</a>
-                    <a class="item" href="/community">community ☮</a>
-                    {% if current_user %}
-                        <span class="item">
-                            {% if current_user.n_messages %}
-                                <a href="/inbox">inbox  ★ {{ current_user.n_messages }}</a>
-                            {% else %}
-                                <a href="/inbox">inbox</a>
-                            {% end %}
-                            &nbsp;|&nbsp;
-                            <a href="/account">{{ current_user.name }} ☯ {{ current_user.karma }}</a>
-                             &nbsp;|&nbsp;
-                            <a href="/sign_out">sign out ☽</a>
-                        </span>
-                    {% else %}
-                        <a class="item" href="/sign_in">sign in ☼</a>
-                    {% end %}
-                </div>
+            <div id="logo">
+                {% if current_site %}
+                    <a href="/">
+                        <img src="/static/thrutched_logo3.png" style="height: 100px">
+                    </a>
+                {% end %}
+            </div>
+            <div id="header_about">
+                {{ markdown(current_site.about) }}
             </div>
             <div style="clear:both"></div>
         </div>
         
         <div id="main">
-            <div id="content">
-                {% block content %}{% end %}
+            <div id="sidebar">
+                {% if current_user %}
+                    <a class="nav" href="/inbox">
+                        {% if current_user.n_messages %}
+                            inbox  ★ {{ current_user.n_messages }}
+                        {% else %}
+                            inbox ✉
+                        {% end %}
+                    </a>
+                    </a>
+                    <br>
+                    <a class="nav" href="/account">{{ current_user.name }} ☯ {{ current_user.karma }}</a>
+                    <br>
+                    <a class="nav" href="/sign_out">sign out ☽</a>
+                {% else %}
+                    <a class="nav" href="/sign_in">sign in ☼</a>
+                {% end %}
+                <br>
+                <a class="nav" href="/submit">submit  ✎</a>
+                <br>
+                <a class="nav" href="/community">community ☮</a>
+                <br>
             </div>
-            <div id="footer">
-                <script type="text/javascript">
-                  var _gaq = _gaq || [];
-                  _gaq.push(['_setAccount', 'UA-3228291-1']);
-                  _gaq.push(['_trackPageview']);
-                  (function() {
-                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                  })();
-                </script>
-            </div>
+            <div id="content">{% block content %}{% end %}</div>
+        </div>
+        
+        <div id="footer">
+            <script type="text/javascript">
+              var _gaq = _gaq || [];
+              _gaq.push(['_setAccount', 'UA-3228291-1']);
+              _gaq.push(['_trackPageview']);
+              (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+              })();
+            </script>
         </div>
     </div>
 </body>

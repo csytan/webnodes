@@ -6,7 +6,7 @@ body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 200;
     font-size: 16px;
-    color: black;
+    color: #444;
     line-height: 1.5em;
 }
 
@@ -65,69 +65,51 @@ textarea {
     height: 100%; 
     position: absolute; 
     left: 0px; 
-    top: 0px; 
+    top: -80px; 
     z-index: -1;
 }
 #body {
     padding-bottom: 4em;
 }
-#main {
-    margin: auto;
-    width: 700px;
-}
 
 #header {
-    color: #275f6d;
-    padding: 0.7em;
-    background-color: #4692AB;
-    border-bottom: 1px solid #2B7993;
-    border-left: 4px solid #2B7993;
-}
-#header .container {
-    max-width: 900px;
+    padding: 2em 0;
+    max-width: 870px;
     margin: auto;
 }
 #header #logo {
     float: left;
 }
-#header #logo a {
-    font-size: 1.5em;
-    font-weight: normal;
-    padding: 0.1em 0;
-    line-height: 1;
-    text-decoration: none;
-    color: white;
-    text-shadow: rgba(0, 0, 0, 0.2) 1px 1px 0px;
-}
 
-#header #nav {
+#header_about {
+    color: #675E39;
+    width: 500px;
     float: right;
-}
-#header #nav .item {
-    margin-left: 2em;
-}
-#header #nav a {
-    text-decoration: none;
-    color: white;
-}
-#header #nav a:hover {
-    text-decoration: underline;
-}
-#header #nav a.inbox {
-    background: #67b6cf;
-    color: white;
-    text-decoration: none;
-    padding: 0 0.3em;
-}
-#header #nav a.inbox:hover {
-    background: #e0115f;
-}
-#header #nav .karma {
-    color: #6d6c6c;
+    font-size: 1.2em;
+    margin-top: 3.1em;
 }
 
+
+
+
+#sidebar a {
+    text-decoration: none;
+}
+#sidebar a.nav {
+    font-size: 1.1em;
+}
+
+
+#main {
+    margin: auto;
+    width: 800px;
+}
 #content {
-    padding: 2em 0;
+    width: 600px;
+}
+#sidebar {
+    float: right;
+    width: 150px;
 }
 
 #message {
@@ -158,10 +140,10 @@ textarea {
     font-weight: 200;
     width: 22%;
     text-align: right;
-    padding: 1.2em;
+    padding: 1.2em 0;
 }
 .topic_listing td.title {
-    padding: 1.2em;
+    padding: 1.2em 0;
     width: 78%;
 }
 .topic_listing h2 {
@@ -222,6 +204,6 @@ a.vote_down:hover {
 
 
 iframe.video {
-    width: 700px;
-    height: 394px;
+    width: 600px;
+    height: 338px;
 }
