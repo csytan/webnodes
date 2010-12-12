@@ -65,7 +65,7 @@ textarea {
     height: 100%; 
     position: absolute; 
     left: 0px; 
-    top: -80px; 
+    top: 0px; 
     z-index: -1;
 }
 #body {
@@ -83,12 +83,12 @@ textarea {
 
 #header_about {
     color: #675E39;
-    width: 500px;
+    width: 600px;
     float: right;
-    font-size: 1.2em;
+    text-align: right;
+    font-size: 1.1em;
     margin-top: 3.1em;
 }
-
 
 
 
@@ -97,6 +97,11 @@ textarea {
 }
 #sidebar a.nav {
     font-size: 1.1em;
+    font-weight: normal;
+}
+#sidebar h3 {
+    font-size: 1em;
+    font-weight: 200;
 }
 
 

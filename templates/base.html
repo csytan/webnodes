@@ -28,7 +28,7 @@
             <div id="logo">
                 {% if current_site %}
                     <a href="/">
-                        <img src="/static/thrutched_logo3.png" style="height: 100px">
+                        <img src="/static/thrutched_logo.png" style="height: 100px">
                     </a>
                 {% end %}
             </div>
@@ -43,24 +43,28 @@
                 {% if current_user %}
                     <a class="nav" href="/inbox">
                         {% if current_user.n_messages %}
-                            inbox  ★ {{ current_user.n_messages }}
+                            Inbox  ★ {{ current_user.n_messages }}
                         {% else %}
-                            inbox ✉
+                            Inbox ✉
                         {% end %}
                     </a>
                     </a>
                     <br>
                     <a class="nav" href="/account">{{ current_user.name }} ☯ {{ current_user.karma }}</a>
                     <br>
-                    <a class="nav" href="/sign_out">sign out ☽</a>
+                    <a class="nav" href="/sign_out">Sign out ☽</a>
                 {% else %}
-                    <a class="nav" href="/sign_in">sign in ☼</a>
+                    <a class="nav" href="/sign_in">Sign in ☼</a>
                 {% end %}
                 <br>
-                <a class="nav" href="/submit">submit  ✎</a>
+                <a class="nav" href="/submit">Submit  ✎</a>
                 <br>
-                <a class="nav" href="/community">community ☮</a>
+                <a class="nav" href="/community">Community ☮</a>
                 <br>
+                {% set topics = globals().get('topics', []) %}
+                {% for t in topics %}
+                    <h3><a href="/{{ t.name }}">{{ escape(t.title) }}</a></h3>
+                {% end %}
             </div>
             <div id="content">{% block content %}{% end %}</div>
         </div>
