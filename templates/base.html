@@ -13,8 +13,8 @@
         </style>
     <![endif]-->
     {% block style %}{% end %}
-    {% if current_site and current_site.favicon %}
-        <link rel="shortcut icon" href="/files/{{ current_site.favicon }}">
+    {% if current_site %}
+        <link rel="shortcut icon" href="/static/favicon.ico">
     {% end %}
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
     <script type="text/javascript" src="/static/script.js"></script>
@@ -44,6 +44,7 @@
                 <a class="nav" href="/submit">submit  ✎</a>
                 <br>
                 <a class="nav" href="/community">community ☮</a>
+                <br>
                 {% if current_user %}
                     <div class="divider"></div>
                     <a class="nav" href="/inbox">
@@ -58,15 +59,22 @@
                     <br>
                     <a class="nav" href="/sign_out">sign out ☽</a>
                 {% else %}
-                    <br>
                     <a class="nav" href="/sign_in">sign in ☼</a>
                 {% end %}
                 <br>
                 <br>
                 <h2>Recent Topics</h2>
-                {% for t in globals().get('topics', []) %}
+                {% for t in current_site.hot_topics() %}
                     <h3><a href="/{{ t.name }}">{{ escape(t.title) }}</a></h3>
                 {% end %}
+                
+                <h2>Search</h2>
+                <form method="get" action="http://www.google.com/search">
+                    <input type="text" name="q" size="18" maxlength="255" value="">
+                    <input type="hidden" name="domains" value="thrutched.com">
+                    <input type="hidden" name="sitesearch" value="thrutched.com">
+                    <input type="submit" value="Google Search"> 
+                </form>
             </div>
             <div style="clear:both"></div>
         </div>

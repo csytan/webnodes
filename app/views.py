@@ -7,7 +7,6 @@ import unicodedata
 import urllib
 import urlparse
 
-from google.appengine.ext import blobstore
 from google.appengine.ext import db
 
 from lib import markdown2
@@ -372,21 +371,13 @@ class Vote(BaseHandler):
 class CommunityEdit(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        self.render('community_edit.html',
-            upload_url=blobstore.create_upload_url('/community_edit'))
+        self.render('community_edit.html')
         
     @tornado.web.authenticated
     def post(self):
-        blob_key = re.findall(r'blob-key="*([^;"\s]+)', self.request.body)
-        if blob_key:
-            blob_info = blobstore.BlobInfo.get(blob_key[0])
-            if self.current_site.favicon:
-                self.current_site.favicon.delete()
-            self.current_site.favicon = str(blob_info.key())
-        else:
-            self.current_site.title = self.get_argument('title', '')
-            self.current_site.tagline = self.get_argument('tagline', '')
-            self.current_site.about = self.get_argument('about', '')
+        self.current_site.title = self.get_argument('title', '')
+        self.current_site.tagline = self.get_argument('tagline', '')
+        self.current_site.about = self.get_argument('about', '')
         self.current_site.put()
         self.reload(message='updated')
 

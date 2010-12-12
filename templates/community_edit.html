@@ -15,15 +15,7 @@
         <div id="message" class="success">Updated</div>
     {% end %}
     
-    <h1>Community - Edit</h1>
-    
-    <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
-        {{ xsrf_form_html() }}
-        <label for="favicon">Favicon</label>
-        <br>
-        <input id="favicon" type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>
+    <h1>Community Edit</h1>
     
     <form action="/community_edit" method="post">
         {{ xsrf_form_html() }}

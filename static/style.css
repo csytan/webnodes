@@ -73,8 +73,8 @@ textarea {
 }
 
 #header {
+    width: 870px;
     margin: 2em auto 0;
-    max-width: 870px;
 }
 #header #logo {
     float: left;
@@ -110,13 +110,12 @@ textarea {
 }
 #sidebar a.nav {
     text-decoration: none;
-    font-size: 1.1em;
 }
 #sidebar h2 {
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 #sidebar h3 {
-    font-size: 1em;
+    font-size: 0.9em;
     font-weight: 200;
 }
 
