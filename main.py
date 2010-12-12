@@ -15,6 +15,7 @@ settings = {
 }
 application = tornado.wsgi.WSGIApplication([
     (r'/', views.Index),
+    (r'/favicon\.ico', views.Favicon),
     (r'/new_site', views.NewSite),
     (r'/submit', views.Submit),
     (r'/vote', views.Vote),

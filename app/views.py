@@ -138,7 +138,7 @@ class Index(BaseHandler):
 
 class Favicon(BaseHandler):
     def get(self):
-        self.redirect('/static/' + self.current_site.name + '_favicon.ico')
+        self.redirect('/static/' + self.current_site.key_name + '_favicon.ico')
 
 
 class NewSite(BaseHandler):
