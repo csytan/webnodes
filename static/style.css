@@ -118,6 +118,10 @@ textarea {
     font-size: 0.9em;
     font-weight: 200;
 }
+#sidebar #search {
+    float: right;
+    width: 80%;
+}
 
 
 
