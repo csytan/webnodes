@@ -73,9 +73,8 @@ textarea {
 }
 
 #header {
-    padding: 2em 0;
+    margin: 2em auto 0;
     max-width: 870px;
-    margin: auto;
 }
 #header #logo {
     float: left;
@@ -92,12 +91,29 @@ textarea {
 
 
 
-#sidebar a {
-    text-decoration: none;
+#main {
+    margin: 1em auto;
+    width: 800px;
+}
+#content {
+    width: 600px;
+    float: right;
+}
+#sidebar {
+    width: 160px;
+    padding-top: 3em;
+    text-align: right;
+}
+#sidebar .divider {
+    border-bottom: 1px solid #eee;
+    margin: 1em 0;
 }
 #sidebar a.nav {
+    text-decoration: none;
     font-size: 1.1em;
-    font-weight: normal;
+}
+#sidebar h2 {
+    font-size: 1.2em;
 }
 #sidebar h3 {
     font-size: 1em;
@@ -105,17 +121,6 @@ textarea {
 }
 
 
-#main {
-    margin: auto;
-    width: 800px;
-}
-#content {
-    width: 600px;
-}
-#sidebar {
-    float: right;
-    width: 150px;
-}
 
 #message {
     color: #333;
