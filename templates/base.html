@@ -41,12 +41,11 @@
         <div id="main">
             <div id="content">{% block content %}{% end %}</div>
             <div id="sidebar">
-                <br>
                 <a class="nav" href="/submit">submit  ✎</a>
                 <br>
                 <a class="nav" href="/community">community ☮</a>
-                <div class="divider"></div>
                 {% if current_user %}
+                    <div class="divider"></div>
                     <a class="nav" href="/inbox">
                         {% if current_user.n_messages %}
                             inbox  ★ {{ current_user.n_messages }}
@@ -59,6 +58,7 @@
                     <br>
                     <a class="nav" href="/sign_out">sign out ☽</a>
                 {% else %}
+                    <br>
                     <a class="nav" href="/sign_in">sign in ☼</a>
                 {% end %}
                 <br>
