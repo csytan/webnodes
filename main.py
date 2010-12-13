@@ -4,12 +4,16 @@ import wsgiref.handlers
 import tornado.wsgi
 
 from app import views
+from app import models
 
+
+
+app_settings = models.Settings.get_settings()
 
 settings = {
     'template_path': os.path.join(os.path.dirname(__file__), 'templates'),
     'debug': views.DEBUG,
-    'cookie_secret': 'hello',
+    'cookie_secret': app_settings.cookie_secret,
     'login_url': '/sign_in',
     'xsrf_cookies': True,
 }

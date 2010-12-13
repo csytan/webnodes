@@ -22,6 +22,15 @@ def prefetch_refprop(entities, prop):
 
 
 ### Models ###
+class Settings(db.Model):
+    cookie_secret = db.StringProperty(indexed=False)
+    
+    @classmethod
+    def get_settings(cls):
+        return cls.get_or_insert(key_name='settings',
+            cookie_secret=str(uuid.uuid4()).replace('-', ''))
+
+
 class BaseModel(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
