@@ -47,7 +47,6 @@ blockquote, pre, code {
     padding: 1em;
     padding-bottom: 0.1em;
 }
-img { max-width: 100%; }
 
 
 input[type="text"],
@@ -116,7 +115,6 @@ textarea {
     font-weight: 200;
 }
 #sidebar #search {
-    float: right;
     width: 80%;
 }
 
@@ -161,7 +159,6 @@ textarea {
 }
 
 
-
 .gravatar { border-radius: 4px; }
 
 .comment {
@@ -189,6 +186,8 @@ textarea {
 .topic h1, .comment h1 { font-size: 1.5em; }
 .topic h2, .comment h2 { font-size: 1.3em; }
 .topic h3, .comment h3 { font-size: 1.1em; }
+
+.topic img, .comment img { max-width: 100%; }
 
 
 a.vote_up,
