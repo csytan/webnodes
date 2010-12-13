@@ -89,20 +89,17 @@ textarea {
     margin-top: 3.1em;
 }
 
-
-
 #main {
-    margin: 1em auto;
+    margin: 2.5em auto;
     width: 800px;
 }
 #content {
     width: 600px;
-    float: right;
 }
 #sidebar {
+    float: right;
+    margin-top: 2em;
     width: 160px;
-    padding-top: 4em;
-    text-align: right;
 }
 #sidebar .divider {
     border-bottom: 1px solid #eee;
