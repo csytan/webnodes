@@ -93,6 +93,7 @@ textarea {
     width: 800px;
 }
 #content {
+    float: left;
     width: 600px;
 }
 #sidebar {
