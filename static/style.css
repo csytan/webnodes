@@ -146,7 +146,6 @@ textarea {
 }
 .topic_listing td.info {
     color: #6d6c6c; 
-    font-weight: 200;
     width: 22%;
     text-align: right;
     padding: 1.2em 0;
@@ -156,6 +155,7 @@ textarea {
     width: 78%;
 }
 .topic_listing h2 {
+    font-size: 1.2em;
     margin: 0;
 }
 
