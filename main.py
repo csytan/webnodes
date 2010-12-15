@@ -3,9 +3,8 @@ import wsgiref.handlers
 
 import tornado.wsgi
 
-from app import views
-from app import models
-
+import views
+import models
 
 
 app_settings = models.Settings.get_settings()
