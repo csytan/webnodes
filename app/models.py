@@ -144,9 +144,11 @@ class User(BaseModel):
     
     def set_password(self, raw_password):
         assert len(raw_password) > 0 and len(raw_password) <= 20
-        raw_password = raw_password.encode('utf-8')
+        password = raw_password.encode('utf-8')
         salt = str(uuid.uuid4()).replace('-', '')
-        hsh = hashlib.sha1(salt + raw_password).hexdigest()
+        #n_iter = 50000
+        #for i in range(n_iter):
+        hsh = hashlib.sha1(salt + password).hexdigest()
         self.password = 'sha1$' + salt + '$' + hsh
         
     def check_password(self, raw_password):
