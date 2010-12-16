@@ -82,6 +82,10 @@ class Site(BaseModel):
         if not hasattr(self, '_sidebar_topics'):
             self._sidebar_topics = self.topics.order('-score').fetch(30)
         return self._sidebar_topics
+        
+    @property
+    def link(self):
+        return 'http://' + (self.domain or self.key_name + '.webnodes.org')
 
 
 class User(BaseModel):

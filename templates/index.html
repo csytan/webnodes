@@ -69,7 +69,7 @@
                     {{ relative_date(topic.created) }}
                 </p>
                 <div class="body">
-                    {{ markdown(topic.text, video_embed=False) }}
+                    {{ markdown(topic.text) }}
                 </div>
                 {% if topic.n_comments %}
                     <a href="/{{ topic.name }}">{{ topic.n_comments }} comments</a>

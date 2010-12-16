@@ -77,7 +77,7 @@
             | <a href="/{{ topic.name }}/edit">edit</a>
         </p>
         <div class="body">
-            {{ markdown(topic.text) }}
+            {{ markdown(topic.text, video_embed=True) }}
             {% if replies %}
                 <a class="reply">reply</a>
             {% end %}
@@ -98,7 +98,7 @@
                 {{ xsrf_form_html() }}
                 <input type="hidden" id="reply_to" name="reply_to">
                 {% if not current_user %}
-                    <label for="skill_test">1 + 4 = ? (Anti Spam)</label>
+                    <label for="skill_test">2 x 4 = ? (Skill testing question)</label>
                     <input type="text" name="skill_test" id="skill_test">
                 {% end %}
                 <textarea name="text"></textarea>

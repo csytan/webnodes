@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+<channel>
+    <title>{{ escape(current_site.title) }}</title>
+    <link>{{ current_site.link }}</link>
+    <description>{{ escape(current_site.tagline)}}</description>
+    {% for topic in topics %}
+        <item>
+            <title>{{ escape(topic.title) }}</title>
+            <link>{{ current_site.link }}/{{ topic.key_name }}</link>
+            <guid>{{ current_site.link }}/{{ topic.key_name }}</guid>
+            <description>{{ escape(markdown(topic.text)) }}</description>
+        </item>
+    {% end %}
+</channel>
+
+</rss>

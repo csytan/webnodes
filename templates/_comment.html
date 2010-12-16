@@ -34,7 +34,7 @@
                     | <a href="/comments/{{ comment.id }}/edit">edit</a>
                 {% end %}
             </p>
-            {{ markdown(comment.text, video_embed=False) }}
+            {{ markdown(comment.text) }}
             <a data-id="{{ comment.id }}" class="reply">reply</a>
         </div>
         {{ handler.render_comments(comment.replies) }}

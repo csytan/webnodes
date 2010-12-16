@@ -86,7 +86,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return cgi.escape(new_str)
         
     @staticmethod
-    def markdown(value, video_embed=True):
+    def markdown(value, video_embed=False):
         # real line breaks
         value = re.sub(r'(\S ?)(\r\n|\r|\n)', r'\1  \n', value)
         # vimeo and youtube embed
@@ -139,6 +139,11 @@ class Index(BaseHandler):
 class Favicon(BaseHandler):
     def get(self):
         self.redirect('/static/' + self.current_site.key_name + '_favicon.ico')
+
+
+class RSS(BaseHandler):
+    def get(self):
+        self.render('rss.xml', topics=self.current_site.hot_topics())
 
 
 class NewSite(BaseHandler):
@@ -220,7 +225,7 @@ class Topic(BaseHandler):
             raise tornado.web.HTTPError(404)
         
         if not self.current_user:
-            if self.get_argument('skill_test', None) != '5':
+            if self.get_argument('skill_test', None) != '8':
                 return self.reload(message='skill_test')
         
         reply_to = self.get_argument('reply_to', None)
