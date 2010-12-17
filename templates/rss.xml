@@ -8,8 +8,8 @@
     {% for topic in topics %}
         <item>
             <title>{{ escape(topic.title) }}</title>
-            <link>{{ current_site.link }}/{{ topic.key_name }}</link>
-            <guid>{{ current_site.link }}/{{ topic.key_name }}</guid>
+            <link>{{ current_site.link }}/{{ topic.name }}</link>
+            <guid>{{ current_site.link }}/{{ topic.name }}</guid>
             <description>{{ escape(markdown(topic.text)) }}</description>
         </item>
     {% end %}

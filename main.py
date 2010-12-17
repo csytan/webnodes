@@ -19,7 +19,7 @@ settings = {
 application = tornado.wsgi.WSGIApplication([
     (r'/', views.Index),
     (r'/favicon\.ico', views.Favicon),
-    (r'/rss', views.RSS),
+    (r'/rss\.xml', views.RSS),
     (r'/new_site', views.NewSite),
     (r'/submit', views.Submit),
     (r'/vote', views.Vote),
