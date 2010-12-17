@@ -3,6 +3,9 @@ version: 4
 runtime: python
 api_version: 1
 
+inbound_services:
+- warmup
+
 handlers:
 - url: /robots.txt
   static_files: static/robots.txt
