@@ -115,7 +115,6 @@ class Template(object):
         """Generate this template with the given arguments."""
         namespace = {
             "escape": escape.xhtml_escape,
-            "xhtml_escape": escape.xhtml_escape,
             "url_escape": escape.url_escape,
             "json_encode": escape.json_encode,
             "squeeze": escape.squeeze,
@@ -532,8 +531,7 @@ def _parse(reader, in_block=None):
                 raise ParseError("Extra {%% end %%} block on line %d" % line)
             return body
 
-        elif operator in ("extends", "include", "set", "import", "from",
-                          "comment"):
+        elif operator in ("extends", "include", "set", "import", "comment"):
             if operator == "comment":
                 continue
             if operator == "extends":
@@ -541,7 +539,7 @@ def _parse(reader, in_block=None):
                 if not suffix:
                     raise ParseError("extends missing file path on line %d" % line)
                 block = _ExtendsBlock(suffix)
-            elif operator in ("import", "from"):
+            elif operator == "import":
                 if not suffix:
                     raise ParseError("import missing statement on line %d" % line)
                 block = _Statement(contents)

@@ -5,10 +5,6 @@
         </h2>
     </td>
     <td class="info">
-        <span class="points">
-            {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
-        </span>
-        <br>
         {{ relative_date(topic.created) }}
     </td>
 </tr>

@@ -242,24 +242,15 @@ class Locale(object):
 
         You can force a full format date ("July 10, 1980") with
         full_format=True.
-
-        This method is primarily intended for dates in the past.
-        For dates in the future, we fall back to full format.
         """
         if self.code.startswith("ru"):
             relative = False
         if type(date) in (int, long, float):
             date = datetime.datetime.utcfromtimestamp(date)
         now = datetime.datetime.utcnow()
-        if date > now:
-            if relative and (date - now).seconds < 60:
-                # Due to click skew, things are some things slightly
-                # in the future. Round timestamps in the immediate
-                # future down to now in relative mode.
-                date = now
-            else:
-                # Otherwise, future dates always use the full format.
-                full_format = True
+        # Round down to now. Due to click skew, things are somethings
+        # slightly in the future.
+        if date > now: date = now
         local_date = date - datetime.timedelta(minutes=gmt_offset)
         local_now = now - datetime.timedelta(minutes=gmt_offset)
         local_yesterday = local_now - datetime.timedelta(hours=24)
@@ -398,7 +389,6 @@ class GettextLocale(Locale):
 
 LOCALE_NAMES = {
     "af_ZA": {"name_en": u"Afrikaans", "name": u"Afrikaans"},
-    "am_ET": {"name_en": u"Amharic", "name": u'\u12a0\u121b\u122d\u129b'},
     "ar_AR": {"name_en": u"Arabic", "name": u"\u0627\u0644\u0639\u0631\u0628\u064a\u0629"},
     "bg_BG": {"name_en": u"Bulgarian", "name": u"\u0411\u044a\u043b\u0433\u0430\u0440\u0441\u043a\u0438"},
     "bn_IN": {"name_en": u"Bengali", "name": u"\u09ac\u09be\u0982\u09b2\u09be"},
@@ -428,8 +418,8 @@ LOCALE_NAMES = {
     "id_ID": {"name_en": u"Indonesian", "name": u"Bahasa Indonesia"},
     "is_IS": {"name_en": u"Icelandic", "name": u"\xcdslenska"},
     "it_IT": {"name_en": u"Italian", "name": u"Italiano"},
-    "ja_JP": {"name_en": u"Japanese", "name": u"\u65e5\u672c\u8a9e"},
-    "ko_KR": {"name_en": u"Korean", "name": u"\ud55c\uad6d\uc5b4"},
+    "ja_JP": {"name_en": u"Japanese", "name": u"\xe6\xe6\xe8"},
+    "ko_KR": {"name_en": u"Korean", "name": u"\xed\xea\xec"},
     "lt_LT": {"name_en": u"Lithuanian", "name": u"Lietuvi\u0173"},
     "lv_LV": {"name_en": u"Latvian", "name": u"Latvie\u0161u"},
     "mk_MK": {"name_en": u"Macedonian", "name": u"\u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0441\u043a\u0438"},
@@ -457,6 +447,7 @@ LOCALE_NAMES = {
     "tr_TR": {"name_en": u"Turkish", "name": u"T\xfcrk\xe7e"},
     "uk_UA": {"name_en": u"Ukraini ", "name": u"\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430"},
     "vi_VN": {"name_en": u"Vietnamese", "name": u"Ti\u1ebfng Vi\u1ec7t"},
-    "zh_CN": {"name_en": u"Chinese (Simplified)", "name": u"\u4e2d\u6587(\u7b80\u4f53)"},
-    "zh_TW": {"name_en": u"Chinese (Traditional)", "name": u"\u4e2d\u6587(\u7e41\u9ad4)"},
+    "zh_CN": {"name_en": u"Chinese (Simplified)", "name": u"\xe4\xe6(\xe7\xe4)"},
+    "zh_HK": {"name_en": u"Chinese (Hong Kong)", "name": u"\xe4\xe6(\xe9\xe6)"},
+    "zh_TW": {"name_en": u"Chinese (Taiwan)", "name": u"\xe4\xe6(\xe5\xe7)"},
 }

@@ -353,8 +353,8 @@ class Vote(BaseHandler):
         puts = [comment, user]
         if way == 'up' and comment.can_vote_up(user):
             comment.points += 1
-            if user.name not in comment.up_votes:
-                comment.up_votes.append(user.name)
+            if user.key_name not in comment.up_votes:
+                comment.up_votes.append(user.key_name)
             if comment.author:
                 comment.author.karma += 1
                 message = models.Message(to=comment.author, sender=user)
@@ -368,8 +368,8 @@ class Vote(BaseHandler):
                 puts += [comment.author, message]
         elif way == 'down' and comment.can_vote_down(user):
             comment.points -= 1
-            if user.name not in comment.down_votes:
-                comment.down_votes.append(user.name)
+            if user.key_name not in comment.down_votes:
+                comment.down_votes.append(user.key_name)
             user.karma -= 1
             if comment.author:
                 comment.author.karma -= 1
@@ -434,7 +434,7 @@ class UserProfile(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('user_profile.html', user=user)
+        self.render('user_profile.html', user=user, favorites=user.favorites())
 
 
 class UserTopics(BaseHandler):

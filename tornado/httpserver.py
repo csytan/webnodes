@@ -27,13 +27,12 @@ import urlparse
 from tornado import httputil
 from tornado import ioloop
 from tornado import iostream
-from tornado import stack_context
 
 try:
     import fcntl
 except ImportError:
     if os.name == 'nt':
-        from tornado import win32_support as fcntl
+        import win32_support as fcntl
     else:
         raise
 
@@ -204,17 +203,6 @@ class HTTPServer(object):
             logging.info("Pre-forking %d server processes", num_processes)
             for i in range(num_processes):
                 if os.fork() == 0:
-                    import random
-                    from binascii import hexlify
-                    try:
-                        # If available, use the same method as
-                        # random.py
-                        seed = long(hexlify(os.urandom(16)), 16)
-                    except NotImplementedError:
-                        # Include the pid to avoid initializing two
-                        # processes to the same value
-                        seed(int(time.time() * 1000) ^ os.getpid())
-                    random.seed(seed)
                     self.io_loop = ioloop.IOLoop.instance()
                     self.io_loop.add_handler(
                         self._socket.fileno(), self._handle_events,
@@ -237,7 +225,7 @@ class HTTPServer(object):
             try:
                 connection, address = self._socket.accept()
             except socket.error, e:
-                if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
+                if e[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                     return
                 raise
             if self.ssl_options is not None:
@@ -267,9 +255,6 @@ class HTTPServer(object):
             except:
                 logging.error("Error in connection callback", exc_info=True)
 
-class _BadRequestException(Exception):
-    """Exception class for malformed HTTP requests."""
-    pass
 
 class HTTPConnection(object):
     """Handles a connection to an HTTP client, executing HTTP requests.
@@ -286,10 +271,7 @@ class HTTPConnection(object):
         self.xheaders = xheaders
         self._request = None
         self._request_finished = False
-        # Save stack context here, outside of any request.  This keeps
-        # contexts from one request from leaking into the next.
-        self._header_callback = stack_context.wrap(self._on_headers)
-        self.stream.read_until("\r\n\r\n", self._header_callback)
+        self.stream.read_until("\r\n\r\n", self._on_headers)
 
     def write(self, chunk):
         assert self._request, "Request closed"
@@ -323,39 +305,30 @@ class HTTPConnection(object):
         if disconnect:
             self.stream.close()
             return
-        self.stream.read_until("\r\n\r\n", self._header_callback)
+        self.stream.read_until("\r\n\r\n", self._on_headers)
 
     def _on_headers(self, data):
-        try:
-            eol = data.find("\r\n")
-            start_line = data[:eol]
-            try:
-                method, uri, version = start_line.split(" ")
-            except ValueError:
-                raise _BadRequestException("Malformed HTTP request line")
-            if not version.startswith("HTTP/"):
-                raise _BadRequestException("Malformed HTTP version in HTTP Request-Line")
-            headers = httputil.HTTPHeaders.parse(data[eol:])
-            self._request = HTTPRequest(
-                connection=self, method=method, uri=uri, version=version,
-                headers=headers, remote_ip=self.address[0])
+        eol = data.find("\r\n")
+        start_line = data[:eol]
+        method, uri, version = start_line.split(" ")
+        if not version.startswith("HTTP/"):
+            raise Exception("Malformed HTTP version in HTTP Request-Line")
+        headers = httputil.HTTPHeaders.parse(data[eol:])
+        self._request = HTTPRequest(
+            connection=self, method=method, uri=uri, version=version,
+            headers=headers, remote_ip=self.address[0])
 
-            content_length = headers.get("Content-Length")
-            if content_length:
-                content_length = int(content_length)
-                if content_length > self.stream.max_buffer_size:
-                    raise _BadRequestException("Content-Length too long")
-                if headers.get("Expect") == "100-continue":
-                    self.stream.write("HTTP/1.1 100 (Continue)\r\n\r\n")
-                self.stream.read_bytes(content_length, self._on_request_body)
-                return
-
-            self.request_callback(self._request)
-        except _BadRequestException, e:
-            logging.info("Malformed HTTP request from %s: %s",
-                         self.address[0], e)
-            self.stream.close()
+        content_length = headers.get("Content-Length")
+        if content_length:
+            content_length = int(content_length)
+            if content_length > self.stream.max_buffer_size:
+                raise Exception("Content-Length too long")
+            if headers.get("Expect") == "100-continue":
+                self.stream.write("HTTP/1.1 100 (Continue)\r\n\r\n")
+            self.stream.read_bytes(content_length, self._on_request_body)
             return
+
+        self.request_callback(self._request)
 
     def _on_request_body(self, data):
         self._request.body = data
@@ -369,12 +342,9 @@ class HTTPConnection(object):
                         self._request.arguments.setdefault(name, []).extend(
                             values)
             elif content_type.startswith("multipart/form-data"):
-                fields = content_type.split(";")
-                for field in fields:
-                    k, sep, v = field.strip().partition("=")
-                    if k == "boundary" and v:
-                        self._parse_mime_body(v, data)
-                        break
+                if 'boundary=' in content_type:
+                    boundary = content_type.split('boundary=',1)[1]
+                    if boundary: self._parse_mime_body(boundary, data)
                 else:
                     logging.warning("Invalid multipart/form-data")
         self.request_callback(self._request)
@@ -452,11 +422,7 @@ class HTTPRequest(object):
             # Squid uses X-Forwarded-For, others use X-Real-Ip
             self.remote_ip = self.headers.get(
                 "X-Real-Ip", self.headers.get("X-Forwarded-For", remote_ip))
-            # AWS uses X-Forwarded-Proto
-            self.protocol = self.headers.get(
-                "X-Scheme", self.headers.get("X-Forwarded-Proto", protocol))
-            if self.protocol not in ("http", "https"):
-                self.protocol = "http"
+            self.protocol = self.headers.get("X-Scheme", protocol) or "http"
         else:
             self.remote_ip = remote_ip
             self.protocol = protocol or "http"
@@ -500,30 +466,9 @@ class HTTPRequest(object):
         else:
             return self._finish_time - self._start_time
 
-    def get_ssl_certificate(self):
-        """Returns the client's SSL certificate, if any.
-
-        To use client certificates, the HTTPServer must have been constructed
-        with cert_reqs set in ssl_options, e.g.:
-            server = HTTPServer(app,
-                ssl_options=dict(
-                    certfile="foo.crt",
-                    keyfile="foo.key",
-                    cert_reqs=ssl.CERT_REQUIRED,
-                    ca_certs="cacert.crt"))
-
-        The return value is a dictionary, see SSLSocket.getpeercert() in
-        the standard library for more details.
-        http://docs.python.org/library/ssl.html#sslsocket-objects
-        """
-        try:
-            return self.connection.socket.getpeercert()
-        except:
-            return None
-
     def __repr__(self):
         attrs = ("protocol", "host", "method", "uri", "version", "remote_ip",
-                 "body")
+                 "remote_ip", "body")
         args = ", ".join(["%s=%r" % (n, getattr(self, n)) for n in attrs])
         return "%s(%s, headers=%s)" % (
             self.__class__.__name__, args, dict(self.headers))

@@ -181,13 +181,16 @@ class User(BaseModel):
     @property
     def is_admin(self):
         return self.name == 'csytan'
+        
+    def favorites(self):
+        return Topic.all().filter('up_votes =', self.key_name).order('-created').fetch(100)
 
 
 class Votable(BaseModel):
     points = db.IntegerProperty(default=1)
     score = db.FloatProperty()
-    up_votes = db.StringListProperty() # contains user key_names
-    down_votes = db.StringListProperty() # contains user key_names
+    up_votes = db.StringListProperty() # contains user.key_name's
+    down_votes = db.StringListProperty() # contains user.key_name's
     
     def update_score(self):
         """Adapted from reddit's algorithm
@@ -204,7 +207,7 @@ class Votable(BaseModel):
         if (user and user.is_admin) or \
             user and \
             user.daily_karma > 0 and \
-            user.name not in self.up_votes and \
+            user.key_name not in self.up_votes and \
             user != self.author:
             return True
         return False
@@ -214,7 +217,7 @@ class Votable(BaseModel):
             user and \
             user.karma >= 100 and \
             user.daily_karma > 0 and \
-            user.name not in self.down_votes and \
+            user.key_name not in self.down_votes and \
             user != self.author:
             return True
         return False

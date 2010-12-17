@@ -30,20 +30,20 @@ that transfer control from one context to another (e.g. AsyncHTTPClient
 itself, IOLoop, thread pools, etc).
 
 Example usage:
-    @contextlib.contextmanager
-    def die_on_error():
-        try:
-            yield
-        except:
-            logging.error("exception in asynchronous operation",exc_info=True)
-            sys.exit(1)
+  @contextlib.contextmanager
+  def die_on_error():
+    try:
+      yield
+    except:
+      logging.error("exception in asynchronous operation", exc_info=True)
+      sys.exit(1)
 
-    with StackContext(die_on_error):
-        # Any exception thrown here *or in callback and its desendents*
-        # will cause the process to exit instead of spinning endlessly
-        # in the ioloop.
-        http_client.fetch(url, callback)
-    ioloop.start()
+  with StackContext(die_on_error):
+    # Any exception thrown here *or in callback and its desendents*
+    # will cause the process to exit instead of spinning endlessly
+    # in the ioloop.
+    http_client.fetch(url, callback)
+  ioloop.start()
 '''
 
 from __future__ import with_statement
@@ -59,81 +59,39 @@ class _State(threading.local):
         self.contexts = ()
 _state = _State()
 
-class StackContext(object):
-    def __init__(self, context_factory):
-        '''Establishes the given context as a StackContext that will be transferred.
+@contextlib.contextmanager
+def StackContext(context_factory):
+    '''Establishes the given context as a StackContext that will be transferred.
 
-        Note that the parameter is a callable that returns a context
-        manager, not the context itself.  That is, where for a
-        non-transferable context manager you would say
-          with my_context():
-        StackContext takes the function itself rather than its result:
-          with StackContext(my_context):
-        '''
-        self.context_factory = context_factory
+    Note that the parameter is a callable that returns a context
+    manager, not the context itself.  That is, where for a
+    non-transferable context manager you would say
+      with my_context():
+    StackContext takes the function itself rather than its result:
+      with StackContext(my_context):
+    '''
+    old_contexts = _state.contexts
+    try:
+        _state.contexts = old_contexts + (context_factory,)
+        with context_factory():
+            yield
+    finally:
+        _state.contexts = old_contexts
 
-    # Note that some of this code is duplicated in ExceptionStackContext
-    # below.  ExceptionStackContext is more common and doesn't need
-    # the full generality of this class.
-    def __enter__(self):
-        self.old_contexts = _state.contexts
-        # _state.contexts is a tuple of (class, arg) pairs
-        _state.contexts = (self.old_contexts + 
-                           ((StackContext, self.context_factory),))
-        try:
-            self.context = self.context_factory()
-            self.context.__enter__()
-        except Exception:
-            _state.contexts = self.old_contexts
-            raise
-
-    def __exit__(self, type, value, traceback):
-        try:
-            return self.context.__exit__(type, value, traceback)
-        finally:
-            _state.contexts = self.old_contexts
-
-class ExceptionStackContext(object):
-    def __init__(self, exception_handler):
-        '''Specialization of StackContext for exception handling.
-
-        The supplied exception_handler function will be called in the
-        event of an uncaught exception in this context.  The semantics are
-        similar to a try/finally clause, and intended use cases are to log
-        an error, close a socket, or similar cleanup actions.  The
-        exc_info triple (type, value, traceback) will be passed to the
-        exception_handler function.
-
-        If the exception handler returns true, the exception will be
-        consumed and will not be propagated to other exception handlers.
-        '''
-        self.exception_handler = exception_handler
-
-    def __enter__(self):
-        self.old_contexts = _state.contexts
-        _state.contexts = (self.old_contexts +
-                           ((ExceptionStackContext, self.exception_handler),))
-
-    def __exit__(self, type, value, traceback):
-        try:
-            if type is not None:
-                return self.exception_handler(type, value, traceback)
-        finally:
-            _state.contexts = self.old_contexts
-
-class NullContext(object):
+@contextlib.contextmanager
+def NullContext():
     '''Resets the StackContext.
 
     Useful when creating a shared resource on demand (e.g. an AsyncHTTPClient)
     where the stack that caused the creating is not relevant to future
     operations.
     '''
-    def __enter__(self):
-        self.old_contexts = _state.contexts
+    old_contexts = _state.contexts
+    try:
         _state.contexts = ()
-
-    def __exit__(self, type, value, traceback):
-        _state.contexts = self.old_contexts
+        yield
+    finally:
+        _state.contexts = old_contexts
 
 def wrap(fn):
     '''Returns a callable object that will resore the current StackContext
@@ -143,31 +101,28 @@ def wrap(fn):
     different execution context (either in a different thread or
     asynchronously in the same thread).
     '''
-    if fn is None:
-      return None
     # functools.wraps doesn't appear to work on functools.partial objects
     #@functools.wraps(fn)
     def wrapped(callback, contexts, *args, **kwargs):
-        # If we're moving down the stack, _state.contexts is a prefix
-        # of contexts.  For each element of contexts not in that prefix,
-        # create a new StackContext object.
-        # If we're moving up the stack (or to an entirely different stack),
-        # _state.contexts will have elements not in contexts.  Use
-        # NullContext to clear the state and then recreate from contexts.
-        if (len(_state.contexts) > len(contexts) or
-            any(a[1] is not b[1]
-                for a, b in itertools.izip(_state.contexts, contexts))):
-            # contexts have been removed or changed, so start over
-            new_contexts = ([NullContext()] +
-                            [cls(arg) for (cls,arg) in contexts])
-        else:
-            new_contexts = [cls(arg)
-                            for (cls, arg) in contexts[len(_state.contexts):]]
-        if len(new_contexts) > 1:
+        # _state.contexts and contexts may share a common prefix.
+        # For each element of contexts not in that prefix, create a new
+        # StackContext object.
+        # TODO(bdarnell): do we want to be strict about the order,
+        # or is what we really want just set(contexts) - set(_state.contexts)?
+        # I think we do want to be strict about using identity comparison,
+        # so a set may not be quite right.  Conversely, it's not very stack-like
+        # to have new contexts pop up in the middle, so would we want to
+        # ensure there are no existing contexts not in the stack being restored?
+        # That feels right, but given the difficulty of handling errors at this
+        # level I'm not going to check for it now.
+        pairs = itertools.izip(itertools.chain(_state.contexts,
+                                               itertools.repeat(None)),
+                               contexts)
+        new_contexts = []
+        for old, new in itertools.dropwhile(lambda x: x[0] is x[1], pairs):
+            new_contexts.append(StackContext(new))
+        if new_contexts:
             with contextlib.nested(*new_contexts):
-                callback(*args, **kwargs)
-        elif new_contexts:
-            with new_contexts[0]:
                 callback(*args, **kwargs)
         else:
             callback(*args, **kwargs)
@@ -177,4 +132,3 @@ def wrap(fn):
     result = functools.partial(wrapped, fn, contexts)
     result.stack_context_wrapped = True
     return result
-

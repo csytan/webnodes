@@ -37,4 +37,14 @@
         <h2>About</h2>
         {{ markdown(user.about) }}
     {% end %}
+    
+    {% if favorites %}
+        <br>
+        <h2>Favorites</h2>
+        <table class="topic_listing">
+            {% for topic in favorites %}
+                {% include "_topic_listing.html" %}
+            {% end %}
+        </table>
+    {% end %}
 {% end %}
