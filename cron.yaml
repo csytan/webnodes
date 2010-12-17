@@ -1,0 +1,6 @@
+cron:
+- description: refresh page
+  url: /
+  schedule: every 10 minutes synchronized
+  
+  
