@@ -44,6 +44,8 @@ class BaseHandler(tornado.web.RequestHandler):
                 self._current_site = models.Site.get_by_key_name(subdomain)
             else:
                 self._current_site = models.Site.all().filter('domain =', self.request.host).get()
+        if not self._current_site:
+            self._current_site = models.Site.get_by_key_name('www')
         return self._current_site
         
     def render_string(self, template_name, **kwargs):
