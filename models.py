@@ -80,7 +80,7 @@ class Site(BaseModel):
         
     def sidebar_topics(self):
         if not hasattr(self, '_sidebar_topics'):
-            self._sidebar_topics = self.topics.order('-score').fetch(30)
+            self._sidebar_topics = self.topics.order('-points').fetch(30)
         return self._sidebar_topics
         
     @property
