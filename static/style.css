@@ -138,6 +138,7 @@ textarea {
 #message.error { background-color: #F8ECEF; border: 1px solid #e0bac7;}
 
 
+.topic_listing { width: 90%; }
 .topic_listing td {
     border-top: 1px solid #eee;
 }
