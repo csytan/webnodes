@@ -267,6 +267,9 @@ class HTTPServer(object):
             except:
                 logging.error("Error in connection callback", exc_info=True)
 
+class _BadRequestException(Exception):
+    """Exception class for malformed HTTP requests."""
+    pass
 
 class HTTPConnection(object):
     """Handles a connection to an HTTP client, executing HTTP requests.
@@ -323,27 +326,36 @@ class HTTPConnection(object):
         self.stream.read_until("\r\n\r\n", self._header_callback)
 
     def _on_headers(self, data):
-        eol = data.find("\r\n")
-        start_line = data[:eol]
-        method, uri, version = start_line.split(" ")
-        if not version.startswith("HTTP/"):
-            raise Exception("Malformed HTTP version in HTTP Request-Line")
-        headers = httputil.HTTPHeaders.parse(data[eol:])
-        self._request = HTTPRequest(
-            connection=self, method=method, uri=uri, version=version,
-            headers=headers, remote_ip=self.address[0])
+        try:
+            eol = data.find("\r\n")
+            start_line = data[:eol]
+            try:
+                method, uri, version = start_line.split(" ")
+            except ValueError:
+                raise _BadRequestException("Malformed HTTP request line")
+            if not version.startswith("HTTP/"):
+                raise _BadRequestException("Malformed HTTP version in HTTP Request-Line")
+            headers = httputil.HTTPHeaders.parse(data[eol:])
+            self._request = HTTPRequest(
+                connection=self, method=method, uri=uri, version=version,
+                headers=headers, remote_ip=self.address[0])
 
-        content_length = headers.get("Content-Length")
-        if content_length:
-            content_length = int(content_length)
-            if content_length > self.stream.max_buffer_size:
-                raise Exception("Content-Length too long")
-            if headers.get("Expect") == "100-continue":
-                self.stream.write("HTTP/1.1 100 (Continue)\r\n\r\n")
-            self.stream.read_bytes(content_length, self._on_request_body)
+            content_length = headers.get("Content-Length")
+            if content_length:
+                content_length = int(content_length)
+                if content_length > self.stream.max_buffer_size:
+                    raise _BadRequestException("Content-Length too long")
+                if headers.get("Expect") == "100-continue":
+                    self.stream.write("HTTP/1.1 100 (Continue)\r\n\r\n")
+                self.stream.read_bytes(content_length, self._on_request_body)
+                return
+
+            self.request_callback(self._request)
+        except _BadRequestException, e:
+            logging.info("Malformed HTTP request from %s: %s",
+                         self.address[0], e)
+            self.stream.close()
             return
-
-        self.request_callback(self._request)
 
     def _on_request_body(self, data):
         self._request.body = data
@@ -357,9 +369,12 @@ class HTTPConnection(object):
                         self._request.arguments.setdefault(name, []).extend(
                             values)
             elif content_type.startswith("multipart/form-data"):
-                if 'boundary=' in content_type:
-                    boundary = content_type.split('boundary=',1)[1]
-                    if boundary: self._parse_mime_body(boundary, data)
+                fields = content_type.split(";")
+                for field in fields:
+                    k, sep, v = field.strip().partition("=")
+                    if k == "boundary" and v:
+                        self._parse_mime_body(v, data)
+                        break
                 else:
                     logging.warning("Invalid multipart/form-data")
         self.request_callback(self._request)
@@ -437,7 +452,11 @@ class HTTPRequest(object):
             # Squid uses X-Forwarded-For, others use X-Real-Ip
             self.remote_ip = self.headers.get(
                 "X-Real-Ip", self.headers.get("X-Forwarded-For", remote_ip))
-            self.protocol = self.headers.get("X-Scheme", protocol) or "http"
+            # AWS uses X-Forwarded-Proto
+            self.protocol = self.headers.get(
+                "X-Scheme", self.headers.get("X-Forwarded-Proto", protocol))
+            if self.protocol not in ("http", "https"):
+                self.protocol = "http"
         else:
             self.remote_ip = remote_ip
             self.protocol = protocol or "http"
@@ -481,9 +500,30 @@ class HTTPRequest(object):
         else:
             return self._finish_time - self._start_time
 
+    def get_ssl_certificate(self):
+        """Returns the client's SSL certificate, if any.
+
+        To use client certificates, the HTTPServer must have been constructed
+        with cert_reqs set in ssl_options, e.g.:
+            server = HTTPServer(app,
+                ssl_options=dict(
+                    certfile="foo.crt",
+                    keyfile="foo.key",
+                    cert_reqs=ssl.CERT_REQUIRED,
+                    ca_certs="cacert.crt"))
+
+        The return value is a dictionary, see SSLSocket.getpeercert() in
+        the standard library for more details.
+        http://docs.python.org/library/ssl.html#sslsocket-objects
+        """
+        try:
+            return self.connection.socket.getpeercert()
+        except:
+            return None
+
     def __repr__(self):
         attrs = ("protocol", "host", "method", "uri", "version", "remote_ip",
-                 "remote_ip", "body")
+                 "body")
         args = ", ".join(["%s=%r" % (n, getattr(self, n)) for n in attrs])
         return "%s(%s, headers=%s)" % (
             self.__class__.__name__, args, dict(self.headers))

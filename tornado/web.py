@@ -23,7 +23,6 @@ Tornado non-blocking web server and tools.
 
 Here is the canonical "Hello, world" example app:
 
-    import tornado.httpserver
     import tornado.ioloop
     import tornado.web
 
@@ -35,12 +34,11 @@ Here is the canonical "Hello, world" example app:
         application = tornado.web.Application([
             (r"/", MainHandler),
         ])
-        http_server = tornado.httpserver.HTTPServer(application)
-        http_server.listen(8888)
+        application.listen(8888)
         tornado.ioloop.IOLoop.instance().start()
 
-See the Tornado walkthrough on GitHub for more details and a good
-getting started guide.
+See the Tornado walkthrough on http://tornadoweb.org for more details
+and a good getting started guide.
 """
 
 from __future__ import with_statement
@@ -457,12 +455,14 @@ class RequestHandler(object):
             sloc = html.rindex('</body>')
             html = html[:sloc] + js + '\n' + html[sloc:]
         if css_files:
-            paths = set()
+            paths = []
+            unique_paths = set()
             for path in css_files:
                 if not path.startswith("/") and not path.startswith("http:"):
-                    paths.add(self.static_url(path))
-                else:
-                    paths.add(path)
+                    path = self.static_url(path)
+                if path not in unique_paths:
+                    paths.append(path)
+                    unique_paths.add(path)
             css = ''.join('<link href="' + escape.xhtml_escape(p) + '" '
                           'type="text/css" rel="stylesheet"/>'
                           for p in paths)
@@ -550,7 +550,8 @@ class RequestHandler(object):
         # Automatically support ETags and add the Content-Length header if
         # we have not flushed any content yet.
         if not self._headers_written:
-            if (self._status_code == 200 and self.request.method == "GET" and
+            if (self._status_code == 200 and
+                self.request.method in ("GET", "HEAD") and
                 "Etag" not in self._headers):
                 hasher = hashlib.sha1()
                 for part in self._write_buffer:
@@ -808,17 +809,15 @@ class RequestHandler(object):
     def reverse_url(self, name, *args):
         return self.application.reverse_url(name, *args)
 
-    @contextlib.contextmanager
-    def _stack_context(self):
-        try:
-            yield
-        except Exception, e:
-            self._handle_request_exception(e)
+    def _stack_context_handle_exception(self, type, value, traceback):
+        self._handle_request_exception(value)
+        return True
 
     def _execute(self, transforms, *args, **kwargs):
         """Executes this request with the given output transforms."""
         self._transforms = transforms
-        with stack_context.StackContext(self._stack_context):
+        with stack_context.ExceptionStackContext(
+            self._stack_context_handle_exception):
             if self.request.method not in self.SUPPORTED_METHODS:
                 raise HTTPError(405)
             # If XSRF cookies are turned on, reject form submissions without
@@ -924,7 +923,7 @@ def removeslash(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         if self.request.path.endswith("/"):
-            if self.request.method == "GET":
+            if self.request.method in ("GET", "HEAD"):
                 uri = self.request.path.rstrip("/")
                 if self.request.query: uri += "?" + self.request.query
                 self.redirect(uri)
@@ -944,7 +943,7 @@ def addslash(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         if not self.request.path.endswith("/"):
-            if self.request.method == "GET":
+            if self.request.method in ("GET", "HEAD"):
                 uri = self.request.path + "/"
                 if self.request.query: uri += "?" + self.request.query
                 self.redirect(uri)
@@ -1028,6 +1027,25 @@ class Application(object):
         if self.settings.get("debug") and not wsgi:
             import autoreload
             autoreload.start()
+
+    def listen(self, port, address="", **kwargs):
+        """Starts an HTTP server for this application on the given port.
+
+        This is a convenience alias for creating an HTTPServer object
+        and calling its listen method.  Keyword arguments not
+        supported by HTTPServer.listen are passed to the HTTPServer
+        constructor.  For advanced uses (e.g. preforking), do not use
+        this method; create an HTTPServer and call its bind/start
+        methods directly.
+
+        Note that after calling this method you still need to call
+        IOLoop.instance().start() to start the server.
+        """
+        # import is here rather than top level because HTTPServer
+        # is not importable on appengine
+        from tornado.httpserver import HTTPServer
+        server = HTTPServer(self, **kwargs)
+        server.listen(port, address)
 
     def add_handlers(self, host_pattern, host_handlers):
         """Appends the given handlers to our handler list.
@@ -1142,7 +1160,7 @@ class Application(object):
                         args = [unquote(s) for s in match.groups()]
                     break
             if not handler:
-                handler = ErrorHandler(self, request, 404)
+                handler = ErrorHandler(self, request, status_code=404)
 
         # In debug mode, re-compile templates and reload static files on every
         # request so you don't need to restart to see changes
@@ -1183,8 +1201,7 @@ class HTTPError(Exception):
 
 class ErrorHandler(RequestHandler):
     """Generates an error response with status_code for all requests."""
-    def __init__(self, application, request, status_code):
-        RequestHandler.__init__(self, application, request)
+    def initialize(self, status_code):
         self.set_status(status_code)
 
     def prepare(self):
@@ -1200,8 +1217,7 @@ class RedirectHandler(RequestHandler):
             (r"/oldpath", web.RedirectHandler, {"url": "/newpath"}),
         ])
     """
-    def __init__(self, application, request, url, permanent=True):
-        RequestHandler.__init__(self, application, request)
+    def initialize(self, url, permanent=True):
         self._url = url
         self._permanent = permanent
 
@@ -1227,8 +1243,7 @@ class StaticFileHandler(RequestHandler):
     want browsers to cache a file indefinitely, send them to, e.g.,
     /static/images/myimage.png?v=xxx.
     """
-    def __init__(self, application, request, path, default_filename=None):
-        RequestHandler.__init__(self, application, request)
+    def initialize(self, path, default_filename=None):
         self.root = os.path.abspath(path) + os.path.sep
         self.default_filename = default_filename
 
@@ -1309,8 +1324,7 @@ class FallbackHandler(RequestHandler):
             (r".*", FallbackHandler, dict(fallback=wsgi_app),
         ])
     """
-    def __init__(self, app, request, fallback):
-        RequestHandler.__init__(self, app, request)
+    def initialize(self, fallback):
         self.fallback = fallback
 
     def prepare(self):
@@ -1415,7 +1429,7 @@ def authenticated(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         if not self.current_user:
-            if self.request.method == "GET":
+            if self.request.method in ("GET", "HEAD"):
                 url = self.get_login_url()
                 if "?" not in url:
                     if urlparse.urlsplit(url).scheme:

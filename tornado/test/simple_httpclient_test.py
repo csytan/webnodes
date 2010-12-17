@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 
+from __future__ import with_statement
+
+import collections
 import gzip
 import logging
+import socket
 
+from contextlib import closing
+from tornado.ioloop import IOLoop
 from tornado.simple_httpclient import SimpleAsyncHTTPClient
-from tornado.testing import AsyncHTTPTestCase, LogTrapTestCase
-from tornado.web import Application, RequestHandler
+from tornado.testing import AsyncHTTPTestCase, LogTrapTestCase, get_unused_port
+from tornado.web import Application, RequestHandler, asynchronous
 
 class HelloWorldHandler(RequestHandler):
     def get(self):
@@ -28,13 +34,34 @@ class AuthHandler(RequestHandler):
     def get(self):
         self.finish(self.request.headers["Authorization"])
 
+class HangHandler(RequestHandler):
+    @asynchronous
+    def get(self):
+        pass
+
+class TriggerHandler(RequestHandler):
+    def initialize(self, queue, wake_callback):
+        self.queue = queue
+        self.wake_callback = wake_callback
+
+    @asynchronous
+    def get(self):
+        logging.info("queuing trigger")
+        self.queue.append(self.finish)
+        self.wake_callback()
+
 class SimpleHTTPClientTestCase(AsyncHTTPTestCase, LogTrapTestCase):
     def get_app(self):
+        # callable objects to finish pending /trigger requests
+        self.triggers = collections.deque()
         return Application([
             ("/hello", HelloWorldHandler),
             ("/post", PostHandler),
             ("/chunk", ChunkHandler),
             ("/auth", AuthHandler),
+            ("/hang", HangHandler),
+            ("/trigger", TriggerHandler, dict(queue=self.triggers,
+                                              wake_callback=self.stop)),
             ], gzip=True)
 
     def setUp(self):
@@ -94,3 +121,58 @@ class SimpleHTTPClientTestCase(AsyncHTTPTestCase, LogTrapTestCase):
         self.assertEqual(len(response.body), 34)
         f = gzip.GzipFile(mode="r", fileobj=response.buffer)
         self.assertEqual(f.read(), "asdfqwer")
+
+    def test_connect_timeout(self):
+        # create a socket and bind it to a port, but don't
+        # call accept so the connection will timeout.
+        #get_unused_port()
+        port = get_unused_port()
+
+        with closing(socket.socket()) as sock:
+            sock.bind(('', port))
+            self.http_client.fetch("http://localhost:%d/" % port,
+                                   self.stop,
+                                   connect_timeout=0.1)
+            response = self.wait()
+            self.assertEqual(response.code, 599)
+            self.assertEqual(str(response.error), "HTTP 599: Timeout")
+
+    def test_request_timeout(self):
+        response = self.fetch('/hang', request_timeout=0.1)
+        self.assertEqual(response.code, 599)
+        self.assertEqual(str(response.error), "HTTP 599: Timeout")
+
+    def test_singleton(self):
+        # Class "constructor" reuses objects on the same IOLoop
+        self.assertTrue(SimpleAsyncHTTPClient(self.io_loop) is
+                        SimpleAsyncHTTPClient(self.io_loop))
+        # unless force_instance is used
+        self.assertTrue(SimpleAsyncHTTPClient(self.io_loop) is not
+                        SimpleAsyncHTTPClient(self.io_loop,
+                                              force_instance=True))
+        # different IOLoops use different objects
+        io_loop2 = IOLoop()
+        self.assertTrue(SimpleAsyncHTTPClient(self.io_loop) is not
+                        SimpleAsyncHTTPClient(io_loop2))
+
+    def test_connection_limit(self):
+        client = SimpleAsyncHTTPClient(self.io_loop, max_clients=2,
+                                       force_instance=True)
+        self.assertEqual(client.max_clients, 2)
+        seen = []
+        # Send 4 requests.  Two can be sent immediately, while the others
+        # will be queued
+        for i in range(4):
+            client.fetch(self.get_url("/trigger"),
+                         lambda response, i=i: (seen.append(i), self.stop()))
+        self.wait(condition=lambda: len(self.triggers) == 2)
+        self.assertEqual(len(client.queue), 2)
+
+        # Finish the first two requests and let the next two through
+        self.triggers.popleft()()
+        self.triggers.popleft()()
+        self.wait(condition=lambda: (len(self.triggers) == 2 and
+                                     len(seen) == 2))
+        self.assertEqual(seen, [0, 1])
+        self.assertEqual(len(client.queue), 0)
+

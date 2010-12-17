@@ -8,13 +8,16 @@ from tornado.ioloop import IOLoop
 from tornado.iostream import IOStream, SSLIOStream
 from tornado import stack_context
 
+import collections
 import contextlib
 import errno
 import functools
 import logging
 import re
 import socket
+import time
 import urlparse
+import weakref
 import zlib
 
 try:
@@ -42,9 +45,35 @@ class SimpleAsyncHTTPClient(object):
     Python 2.6 or higher is required for HTTPS support.  Users of Python 2.5
     should use the curl-based AsyncHTTPClient if HTTPS support is required.
     """
-    # TODO: singleton magic?
-    def __init__(self, io_loop=None):
-        self.io_loop = io_loop or IOLoop.instance()
+    _ASYNC_CLIENTS = weakref.WeakKeyDictionary()
+
+    def __new__(cls, io_loop=None, max_clients=10,
+                max_simultaneous_connections=None,
+                force_instance=False):
+        """Creates a SimpleAsyncHTTPClient.
+
+        Only a single SimpleAsyncHTTPClient instance exists per IOLoop
+        in order to provide limitations on the number of pending connections.
+        force_instance=True may be used to suppress this behavior.
+
+        max_clients is the number of concurrent requests that can be in
+        progress.  max_simultaneous_connections has no effect and is accepted
+        only for compatibility with the curl-based AsyncHTTPClient.  Note
+        that these arguments are only used when the client is first created,
+        and will be ignored when an existing client is reused.
+        """
+        io_loop = io_loop or IOLoop.instance()
+        if io_loop in cls._ASYNC_CLIENTS and not force_instance:
+            return cls._ASYNC_CLIENTS[io_loop]
+        else:
+            instance = super(SimpleAsyncHTTPClient, cls).__new__(cls)
+            instance.io_loop = io_loop
+            instance.max_clients = max_clients
+            instance.queue = collections.deque()
+            instance.active = {}
+            if not force_instance:
+                cls._ASYNC_CLIENTS[io_loop] = instance
+            return instance
 
     def close(self):
         pass
@@ -55,7 +84,27 @@ class SimpleAsyncHTTPClient(object):
         if not isinstance(request.headers, HTTPHeaders):
             request.headers = HTTPHeaders(request.headers)
         callback = stack_context.wrap(callback)
-        _HTTPConnection(self.io_loop, request, callback)
+        self.queue.append((request, callback))
+        self._process_queue()
+        if self.queue:
+            logging.debug("max_clients limit reached, request queued. "
+                          "%d active, %d queued requests." % (
+                    len(self.active), len(self.queue)))
+
+    def _process_queue(self):
+        with stack_context.NullContext():
+            while self.queue and len(self.active) < self.max_clients:
+                request, callback = self.queue.popleft()
+                key = object()
+                self.active[key] = (request, callback)
+                _HTTPConnection(self.io_loop, request,
+                                functools.partial(self._on_fetch_complete,
+                                                  key, callback))
+
+    def _on_fetch_complete(self, key, callback, response):
+        del self.active[key]
+        callback(response)
+        self._process_queue()
 
 
 
@@ -63,6 +112,7 @@ class _HTTPConnection(object):
     _SUPPORTED_METHODS = set(["GET", "HEAD", "POST", "PUT", "DELETE"])
 
     def __init__(self, io_loop, request, callback):
+        self.start_time = time.time()
         self.io_loop = io_loop
         self.request = request
         self.callback = callback
@@ -70,6 +120,8 @@ class _HTTPConnection(object):
         self.headers = None
         self.chunks = None
         self._decompressor = None
+        # Timeout handle returned by IOLoop.add_timeout
+        self._timeout = None
         with stack_context.StackContext(self.cleanup):
             parsed = urlparse.urlsplit(self.request.url)
             if ":" in parsed.netloc:
@@ -86,10 +138,30 @@ class _HTTPConnection(object):
             else:
                 self.stream = IOStream(socket.socket(),
                                        io_loop=self.io_loop)
+            timeout = min(request.connect_timeout, request.request_timeout)
+            if timeout:
+                self._connect_timeout = self.io_loop.add_timeout(
+                    self.start_time + timeout,
+                    self._on_timeout)
             self.stream.connect((host, port),
                                 functools.partial(self._on_connect, parsed))
 
+    def _on_timeout(self):
+        self._timeout = None
+        self.stream.close()
+        if self.callback is not None:
+            self.callback(HTTPResponse(self.request, 599,
+                                       error=HTTPError(599, "Timeout")))
+            self.callback = None
+
     def _on_connect(self, parsed):
+        if self._timeout is not None:
+            self.io_loop.remove_callback(self._timeout)
+            self._timeout = None
+        if self.request.request_timeout:
+            self._timeout = self.io_loop.add_timeout(
+                self.start_time + self.request.request_timeout,
+                self._on_timeout)
         if (self.request.method not in self._SUPPORTED_METHODS and
             not self.request.allow_nonstandard_methods):
             raise KeyError("unknown method %s" % self.request.method)
@@ -123,9 +195,6 @@ class _HTTPConnection(object):
                                              req_path)]
         for k, v in self.request.headers.get_all():
             request_lines.append("%s: %s" % (k, v))
-        if logging.getLogger().isEnabledFor(logging.DEBUG):
-            for line in request_lines:
-                logging.debug(line)
         self.stream.write("\r\n".join(request_lines) + "\r\n\r\n")
         if has_body:
             self.stream.write(self.request.body)
@@ -142,7 +211,6 @@ class _HTTPConnection(object):
                 self.callback = None
 
     def _on_headers(self, data):
-        logging.debug(data)
         first_line, _, header_data = data.partition("\r\n")
         match = re.match("HTTP/1.[01] ([0-9]+) .*", first_line)
         assert match
@@ -167,6 +235,9 @@ class _HTTPConnection(object):
                             "don't know how to read %s", self.request.url)
 
     def _on_body(self, data):
+        if self._timeout is not None:
+            self.io_loop.remove_timeout(self._timeout)
+            self._timeout = None
         if self._decompressor:
             data = self._decompressor.decompress(data)
         if self.request.streaming_callback:

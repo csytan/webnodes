@@ -180,7 +180,7 @@ class AsyncHTTPClient(object):
 
         If an error occurs during the fetch, the HTTPResponse given to the
         callback has a non-None error attribute that contains the exception
-        encountered during the request. You can call response.reraise() to
+        encountered during the request. You can call response.rethrow() to
         throw the exception (if any) in the callback.
         """
         if not isinstance(request, HTTPRequest):
@@ -554,6 +554,8 @@ def _curl_setup_request(curl, request, buffer, headers):
             credentials = '%s:%s' % (request.proxy_username,
                     request.proxy_password)
             curl.setopt(pycurl.PROXYUSERPWD, credentials)
+    else:
+        curl.setopt(pycurl.PROXY, '')
 
     # Set the request method through curl's retarded interface which makes
     # up names for almost every single method
