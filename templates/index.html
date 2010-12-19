@@ -12,6 +12,8 @@
         .topic_listing_front {
             margin-bottom: 3em;
         }
+        
+
     </style>
 {% end %}
 
@@ -41,42 +43,43 @@
 
 {% block content %}
     {% for topic in topics %}
-        <div class="topic_listing_front">
-            <h2 class="topic_title">
+        <div class="topic">
+            <h2 class="title">
                 <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
             </h2>
-            
-            <div class="topic" style="border:none;">
-                <p class="comment_info">
-                    {% if not current_user %}
-                        <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
-                    {% elif topic.can_vote_up(current_user) %}
-                        <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
-                    {% end %}
-                    {% if topic.can_vote_down(current_user) %}
-                        / <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
-                    {% end %}
-                    <span class="points">
-                        {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
-                    </span>
-                    
-                    {% if topic.author %}
-                        by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
-                    {% else %}
-                        by anonymous
-                    {% end %}
-                    
-                    {{ relative_date(topic.created) }}
-                </p>
-                <div class="body">
-                    {{ markdown(topic.text) }}
-                </div>
+            <div class="info">
+                {% if not current_user %}
+                    <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
+                {% elif topic.can_vote_up(current_user) %}
+                    <a class="vote_up" href="/vote?way=up&amp;topic_id={{ topic.name }}">+</a>
+                {% end %}
+                {% if topic.can_vote_down(current_user) %}
+                    / <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
+                {% end %}
+                <span class="points">
+                    {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
+                </span>
+                <br>
+                <img src="{{ topic.author.gravatar(60) }}" class="gravatar">
+                
+                <br>
+                {% if topic.author %}
+                    by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
+                {% else %}
+                    by anonymous
+                {% end %}
+                <br>
+                {{ relative_date(topic.created) }}
+            </div>
+            <div class="body">
+                {{ markdown(topic.text) }}
                 {% if topic.n_comments %}
                     <a href="/{{ topic.name }}">{{ topic.n_comments }} comments</a>
                 {% else %}
                     <a href="/{{ topic.name }}">discuss</a>
                 {% end %}
             </div>
+            <div style="clear:both"></div>
         </div>
     {% end %}
     
