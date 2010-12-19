@@ -1,21 +1,19 @@
 /* http://yui.yahooapis.com/3.0.0/build/cssreset/reset-min.css */
 html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
 
-
+#sidebar {display:none;}
 html {
-    background: #1B1C1F;
 }
 
 body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: Georgia;
     font-size: 16px;
     line-height: 1.5em;
     color: black;
     background: white;
-    border: 10px solid black;
     margin: 20px auto;
     padding: 20px 50px;
-    width: 800px;
+    width: 900px;
     padding-bottom: 4em;
 }
 
@@ -35,7 +33,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
     text-decoration: none;
 }
 
-h1 { font-size: 1.6em; }
+h1 { font-size: 1.6em; margin: 1em 0; }
 h2 { font-size: 1.3em; }
 h3 { font-size: 1.1em; font-weight: bold; }
 
@@ -74,18 +72,13 @@ textarea {
 #header #logo {
     float: left;
 }
-#header #logo img {
-    height: 70px;
-}
 
 #header_about {
     color: #675E39;
-    width: 600px;
     float: right;
     text-align: right;
-    margin-top: 1.2em;
-    font-size: 1em;
-    display: none;
+    margin-top: 3.2em;
+    font-size: 1.2em;
 }
 
 #header_about p {
@@ -99,29 +92,6 @@ textarea {
     float: left;
     width: 800px;
 }
-#sidebar {
-    float: right;
-    margin-top: 2em;
-    width: 160px;
-}
-#sidebar .divider {
-    border-bottom: 1px solid #eee;
-    margin: 1em 0;
-}
-#sidebar a.nav {
-    text-decoration: none;
-}
-#sidebar h2 {
-    font-size: 1.1em;
-}
-#sidebar h3 {
-    font-size: 0.9em;
-    font-weight: 200;
-}
-#sidebar #search {
-    width: 80%;
-}
-
 
 
 #message {
@@ -140,23 +110,21 @@ textarea {
 #message.success { background-color: #c6eac5; border: 1px solid #a5c4a4;}
 #message.error { background-color: #F8ECEF; border: 1px solid #e0bac7;}
 
+.topic { margin-bottom: 4em; }
+.topic .title,
+.topic .body {
+    margin-left: 180px;
+}
 .topic .title {
-    margin-left: 130px;
     font-size: 1.8em;
 }
 .topic .info {
     float: left;
-    width: 100px;
+    width: 150px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 200;
 }
-.topic .body {
-    margin-left: 130px;
-    font-family: Georgia;
-}
-.topic .video {
-    width: 80%;
-}
-#sidebar { display: none;}
+
 
 .topic_listing { width: 90%; }
 .topic_listing td {
@@ -231,6 +199,6 @@ a.vote_down:hover {
 
 
 iframe.video {
-    width: 600px;
-    height: 338px;
+    width: 100%;
+    height: 350px;
 }

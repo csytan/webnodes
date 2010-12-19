@@ -73,7 +73,9 @@
             </div>
             <div class="body">
                 {{ markdown(topic.text) }}
-                {% if topic.n_comments %}
+                {% if topic.n_comments == 1 %}
+                    <a href="/{{ topic.name }}">{{ topic.n_comments }} comment</a>
+                {% elif topic.n_comments %}
                     <a href="/{{ topic.name }}">{{ topic.n_comments }} comments</a>
                 {% else %}
                     <a href="/{{ topic.name }}">discuss</a>

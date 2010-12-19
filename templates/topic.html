@@ -56,7 +56,6 @@
             {% if topic.can_vote_down(current_user) %}
                 / <a class="vote_down" href="/vote?way=down&amp;topic_id={{ topic.name }}">-</a>
             {% end %}
-            <br>
             <span class="points">
                 {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
             </span>
@@ -71,16 +70,16 @@
             {% end %}
             <br>
             {{ relative_date(topic.created) }}
-            
+            <br>
             {% if topic.version > 1 %}
-                | <a href="/{{ topic.name }}/versions">version {{ topic.version }}</a>
+                <a href="/{{ topic.name }}/versions">version {{ topic.version }}</a>
             {% else %}
-                | version 1
+                version 1
             {% end %}
-            | <a href="/{{ topic.name }}/edit">edit</a>
+            <br>
+            <a href="/{{ topic.name }}/edit">edit</a>
         </div>
-        
-        <div class="body" style="border:none;">
+        <div class="body">
             {{ markdown(topic.text, video_embed=True) }}
             {% if replies %}
                 <a class="reply">reply</a>
@@ -88,9 +87,8 @@
         </div>
         <div style="clear:both"></div>
     </div>
-
-    <br>
-    <h2 style="margin-top: 1em;">Comments</h2>
+    
+    <h2>Comments</h2>
     
     <div id="reply_box" class="comment" {% if not replies %}style="display:block;"{% end %}>
         {% if current_user %}
