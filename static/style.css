@@ -103,6 +103,7 @@ textarea {
     background: white;
     padding: 25px;
     margin-left: 140px;
+    margin-bottom: 2em;
     border: 1px solid #ddd;
     -webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.08);
     -moz-box-shadow: 0 0 7px rgba(0, 0, 0, 0.08);
