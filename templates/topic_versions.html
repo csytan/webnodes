@@ -50,7 +50,7 @@
         <h2 style="font-size: 1.8em">
             <a href="/{{ topic.name }}">{{ escape(edit.title) }}</a>
         </h2>
-        <p class="comment_info">
+        <p class="info">
             Edited by <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
             {{ relative_date(edit.created) }}
             {% if edit.reason %}
