@@ -61,7 +61,13 @@
         <a href="/rss.xml">RSS</a>
         <a href="http://www.google.com/search?sitesearch=thrutched.com">Search</a>
     </div>
-    <div id="content">{% block content %}{% end %}</div>
+    <div id="content">
+        {% block content_wrapper %}
+            <div class="wrapper">
+                {% block content %}{% end %}
+            </div>
+        {% end %}
+    </div>
     <div style="clear:both"></div>
     
     <div id="footer">

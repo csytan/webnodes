@@ -95,10 +95,12 @@ textarea {
     border-top: 1px solid #ccc;
     border-bottom: 1px solid white;
 }
-
 #content {
-    background: white;
     width: 550px;
+}
+#content .wrapper {
+    width: 100%;
+    background: white;
     padding: 25px;
     margin-left: 140px;
     border: 1px solid #ddd;
@@ -156,7 +158,6 @@ textarea {
 }
 
 
-.topic { margin-bottom: 4em; }
 .topic .title {
     font-size: 1.6em;
     margin-bottom: 0.5em;
@@ -181,7 +182,6 @@ textarea {
 }
 .topic_listing h2 {
     font-size: 1.2em;
-    font-weight: 200;
     margin: 0;
 }
 
