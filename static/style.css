@@ -46,7 +46,7 @@ ol li { list-style-type: decimal; }
 ul li { list-style-type: disc; }
 
 blockquote, pre, code {
-    color: #555;
+    color: #777;
     background-color: #F8F8F8;
     border-left: 4px solid #BBB;
     padding: 1em;
