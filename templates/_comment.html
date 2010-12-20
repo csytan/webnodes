@@ -7,7 +7,7 @@
         {% end %}
         
         <div class="body">
-            <p class="comment_info">
+            <p class="info">
                 {% if not current_user %}
                     <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
                 {% elif comment.can_vote_up(current_user) %}

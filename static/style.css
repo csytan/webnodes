@@ -4,14 +4,13 @@ html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pr
 html {
     background: #EBEBEB;
 }
-
 body {
     width: 1000px;
     margin: auto;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.5em;
-    color: rgba(0, 0, 0, 0.699219);
+    color: #4C4C4C;
     margin: auto;
     padding-bottom: 4em;
 }
@@ -24,6 +23,7 @@ em { font-style: italic; }
 p, blockquote { margin-bottom: 1.4em; }
 
 h1, h2, h3, h4, h5 {
+    font-weight: 200;
     line-height: 1.4em;
     margin: 0.5em 0 1em;
 }
@@ -76,7 +76,7 @@ textarea {
     width: 120px;
 }
 #nav a {
-    color: rgba(0, 0, 0, .4);
+    color: #959595;
     display: block;
     text-decoration: none;
     margin-left: 0.3em;
@@ -88,7 +88,7 @@ textarea {
 }
 #nav a:hover,
 #nav a:active {
-    color: rgba(0, 0, 0, .7);
+    color: #464646;
 }
 #nav .divider {
     margin: 1em 0;
@@ -109,14 +109,13 @@ textarea {
 }
 #sidebar {
     font-size: 0.9em;
-    
-    color: rgba(0, 0, 0, .4);
+    color: #959595;
     float: right;
     margin-top: 25px;
     width: 230px;
 }
 #sidebar h2 {
-    color: rgba(0, 0, 0, .6);
+    color: #5E5E5E;
     margin: 0;
     margin-bottom: 1em;
     font-size: 1.1em;
@@ -193,9 +192,6 @@ textarea {
 .comment {
     border-top: 1px solid #EEE;
     padding: 1.5em 0;
-}
-.comment_info {
-    color: #6d6c6c; 
 }
 .comment .gravatar {
     float: left;
