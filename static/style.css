@@ -163,6 +163,7 @@ textarea {
 }
 
 
+.topic_listing { width: 100%; }
 .topic_listing td {
     border-top: 1px solid #eee;
 }
