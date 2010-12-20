@@ -98,7 +98,7 @@ textarea {
 #content {
     width: 550px;
 }
-#content .wrapper {
+#content .inner {
     width: 100%;
     background: white;
     padding: 25px;

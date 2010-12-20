@@ -3,7 +3,7 @@
 
 {% block style %}
     <style>
-        #content .wrapper {
+        #content .inner {
             margin-bottom: 2em;
         }
         
@@ -37,9 +37,9 @@
 {% end %}
 
 
-{% block content_wrapper %}
+{% block content_inner %}
     {% for topic in topics %}
-        <div class="wrapper">
+        <div class="inner">
             <div class="topic">
                 <h2 class="title">
                     <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
@@ -78,6 +78,8 @@
     {% end %}
     
     {% if next_page %}
-        <a id="next_page" href="/?page={{ next_page }}">next page »</a>
+        <div class="inner">
+            <a id="next_page" href="/?page={{ next_page }}">next page »</a>
+        </div>
     {% end %}
 {% end %}
