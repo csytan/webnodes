@@ -20,6 +20,10 @@
             background: #eee;
         }
         .slug { font-size: 0.9em; color: grey; }
+        
+        #preview {
+            display: none;
+        }
     </style>
 {% end %}
 
@@ -33,6 +37,21 @@
                 .substr(0, 60);
         }
         
+        var id;
+        function preview(){
+            clearTimeout(id);
+            id = setTimeout(function(){
+                var val = $('#text').val();
+                if (!val) return;
+                $.post('/submit', {preview: val}, function(html){
+                    $('#preview').show()
+                        .find('.content')
+                        .empty()
+                        .append(html);
+                });
+            }, 500);
+        }
+        
         jQuery(function($){
             $('#title').focus()
                 .keyup(function(){
@@ -43,6 +62,7 @@
                 if (this.value != slug)
                     this.value = slug;
             });
+            $('#text').keyup(preview);
         });
     </script>
 {% end %}
@@ -75,7 +95,12 @@
         <label for="text">
             Text (<a target="_blank" href="http://daringfireball.net/projects/markdown/basics">markdown</a>)
         </label>
-        <textarea name="text" tabindex="4">{{ handler.get_argument('text', '') }}</textarea>
+        <textarea id="text" name="text" tabindex="4">{{ handler.get_argument('text', '') }}</textarea>
+        <br>
+        <div id="preview">
+            <h2>Preview</h2>
+            <div class="content"></div>
+        </div>
         <input type="submit" value="Do it!" tabindex="5">
     </form>
 {% end %}

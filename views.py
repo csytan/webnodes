@@ -173,6 +173,11 @@ class Submit(BaseHandler):
         
     @tornado.web.authenticated
     def post(self):
+        preview = self.get_argument('preview', None)
+        if preview:
+            html = self.markdown(preview, video_embed=True)
+            return self.write(html)
+        
         title = self.get_argument('title', '')
         slug = self.slugify(
             self.get_argument('slug', ''))
