@@ -12,6 +12,12 @@ indexes:
 
 - kind: Comment
   properties:
+  - name: author
+  - name: created
+    direction: desc
+
+- kind: Comment
+  properties:
   - name: topic
   - name: score
     direction: desc
@@ -19,6 +25,12 @@ indexes:
 - kind: Message
   properties:
   - name: to
+  - name: created
+    direction: desc
+
+- kind: Topic
+  properties:
+  - name: author
   - name: created
     direction: desc
 

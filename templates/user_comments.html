@@ -9,7 +9,7 @@
 {% block content %}
     <h1>{{ user.name.capitalize() }}'s Comments</h1>
     
-    {% for comment in user.comments %}
+    {% for comment in comments %}
         <div class="comment">
             <img src="{{ user.gravatar(50) }}" class="gravatar">
             

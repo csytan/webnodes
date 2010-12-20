@@ -181,9 +181,6 @@ class User(BaseModel):
     @property
     def is_admin(self):
         return self.name == 'csytan'
-        
-    def favorites(self):
-        return Topic.all().filter('up_votes =', self.key_name).order('-created').fetch(100)
 
 
 class Votable(BaseModel):

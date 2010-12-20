@@ -434,7 +434,9 @@ class UserProfile(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('user_profile.html', user=user, favorites=user.favorites())
+        favorites = models.Topic.all().filter('up_votes =', user.key_name).order('-created')
+        self.render('user_profile.html', user=user,
+            favorites=favorites.fetch(100))
 
 
 class UserTopics(BaseHandler):
@@ -442,7 +444,8 @@ class UserTopics(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('user_topics.html', user=user)
+        self.render('user_topics.html', user=user,
+            topics=user.topics.order('-created').fetch(100))
 
 
 class UserComments(BaseHandler):
@@ -450,7 +453,8 @@ class UserComments(BaseHandler):
         user = models.User.get_user(self.current_site, username)
         if not user:
             raise tornado.web.HTTPError(404)
-        self.render('user_comments.html', user=user)
+        self.render('user_comments.html', user=user,
+            comments=user.comments.order('-created').fetch(100))
 
 
 class SignIn(BaseHandler):
