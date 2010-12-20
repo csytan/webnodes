@@ -47,7 +47,7 @@
         <h1 class="title">
             <a href="/{{ topic.name }}">{{ escape(topic.title) }}</a>
         </h1>
-        <div class="info">
+        <p class="info">
             {% if not current_user %}
                 <a class="vote_up sign_in" href="/sign_in?message=vote">+</a>
             {% elif topic.can_vote_up(current_user) %}
@@ -59,33 +59,26 @@
             <span class="points">
                 {{ topic.points }} {{ 'point' if topic.points in (1, -1) else 'points' }}
             </span>
-            <br>
-            <img src="{{ topic.author.gravatar(60) }}" class="gravatar">
-            
-            <br>
             {% if topic.author %}
                 by <a href="/users/{{ topic.author.name }}">{{ topic.author.name }}</a>{% for editor in topic.editors %}, <a href="/users/{{ editor }}">{{ editor }}</a>{% end %}
             {% else %}
                 by anonymous
             {% end %}
-            <br>
             {{ relative_date(topic.created) }}
-            <br>
+            |
             {% if topic.version > 1 %}
                 <a href="/{{ topic.name }}/versions">version {{ topic.version }}</a>
             {% else %}
                 version 1
             {% end %}
-            <br>
-            <a href="/{{ topic.name }}/edit">edit</a>
-        </div>
+            | <a href="/{{ topic.name }}/edit">edit</a>
+        </p>
         <div class="body">
             {{ markdown(topic.text, video_embed=True) }}
             {% if replies %}
                 <a class="reply">reply</a>
             {% end %}
         </div>
-        <div style="clear:both"></div>
     </div>
     
     <h2>Comments</h2>

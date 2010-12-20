@@ -9,7 +9,6 @@
     <link type="text/css" href="/static/style.css" rel="stylesheet">
     <!--[if IE 6]>
         <style>
-            #background { display: none; }
             .topic img, .comment img { width: 100%; }
         </style>
     <![endif]-->
@@ -20,59 +19,50 @@
 </head>
 
 <body>
-    <div id="header">
-        <div id="logo">
-            {% if current_site %}
-                <a href="/">
-                    <img src="/static/thrutched_logo.png">
-                </a>
-            {% end %}
-        </div>
-        <div id="header_about">
+    <div id="logo">
+        {% if current_site %}
+            <a href="/">
+                <img src="/static/thrutched_logo.png">
+            </a>
+        {% end %}
+    </div>
+    <div id="sidebar">
+        <h2>About</h2>
+        <div class="about">
             {{ markdown(current_site.about) }}
         </div>
-        <div style="clear:both"></div>
+        <h2>Favorites</h2>
+        <div class="favorites">
+            {% for t in current_site.sidebar_topics() %}
+                <a href="/{{ t.name }}">{{ escape(t.title) }}</a>
+            {% end %}
+        </div>
     </div>
     
-    <div id="main">
-        <div id="content">{% block content %}{% end %}</div>
-        <div id="sidebar">
-            <a class="nav" href="/submit">submit  ✎</a>
-            <br>
-            <a class="nav" href="/community">community ☮</a>
-            <br>
-            {% if current_user %}
-                <div class="divider"></div>
-                <a class="nav" href="/inbox">
-                    {% if current_user.n_messages %}
-                        inbox  ★ {{ current_user.n_messages }}
-                    {% else %}
-                        inbox ✉
-                    {% end %}
-                </a>
-                <br>
-                <a class="nav" href="/account">{{ current_user.name }} ☯ {{ current_user.karma }}</a>
-                <br>
-                <a class="nav" href="/sign_out">sign out ☽</a>
-            {% else %}
-                <a class="nav" href="/sign_in">sign in ☼</a>
-            {% end %}
-            <br>
-            <br>
-            <h2>Favorites</h2>
-            {% for t in current_site.sidebar_topics() %}
-                <h3><a href="/{{ t.name }}">{{ escape(t.title) }}</a></h3>
-            {% end %}
-            <br>
-            <h2>Search</h2>
-            <form method="get" action="http://www.google.com/search">
-                <input type="text" name="q" value="">
-                <input type="hidden" name="sitesearch" value="thrutched.com">
-                <input type="submit" value="Google Search"> 
-            </form>
-        </div>
-        <div style="clear:both"></div>
+    <div id="nav">
+        {% if current_user %}
+            <a href="/inbox">
+                {% if current_user.n_messages %}
+                    Inbox  ★ {{ current_user.n_messages }}
+                {% else %}
+                    Inbox
+                {% end %}
+            </a>
+            <a href="/account">
+                <strong>{{ current_user.name }}</strong> ({{ current_user.karma }})
+            </a>
+            <a href="/sign_out">Sign Out</a>
+        {% else %}
+            <a href="/sign_in">Sign In</a>
+        {% end %}
+        <div class="divider"></div>
+        <a href="/submit">Submit</a>
+        <a href="/community">Community</a>
+        <a href="/rss.xml">RSS</a>
+        <a href="http://www.google.com/search?sitesearch=thrutched.com">Search</a>
     </div>
+    <div id="content">{% block content %}{% end %}</div>
+    <div style="clear:both"></div>
     
     <div id="footer">
         <script type="text/javascript">
