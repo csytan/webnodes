@@ -8,7 +8,7 @@
 
 {% block style %}
     <style>
-        .comment_info {
+        .info {
             margin-left: 80px;
         }
     </style>
@@ -36,7 +36,7 @@
             {% set topic = message.topic %}
             <div class="comment">
                 <img src="{{ message.sender.gravatar(40) }}" class="gravatar">
-                <p class="comment_info">
+                <p class="info">
                     <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
                     voted for your topic
                     "{{ escape(topic.title) }}"
@@ -49,7 +49,7 @@
             {% set comment = message.comment %}
             <div class="comment">
                 <img src="{{ message.sender.gravatar(40) }}" class="gravatar">
-                <p class="comment_info">
+                <p class="info">
                     <a href="/users/{{ message.sender.name }}">{{ message.sender.name }}</a>
                     voted for your comment
                     {{ relative_date(message.created) }}
@@ -65,7 +65,7 @@
                 {% else %}
                     <img src="http://www.gravatar.com/avatar/0?d=mm&amp;s=40" class="gravatar">
                 {% end %}
-                <p class="comment_info">
+                <p class="info">
                     {% if comment.author %}
                         <a href="/users/{{ comment.author.name }}">{{ comment.author.name }}</a>
                     {% else %}
@@ -81,7 +81,7 @@
             {% set edit = message.topic_edit %}
             <div class="comment">
                 <img src="{{ edit.author.gravatar(40) }}" class="gravatar">
-                <p class="comment_info">
+                <p class="info">
                     <a href="/users/{{ edit.author.name }}">{{ edit.author.name }}</a>
                     edited your topic
                     "{{ escape(edit.title) }}"
