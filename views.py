@@ -389,6 +389,7 @@ class CommunityEdit(BaseHandler):
     def post(self):
         self.current_site.title = self.get_argument('title', '')
         self.current_site.tagline = self.get_argument('tagline', '')
+        self.current_site.facebook = self.get_argument('facebook', '')
         self.current_site.about = self.get_argument('about', '')
         self.current_site.put()
         self.reload(message='updated')

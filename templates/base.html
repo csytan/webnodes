@@ -58,6 +58,9 @@
         <div class="divider"></div>
         <a href="/submit">Submit</a>
         <a href="/community">Community</a>
+        {% if current_site.facebook %}
+            <a href="{{ current_site.facebook }}">Facebook</a>
+        {% end %}
         <a href="/rss.xml">RSS</a>
         <a href="http://www.google.com/search?sitesearch=thrutched.com">Search</a>
     </div>

@@ -23,6 +23,8 @@
         <input type="text" id="title" name="title" value="{{ escape(current_site.title) }}">
         <label for="tagline">Tagline</label>
         <input type="text" id="tagline" name="tagline" value="{{ escape(current_site.tagline) }}">
+        <label for="facebook">Facebook</label>
+        <input type="text" id="facebook" name="facebook" value="{{ escape(current_site.facebook) }}">
         <label for="about">About</label>
         <textarea id="about" name="about">{{ escape(current_site.about) }}</textarea>
         <input type="submit" value="Update!">
