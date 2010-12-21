@@ -7,13 +7,13 @@ import unicodedata
 import urllib
 import urlparse
 
+from google.appengine.api import mail
 from google.appengine.ext import db
 
 from lib import markdown2
 import tornado.web
 
 import models
-
 
 
 DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
@@ -61,11 +61,12 @@ class BaseHandler(tornado.web.RequestHandler):
             current_site=self.current_site,
             **kwargs)
     
-    def send_mail(self, subject, to, body=None, template=None,
-            sender='webnodes.org <hello@webnodes.org>', **kwargs):
+    def send_mail(self, subject, to, body=None, template=None, **kwargs):
         if template:
             body = self.render_string(template, **kwargs)
-        mail.send_mail(sender=sender, to=to, subject=subject, body=body)
+        mail.send_mail(
+            sender=self.current_site.title + ' <support@webnodes.appspotmail.com>',
+            to=to, subject=subject, body=body)
         logging.info('mail sent to: ' + to)
         
     def reload(self, copyargs=False, **kwargs):
@@ -474,8 +475,8 @@ class SignIn(BaseHandler):
         if token:
             user = models.User.get_by_token(token)
             if user:
-                self.set_secure_cookie('user_id', str(user.id))
-            return self.redirect(next if next.startswith('/') else '/')
+                self.set_secure_cookie('user', user.key_name)
+                return self.redirect(next if next.startswith('/') else '/')
         self.render('sign_in.html')
         
     def post(self):
@@ -490,6 +491,24 @@ class SignIn(BaseHandler):
                 self.set_secure_cookie('user', user.key_name)
                 return self.redirect(next if next.startswith('/') else '/')
         self.reload(message='login_error', copyargs=True)
+
+
+class PasswordReset(BaseHandler):
+    def get(self):
+        self.render('password_reset.html')
+        
+    def post(self):
+        email = self.get_argument('email', None)
+        if email:
+            user = models.User.get_by_email(email)
+            if user:
+                self.send_mail(
+                    to=user.email,
+                    subject='Password Reset',
+                    current_user=user,
+                    template='password_reset_email.txt')
+                message = 'emailed'
+        self.reload(message='emailed')
 
 
 class SignUp(BaseHandler):
@@ -526,25 +545,6 @@ class SignOut(BaseHandler):
         next = self.get_argument('next', '/')
         self.clear_cookie('user')
         self.redirect(next if next.startswith('/') else '/')
-
-
-class PasswordReset(BaseHandler):
-    def get(self):
-        self.render('password_reset.html', email=self.get_argument('email', ''))
-
-    def post(self):
-        email = self.get_argument('email', None)
-        message = 'not_found'
-        if email:
-            user = models.User.get_by_email(email)
-            if user:
-                self.send_mail(
-                    to=user.email,
-                    subject='Password Reset',
-                    current_user=user,
-                    template='email/password_reset.txt')
-                message = 'emailed'
-        self.reload(message=message)
 
 
 

@@ -26,6 +26,7 @@ application = tornado.wsgi.WSGIApplication([
     (r'/account', views.Account),
     (r'/inbox', views.Inbox),
     (r'/sign_in', views.SignIn),
+    (r'/password_reset', views.PasswordReset),
     (r'/sign_up', views.SignUp),
     (r'/sign_out', views.SignOut),
     (r'/users', views.Users),
