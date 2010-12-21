@@ -9,6 +9,7 @@
 {% block style %}
     <style>
         .user { margin-top: 2em; }
+        .user h2 { margin-bottom: 0; }
         .user .gravatar { float: left; }
         .user .body { margin-left: 120px; }
     </style>
@@ -21,7 +22,7 @@
     {% for user in users %}
         <div class="user">
             <img src="{{ user.gravatar(100) }}" class="gravatar">
-            <div class="body">
+            <div class="body info">
                 <h2>
                     <a href="/users/{{ user.name }}">{{ user.name }}</a>
                 </h2>
@@ -31,7 +32,6 @@
                 <br>
                 {{ user.n_comments }} <a href="/users/{{ user.name }}/comments">comments</a>
             </div>
-            <div style="clear:both"></div>
         </div>
     {% end %}
 {% end %}
