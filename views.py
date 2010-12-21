@@ -474,6 +474,7 @@ class SignIn(BaseHandler):
         token = self.get_argument('login_token', None)
         if token:
             q = models.User.all()
+            q.filter('site =', self.current_site)
             user = q.filter('url_login_token =', token).get()
             if user:
                 self.set_secure_cookie('user', user.key_name)
@@ -503,8 +504,7 @@ class PasswordReset(BaseHandler):
         if email:
             q = models.User.all()
             q.filter('site =', self.current_site)
-            q.filter('email =', email.strip().lower())
-            user = q.get()
+            user = q.filter('email =', email.strip().lower()).get()
             if user:
                 self.send_mail(
                     to=user.email,
