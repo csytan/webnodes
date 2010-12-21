@@ -20,6 +20,10 @@ DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 
 
 class BaseHandler(tornado.web.RequestHandler):
+    def head(self):
+        self.get(self)
+        self.request.body = ''
+    
     def get_current_user(self):
         user_key = self.get_secure_cookie('user')
         if not user_key: return
