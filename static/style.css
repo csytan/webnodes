@@ -35,7 +35,10 @@ h1 { font-size: 1.6em; }
 h2 { font-size: 1.3em; }
 h3 { font-size: 1.1em;  }
 
-label { color: #6d6c6c; }
+label, .info {
+    color: #888;
+    font-weight: 200;
+}
 
 ol, ul {
     margin: 0.5em 1em;
@@ -161,10 +164,7 @@ textarea {
 #message.error { background-color: #F8ECEF; border: 1px solid #e0bac7;}
 
 
-.info {
-    color: #888;
-    font-weight: 200;
-}
+
 
 
 .topic .title {

@@ -39,7 +39,7 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" tabindex="2" value="{{ handler.get_argument('password', '') }}">
         <input type="hidden" name="next" value="{{ handler.get_argument('next', '/') }}">
-        <p>
+        <p class="info">
             <a href="/password_reset">Forgot password</a> 
             &nbsp;|&nbsp;
             <a href="/sign_up">Create an account</a>

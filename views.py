@@ -473,10 +473,11 @@ class SignIn(BaseHandler):
         next = self.get_argument('next', '/')
         token = self.get_argument('login_token', None)
         if token:
-            user = models.User.get_by_token(token)
+            q = models.User.all()
+            user = q.filter('url_login_token =', token).get()
             if user:
                 self.set_secure_cookie('user', user.key_name)
-                return self.redirect(next if next.startswith('/') else '/')
+                return self.redirect('/account')
         self.render('sign_in.html')
         
     def post(self):
@@ -500,7 +501,10 @@ class PasswordReset(BaseHandler):
     def post(self):
         email = self.get_argument('email', None)
         if email:
-            user = models.User.get_by_email(email)
+            q = models.User.all()
+            q.filter('site =', self.current_site)
+            q.filter('email =', email.strip().lower())
+            user = q.get()
             if user:
                 self.send_mail(
                     to=user.email,

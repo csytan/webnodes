@@ -136,15 +136,6 @@ class User(BaseModel):
             return True
         return False
         
-    @classmethod
-    def get_by_email(cls, email):
-        email = email.strip().lower()
-        return cls.all().filter('email =', email).get()
-        
-    @classmethod
-    def get_by_token(cls, token):
-        return cls.all().filter('url_login_token =', token).get()
-        
     @property
     def login_token(self):
         if not self.url_login_token:
