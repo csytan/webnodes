@@ -125,6 +125,12 @@ textarea {
     margin-bottom: 1em;
     font-size: 1.1em;
 }
+#sidebar iframe.facebook {
+    border: none;
+    width: 200px;
+    height: 50px;
+    margin: 10px 0;
+}
 #sidebar .favorites a {
     color: rgba(0, 0, 0, .4);
     display: block;
