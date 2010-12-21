@@ -45,19 +45,19 @@
                 {% if current_user.n_messages %}
                     Inbox  ★ {{ current_user.n_messages }}
                 {% else %}
-                    Inbox
+                    Inbox ✉
                 {% end %}
             </a>
             <a href="/account">
-                <strong>{{ current_user.name }}</strong> ({{ current_user.karma }})
+                <strong>{{ current_user.name }}</strong> ☯ {{ current_user.karma }}
             </a>
-            <a href="/sign_out">Sign Out</a>
+            <a href="/sign_out">Sign Out ☽</a>
         {% else %}
-            <a href="/sign_in">Sign In</a>
+            <a href="/sign_in">Sign In ☼</a>
         {% end %}
         <div class="divider"></div>
-        <a href="/submit">Submit</a>
-        <a href="/community">Community</a>
+        <a href="/submit">Submit ✎</a>
+        <a href="/community">Community ☮</a>
         {% if current_site.facebook %}
             <a href="{{ current_site.facebook }}">Facebook</a>
         {% end %}
