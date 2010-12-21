@@ -21,7 +21,7 @@ DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 
 class BaseHandler(tornado.web.RequestHandler):
     def head(self, *args, **kwargs):
-        self.get(self, *args, **kwargs)
+        self.get(*args, **kwargs)
         self.request.body = ''
     
     def get_current_user(self):
