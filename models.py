@@ -3,6 +3,7 @@ import datetime
 import hashlib
 import math
 import re
+import urllib
 import urlparse
 import uuid
 
@@ -87,6 +88,10 @@ class Site(BaseModel):
     @property
     def link(self):
         return 'http://' + (self.domain or self.key_name + '.webnodes.org')
+        
+    @property
+    def facebook_urlencoded(self):
+        return urllib.urlencode({1: self.facebook})[2:]
 
 
 class User(BaseModel):

@@ -31,6 +31,11 @@
         <div class="about">
             {{ markdown(current_site.about) }}
         </div>
+        
+        {% if current_site.facebook %}
+            <iframe src="http://www.facebook.com/plugins/like.php?href={{ current_site.facebook_urlencoded }}&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=50&amp;width=200" scrolling="no" frameborder="0" style="border:none; width:200px; height: 50px;" allowTransparency="true"></iframe>
+        {% end %}
+        
         <h2>Favorites</h2>
         <div class="favorites">
             {% for t in current_site.sidebar_topics() %}
@@ -58,9 +63,6 @@
         <div class="divider"></div>
         <a href="/submit">Submit ✎</a>
         <a href="/community">Community ☮</a>
-        {% if current_site.facebook %}
-            <a href="{{ current_site.facebook }}">Facebook</a>
-        {% end %}
         <a href="/rss.xml">RSS</a>
         <a href="https://github.com/csytan/webnodes">GitHub</a>
         <a href="http://www.google.com/search?sitesearch=thrutched.com">Search</a>
