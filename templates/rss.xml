@@ -10,7 +10,7 @@
             <title>{{ escape(topic.title) }}</title>
             <link>{{ current_site.link }}/{{ topic.name }}</link>
             <guid>{{ current_site.link }}/{{ topic.name }}</guid>
-            <description>{{ escape(markdown(topic.text)) }}</description>
+            <description>{{ escape(markdown(topic.text, video_embed=True)) }}</description>
         </item>
     {% end %}
 </channel>
